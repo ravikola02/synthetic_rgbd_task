@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+# generated: OBJ exports written by scene/spec.py
+assets/meshes/
+# generated evaluation outputs (rerun the scripts to recreate)
+output/
