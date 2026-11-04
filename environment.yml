@@ -1,0 +1,21 @@
+# PyBullet pipeline (CPU, runs on a laptop):   conda env create -f environment.yml
+# Isaac Sim backend (optional, NVIDIA GPU):     see README, "Isaac Sim (optional)"
+name: synthetic_rgbd
+channels:
+  - conda-forge
+dependencies:
+  - python=3.11
+  - pip
+  - pip:
+      - numpy==1.26.0
+      - scipy==1.15.3
+      - pybullet==3.2.7
+      - trimesh==4.5.1
+      - shapely==2.2.0           # trimesh: polygons / extrusions
+      - mapbox_earcut==2.1.0     # trimesh: triangulation
+      - rtree==1.3.0             # trimesh: spatial queries
+      - networkx==3.3            # trimesh: graph ops (stable poses)
+      - cascadio==0.1.1          # trimesh: STEP loading
+      - pillow==11.3.0
+      - opencv-python-headless==4.11.0.86   # grasp videos
+      - matplotlib==3.10.3       # depth colour map

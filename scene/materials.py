@@ -9,7 +9,7 @@ optical  : properties the D435 camera model will read (filled in once we decide
 
 Values are typical handbook numbers, not measurements:
 - aluminium density 2700 kg/m^3 (6063-T5 extrusion alloy: 2690)
-- die-cast zinc (Zamak) 6600 kg/m^3 -> bare bracket 15.6 g (item's ~23 g likely includes screws and nuts)
+- die-cast zinc (Zamak) 6600 kg/m^3 -> bracket + cap 182 g (overestimate: the cap is plastic)
 - dry friction aluminium vs. painted / laminated table: ~0.3-0.5 -> 0.4
 """
 

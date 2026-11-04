@@ -8,8 +8,11 @@ ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 IDEAL_DIR = os.path.join(ROOT, "data", "ideal")      # ideal frames: data/ideal/<backend>/seed_XXX/<camera>/
 
 # ---------------------------------------------------------------- robot
-G1_USD = "/mnt/shared_data/unitree_sim_assets/assets/robots/g1-29dof-dex1-base-fix-usd/g1_29dof_with_dex1_base_fix1.usd"
-G1_URDF = "/mnt/shared_data/unitree_sim_assets/urdf/g1_dex1.urdf"
+# URDF (PyBullet, IK): in the repo (see README, "Robot model"). USD (Isaac only): not in the repo
+# (77 MB); set G1_USD to its path.
+G1_URDF = os.path.join(ROOT, "assets", "robot", "g1_dex1", "g1_dex1.urdf")
+G1_USD = os.environ.get("G1_USD", "/mnt/shared_data/unitree_sim_assets/assets/robots/"
+                        "g1-29dof-dex1-base-fix-usd/g1_29dof_with_dex1_base_fix1.usd")
 G1_PRIM = "/World/G1"
 
 # The G1 base is fixed to the world at the origin (pelvis frame), so we keep the robot
@@ -72,12 +75,14 @@ def sample_part_poses(rng):
 
 
 # ---------------------------------------------------------------- fixed test set
-# Used by all evaluations. Selected 2026-11-03 for the item Line 8 40x40 parts: the first 15 seeds,
-# in order, that pass all of
-#   1. the bracket's top hole is visible to the head camera (ideal PyBullet depth, CAD ground truth)
-#   2. the hole used by the bracket fit (perception/bracket_fit.py) is that hole (within 3 mm)
-#   3. the grasp poses (pre-grasp, approach, lift) are reachable by one arm (IK error < 5 mm)
-# Because perception failures are excluded by construction, ideal-depth perception results on this
-# set are 15/15 by definition; report them as such, not as accuracy.
-# Seeds 0-52 were checked; 38 rejected: 30 no visible top hole, 8 grasp unreachable.
-TEST_SEEDS = [4, 8, 12, 17, 20, 21, 23, 26, 27, 32, 37, 38, 42, 45, 52]
+# Used by all evaluations. Selected 2026-11-04 for the item Line 8 40x40 parts (user: "seeds for
+# which all are detected and lifted"): the first 15 seeds, in order, where with ideal PyBullet depth
+#   1. the bracket's top hole is visible to the head camera (CAD ground truth, eval_holes.gt_top)
+#   2. the hole detector alone returns that hole (within 3 mm)
+#   3. the bracket fit succeeds (t < 5 mm, r < 10 deg) from that hole
+#   4. robot/grasp_hole.py lifts the bracket the full ~100 mm (seed 20, which slips to 51 mm, excluded)
+# Every ideal-depth stage is therefore 15/15 on this set by construction: it is the baseline the
+# camera model degrades, not an accuracy measure (that is on all seeds with a visible hole, NOTES.md).
+# Seeds 0-112 checked; 98 rejected: 69 no visible top hole, 4 detector picked the wrong hole,
+# 20 grasp unreachable (IK), 4 bracket pushed away / not lifted (12, 42, 54, 63), 1 slipped (20).
+TEST_SEEDS = [4, 8, 23, 26, 27, 32, 37, 38, 45, 69, 73, 86, 92, 97, 112]

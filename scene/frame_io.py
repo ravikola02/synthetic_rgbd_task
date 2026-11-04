@@ -23,7 +23,7 @@ VIS_RANGE = (0.40, 0.80)   # m: the workspace (table and parts at 0.45-0.75 m); 
 
 def depth_to_vis(depth, K, rng=VIS_RANGE):
     """Viewing aid only: turbo colour over the workspace depth range, modulated by shading from
-    the surface normals so 20 mm parts and their edges stand out from the table. Black = no
+    the surface normals so 40 mm parts and their edges stand out from the table. Black = no
     depth, grey = beyond the workspace (floor)."""
     import matplotlib
     H, W = depth.shape

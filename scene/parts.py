@@ -1,7 +1,7 @@
 """Real part geometry from manufacturer CAD (item Industrietechnik, Line 8, 40x40, slot 8).
 
 Switched from Line 5 (20x20) on 2026-11-03: with the 20 mm bracket the G1's Dex1 jaws could not
-grasp at the hole (hole ~9 mm above the table, see NOTES.md). The 20x20 files stay in assets/cad/.
+grasp at the hole (hole ~9 mm above the table, see NOTES.md). The 20x20 files are in assets/cad/archive_line5_20x20/.
 
 assets/cad/item_45281_profile_8_40x40_light_natural_200mm.step
     item 0.0.452.81, Profile 8 40x40 light, natural (clear-anodized aluminium). item's export was the

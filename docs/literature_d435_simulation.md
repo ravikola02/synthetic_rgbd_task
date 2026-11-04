@@ -6,7 +6,7 @@ Nov 3, 2026 · online version: https://claude.ai/artifact/NDdykcHzKFRfK1Si1WQWwF
 
 The D435 has been modelled many times, at three levels of fidelity: physics-based IR stereo simulation, analytic noise models fitted to measurements, and learned noise. This doc collects that work so our camera model can reuse proven choices and cite them.
 
-Our setting: a Unitree G1 with its head-mounted D435 (848x480, 0.5-0.65 m to the parts) looking at an item 20x20 clear-anodized aluminium profile and a painted die-cast zinc bracket. The questions are which effects matter on such parts, and which existing models we can copy or validate against.
+Our setting: a Unitree G1 with its head-mounted D435 (848x480, 0.5-0.65 m to the parts) looking at an item Line 8 40x40 clear-anodized aluminium profile and a powder-coated die-cast zinc angle bracket (8.5 mm holes). The questions are which effects matter on such parts, and which existing models we can copy or validate against.
 
 Each section lists papers or tools with what they model; the last two sections turn this into decisions for our model and a reading order.
 
@@ -45,6 +45,8 @@ Axial noise model in the form used after Nguyen et al. (Kinect) and Ahn et al. (
 \sigma_z(z,\theta) = a + b\,z + c\,z^2 + d\,z^{n}\,\frac{\theta^2}{(\pi/2-\theta)^2}
 ```
 
+Correction after reading Ahn et al. (2019) in full (docs/793350771-ANM.pdf, Eq. 2): the D435 fit uses θ, not θ², in the angle term: σ_z = 0.001063 + 0.0007278 z + 0.003949 z² + 0.022 z^{3/2} θ/(π/2 − θ)² (m). The angle coefficients were set by hand ("heuristically obtained"), not fitted. Nguyen et al.'s Kinect model is the one with θ².
+
 Intel's theoretical floor for the RMS error on a well-textured plane (BKM, in docs/), with subpixel ≈ 0.08 px:
 
 ```latex
@@ -53,7 +55,7 @@ Intel's theoretical floor for the RMS error on a well-textured plane (BKM, in do
 
 | Work | Sensor | What it gives | Use for us |
 | --- | --- | --- | --- |
-| Ahn et al., Analysis and Noise Modeling of the Intel RealSense D435 for Mobile Robots (UR 2019), as described in [arXiv 2412.15040](https://arxiv.org/html/2412.15040v1) | D435 | Axial and lateral Gaussian noise vs distance and incidence angle; lateral noise treated as independent of distance and angle | Direct functional form for our noise term; coefficients still to be read from the paper |
+| Ahn et al., Analysis and Noise Modeling of the Intel RealSense D435 for Mobile Robots (UR 2019), full text in docs/793350771-ANM.pdf | D435 | Axial and lateral Gaussian noise vs distance and incidence angle; lateral noise treated as independent of distance and angle | Direct functional form for our noise term; coefficients still to be read from the paper |
 | [Halmetschlager-Funek et al., An Empirical Evaluation of Ten Depth Cameras](https://www.acin.tuwien.ac.at/?p=8369) (IEEE RAM 2018/19) | 10 sensors: structured light, active stereo, ToF | Bias, precision, lateral noise, 4 light levels, 6 materials including aluminium, multi-sensor NaN ratio; data and quadratic error models downloadable | Only study found that measures aluminium as a material; check whether the D435 is among the ten |
 | Intel BKM tuning paper (docs/) | D400 family | Z² error formula, subpixel 0.05-0.1 px, MinZ, presets (High Accuracy vs High Density) | Noise floor and validation number |
 | [Nguyen-style models for other sensors (Fankhauser n = 1.5, Khoshelham n = -0.5)](https://arxiv.org/html/2412.15040v1) | Kinect v1/v2, PMD Flexx2 | Same form with different exponents | Shows the form transfers across sensors |
@@ -94,7 +96,7 @@ The literature supports a layered model: a well-precedented geometric noise stac
 | --- | --- | --- | --- |
 | Axial noise growing with z² | Intel BKM formula; Ahn et al. D435 fit | Ideal depth, K, baseline | Both |
 | Incidence-angle term (noise rises near grazing) | Nguyen-style model as used for D435 by Ahn et al. | Normals (from depth or mesh) | Both |
-| Lateral noise / edge smearing | Ahn et al. (Gaussian lateral); DPL lateral ∝ z | Depth, instance edges | Both |
+| Lateral noise / edge smearing | Ahn et al. (lateral: constant 41–43 mm, 90th percentile, no trend; not usable at our scale); DPL lateral ∝ z | Depth, instance edges | Both |
 | Holes at depth discontinuities | DPL edge dropout; Parkour in the Wild; Isaac outlier removal | Depth gradients | Both |
 | Disparity quantisation and confidence filtering | Isaac depth sensor schema (confidence 0.95, outlier 3 px) | Disparity from depth | Both (Isaac native) |
 | Left invalid band, MinZ | Datasheet section 4.5, Table 4-12 | Depth, K, baseline | Both |
@@ -112,7 +114,7 @@ Isaac's built-in `SingleViewDepthSensor` set to D435 values is a free extra base
 
 Read Ahn et al. first for D435 coefficients, then Zhang et al. for the physics-based route, then HAMMER for validation data.
 
-1. Ahn et al., Analysis and Noise Modeling of the Intel RealSense D435 for Mobile Robots, UR 2019: get the fitted axial and lateral coefficients.
+1. Ahn et al., Analysis and Noise Modeling of the Intel RealSense D435 for Mobile Robots, UR 2019: full text (docs/793350771-ANM.pdf) read by the AI agent on 2026-11-04. Axial Eq. 2 used as the ablation (θ = 0); the angle term is hand-set and the lateral values (41–43 mm) describe edge scatter, see NOTES.md Q2.
 2. [Zhang et al., T-RO 2023](https://angli66.github.io/active-sensor-sim): how materials and IR noise are parameterised; try the SAPIEN `StereoDepthSensor` notebook.
 3. [HAMMER](https://www.github.com/Junggy/HAMMER-dataset): D435 error statistics on reflective vs diffuse objects.
 4. [Isaac Sim 5.1 depth sensors](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/sensors/isaacsim_sensors_camera_depth.html): units and meaning of `noiseMean`, `noiseSigma`, `confidenceThreshold`.
@@ -129,4 +131,4 @@ Open questions:
 
 ## Sources
 
-All links above were opened on the as-of date, except Carfagni et al. (access blocked) and the full texts of Ahn et al. and Parkour in the Wild (only abstracts or secondary descriptions read). Intel datasheet and BKM tuning paper: `docs/` in the project repository.
+All links above were opened by the AI agent on the as-of date, except Carfagni et al. (access blocked) and the full text of Parkour in the Wild (only the abstract or secondary descriptions read). The full text of Ahn et al. was later read by the AI agent (2026-11-04). Intel datasheet and BKM tuning paper: `docs/` in the project repository.

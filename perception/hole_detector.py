@@ -15,6 +15,10 @@ Steps
      diameter on the face plane matches the expected hole size and which is round (not a slot)
   6. centre = mean of those pixels' rays intersected with the face plane; axis = face normal
   7. "top" hole = face normal closest to the table normal
+
+Thresholds (MIN_HEIGHT, TABLE_THRESH, FACE_THRESH) are tuned on ideal depth. detect_holes(...,
+thresholds=...) can replace them by per-pixel values (functions of depth); perception/hole_detector_tuned.py
+uses that to scale them with the D435 noise. The defaults are this baseline detector.
 """
 import os
 import sys
@@ -32,7 +36,7 @@ MIN_HEIGHT = 0.0015           # m above the table to count as an object
 TABLE_THRESH = 0.001          # m, RANSAC inlier distance for the table
 FACE_THRESH = 0.001           # m, RANSAC inlier distance for part faces
 MIN_FACE_PX = 15
-MIN_HOLE_PX = 3               # 1-2 px gaps are not measurable (a 5.3 mm hole was ~4 px wide at 0.55 m)
+MIN_HOLE_PX = 3               # 1-2 px gaps are not measurable (the 8.5 mm hole is ~7 px wide face-on at 0.5 m)
 MAX_FACES = 4
 DIAM_RANGE = (0.6, 1.6)       # accepted equivalent diameter, as a fraction of HOLE_DIAMETER
 MAX_ELONGATION = 2.0          # ratio of in-plane principal spreads; rejects slot fragments
@@ -47,7 +51,8 @@ def rays(K, shape):
 
 
 def ransac_plane(P, thresh, rng, iters=300):
-    """Plane n.p + d = 0 with the most inliers, refined by least squares; n faces the camera."""
+    """Plane n.p + d = 0 with the most inliers (thresh: scalar or one per point), refined by least squares;
+    n faces the camera."""
     best_count, best = -1, None
     for _ in range(iters):
         s = P[rng.choice(len(P), 3, replace=False)]
@@ -68,7 +73,15 @@ def ransac_plane(P, thresh, rng, iters=300):
     return n, -n @ m
 
 
-def detect_holes(depth, K, seed=0):
+def per_pixel(value, depth):
+    """Threshold image: a constant, or a function of the depth image."""
+    return np.broadcast_to(value(depth) if callable(value) else value, depth.shape)
+
+
+def detect_holes(depth, K, seed=0, thresholds=None):
+    """thresholds: optional {"min_height", "table", "face"} -> metres or function(depth image) -> metres."""
+    th = {"min_height": MIN_HEIGHT, "table": TABLE_THRESH, "face": FACE_THRESH, **(thresholds or {})}
+    th_height, th_table, th_face = (per_pixel(th[k], depth) for k in ("min_height", "table", "face"))
     rng = np.random.default_rng(seed)
     R = rays(K, depth.shape)
     P = R * depth[..., None]                             # points, camera frame
@@ -77,9 +90,9 @@ def detect_holes(depth, K, seed=0):
     # 1-2. table plane and object pixels
     idx = np.flatnonzero(valid)
     sample = rng.choice(idx, min(5000, len(idx)), replace=False)
-    n_t, d_t = ransac_plane(P.reshape(-1, 3)[sample], TABLE_THRESH, rng)
+    n_t, d_t = ransac_plane(P.reshape(-1, 3)[sample], th_table.reshape(-1)[sample], rng)
     height = P @ n_t + d_t
-    objects = valid & (height > MIN_HEIGHT)
+    objects = valid & (height > th_height)
 
     # 3. clusters
     labels, n_clusters = ndimage.label(objects, structure=np.ones((3, 3)))
@@ -90,8 +103,8 @@ def detect_holes(depth, K, seed=0):
         for _ in range(MAX_FACES):
             if remaining.sum() < MIN_FACE_PX:
                 break
-            n_f, d_f = ransac_plane(P[remaining], FACE_THRESH, rng, iters=200)
-            on_plane = valid & (np.abs(P @ n_f + d_f) < FACE_THRESH) & (labels == c)
+            n_f, d_f = ransac_plane(P[remaining], th_face[remaining], rng, iters=200)
+            on_plane = valid & (np.abs(P @ n_f + d_f) < th_face) & (labels == c)
             if on_plane.sum() < MIN_FACE_PX:
                 break
             face_lab, nf = ndimage.label(on_plane)

@@ -14,11 +14,15 @@ and are equally "top").
   python perception/eval_holes.py              # fixed test set config.TEST_SEEDS
   python perception/eval_holes.py --backend isaac      # after rendering those seeds
   python perception/eval_holes.py --max-frames 10      # retry on later frames
+  python perception/eval_holes.py --camera d435 --runs 10   # D435 model, 10 noise draws per scene
+  python perception/eval_holes.py --camera d435 --axial ahn --runs 10   # ablation: Ahn axial noise
 
 Multi-frame: per test scene, run the detector on frame 0, 1, ... and stop at the first frame
 with a top-hole detection (the robot cannot know if it is correct), up to --max-frames. The
 scene is static: with ideal depth every frame is the same image and only the detector's RANSAC
-sampling changes; frame_depth() is where the camera model will add per-frame noise.
+sampling changes; with the D435 model (--camera d435) every frame gets a new noise draw (frame_depth()).
+--runs repeats the whole scene with independent noise draws; draws are seeded by (seed, run, frame),
+so all model variants see the same random numbers (paired comparison).
 """
 import argparse
 import json
@@ -30,10 +34,12 @@ import trimesh
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.join(HERE, "..")
-sys.path[:0] = [HERE, os.path.join(ROOT, "scene"), os.path.join(ROOT, "scene", "backends")]
+sys.path[:0] = [HERE, ROOT, os.path.join(ROOT, "scene"), os.path.join(ROOT, "scene", "backends")]
+import camera_model  # noqa: E402
 from config import TEST_SEEDS  # noqa: E402
 from frame_io import ideal_frame  # noqa: E402
-from hole_detector import MAX_TOP_TILT_DEG, detect_holes  # noqa: E402
+import hole_detector_tuned  # noqa: E402
+from hole_detector import MAX_TOP_TILT_DEG  # noqa: E402
 from parts import BRACKET_HOLE_DIAMETER  # noqa: E402
 from parts import BRACKET_OPENINGS as OPENINGS  # noqa: E402  (bracket hole openings, CAD frame)
 
@@ -81,9 +87,10 @@ def gt_top(openings, depth, K):
     return [name for _, name in sorted(valid, reverse=True)]
 
 
-def frame_depth(depth, frame_idx):
-    """Depth of frame `frame_idx` of a static scene. Ideal depth: identical for every frame."""
-    return depth
+def frame_depth(depth, K, args, seed, run, frame_idx):
+    """Depth of frame `frame_idx` of a static scene: the ideal depth through the camera model.
+    Ideal: identical for every frame. D435 model: a new noise draw per (seed, run, frame)."""
+    return camera_model.depth(args, depth, K, np.random.default_rng((seed, run, frame_idx)))
 
 
 def main():
@@ -92,8 +99,12 @@ def main():
                     help="scene seeds; default: the fixed test set config.TEST_SEEDS (15 scenes with a visible top hole)")
     ap.add_argument("--backend", choices=["pybullet", "isaac"], default="pybullet")
     ap.add_argument("--max-frames", type=int, default=1, help="frames tried per scene until a detection")
+    camera_model.add_args(ap)
+    hole_detector_tuned.add_args(ap)
+    ap.add_argument("--runs", type=int, default=1, help="independent noise draws per scene")
     ap.add_argument("--out", default=os.path.join(ROOT, "output", "hole_detector"))
     args = ap.parse_args()
+    args.detect, args.det_tag = hole_detector_tuned.from_args(args)
     os.makedirs(args.out, exist_ok=True)
 
     def get_frame(seed):
@@ -109,34 +120,45 @@ def main():
             print(f"seed {seed}: no {args.backend} frame, skipped")
             continue
         K = np.array(spec["camera"]["K"])
-        for f in range(args.max_frames):
-            det = detect_holes(frame_depth(cam["depth"], f), K, seed=seed * 1000 + f)
-            if det["top"] is not None:
-                break
         ops = gt_openings(spec, cam["cam_pose_ros"])
-        gt = gt_top(ops, cam["depth"], K)
-        row = {"seed": seed, "gt_top": gt, "n_candidates": len(det["all"]), "detected": det["top"] is not None,
-               "frames_used": f + 1}
-        if det["top"] is not None:
-            c, a = det["top"]["center"], det["top"]["axis"]
-            name, (cg, ng, _) = min(ops.items(), key=lambda kv: np.linalg.norm(kv[1][0] - c))
-            row.update(matched=name, pos_err_mm=float(np.linalg.norm(c - cg) * 1e3),
-                       axis_err_deg=float(np.degrees(np.arccos(np.clip(abs(a @ ng), 0, 1)))),
-                       diameter_mm=float(det["top"]["diameter"] * 1e3), n_px=det["top"]["n_px"])
-            row["correct"] = bool(row["pos_err_mm"] < CORRECT_MM and name in gt)
-        # candidates not near any bracket opening = false positives (e.g. on the profile)
-        row["false_pos"] = int(sum(min(np.linalg.norm(h["center"] - o[0]) for o in ops.values()) * 1e3 > CORRECT_MM
-                               for h in det["all"]))
-        rows.append(row)
-        print(json.dumps({k: (round(v, 2) if isinstance(v, float) else v) for k, v in row.items()}))
+        gt = gt_top(ops, cam["depth"], K)                      # visibility from the ideal depth
+        for run in range(args.runs):
+            rows.append(evaluate(seed, run, cam["depth"], K, ops, gt, args))
 
-    with open(os.path.join(args.out, f"results_ideal_depth_{args.backend}_frames{args.max_frames}.json"), "w") as f:
+    tag = f"{camera_model.tag(args)}_depth{args.det_tag}_{args.backend}_frames{args.max_frames}" + (f"_runs{args.runs}" if args.runs > 1 else "")
+    with open(os.path.join(args.out, f"results_{tag}.json"), "w") as f:
         json.dump(rows, f, indent=1)
+    summary(rows, args)
 
+
+def evaluate(seed, run, depth, K, ops, gt, args):
+    """Detect on up to --max-frames frames of one scene and score the top hole against the GT."""
+    for f in range(args.max_frames):
+        det = args.detect(frame_depth(depth, K, args, seed, run, f), K, seed=seed * 1000 + f)
+        if det["top"] is not None:
+            break
+    row = {"seed": seed, "run": run, "gt_top": gt, "n_candidates": len(det["all"]),
+           "detected": det["top"] is not None, "frames_used": f + 1}
+    if det["top"] is not None:
+        c, a = det["top"]["center"], det["top"]["axis"]
+        name, (cg, ng, _) = min(ops.items(), key=lambda kv: np.linalg.norm(kv[1][0] - c))
+        row.update(matched=name, pos_err_mm=float(np.linalg.norm(c - cg) * 1e3),
+                   axis_err_deg=float(np.degrees(np.arccos(np.clip(abs(a @ ng), 0, 1)))),
+                   diameter_mm=float(det["top"]["diameter"] * 1e3), n_px=det["top"]["n_px"])
+        row["correct"] = bool(row["pos_err_mm"] < CORRECT_MM and name in gt)
+    # candidates not near any bracket opening = false positives (e.g. on the profile)
+    row["false_pos"] = int(sum(min(np.linalg.norm(h["center"] - o[0]) for o in ops.values()) * 1e3 > CORRECT_MM
+                           for h in det["all"]))
+    print(json.dumps({k: (round(v, 2) if isinstance(v, float) else v) for k, v in row.items()}))
+    return row
+
+
+def summary(rows, args):
     has_gt = [r for r in rows if r["gt_top"]]
     correct = [r for r in has_gt if r.get("correct")]
-    print(f"\n=== top-hole detector, ideal depth, {args.backend}, up to {args.max_frames} frame(s) ===")
-    print(f"frames {len(rows)}, with a visible upward hole (GT) {len(has_gt)}")
+    print(f"\n=== top-hole detector{args.det_tag}, {camera_model.tag(args)} depth, {args.backend}, up to {args.max_frames} frame(s), "
+          f"{args.runs} run(s) per scene ===")
+    print(f"scene runs {len(rows)}, with a visible upward hole (GT) {len(has_gt)}")
     print(f"detected correctly {len(correct)}/{len(has_gt)} ({100 * len(correct) / max(len(has_gt), 1):.0f}%)")
     print(f"detections on frames without GT top hole: {sum(r['detected'] for r in rows if not r['gt_top'])}")
     print(f"false-positive candidates (not on a bracket opening): {sum(r['false_pos'] for r in rows)}")
@@ -146,8 +168,12 @@ def main():
         print(f"axis error deg    : median {np.median(ae):.2f}, mean {ae.mean():.2f}, max {ae.max():.2f}")
     print(f"frames used per scene: mean {np.mean([r['frames_used'] for r in rows]):.2f}, "
           f"scenes needing > 1 frame: {sum(r['frames_used'] > 1 for r in rows)}")
-    misses = [r["seed"] for r in has_gt if not r.get("correct")]
-    print(f"missed / wrong seeds: {misses}")
+    print(f"no detection {sum(not r['detected'] for r in has_gt)}, "
+          f"wrong detection {sum(r['detected'] and not r.get('correct') for r in has_gt)}")
+    per_seed = {}
+    for r in has_gt:
+        per_seed.setdefault(r["seed"], []).append(bool(r.get("correct")))
+    print("correct runs per seed: " + ", ".join(f"{s}: {sum(v)}/{len(v)}" for s, v in per_seed.items()))
 
 
 if __name__ == "__main__":

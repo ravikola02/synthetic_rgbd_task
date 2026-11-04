@@ -2,9 +2,9 @@
 
 Pipeline per scene (no ground truth used for control):
   1. build the scene with dynamic parts (settled by physics), robot in the ready pose
-  2. head camera -> ideal depth -> top-hole detection -> bracket 6D fit (perception/)
+  2. head camera -> depth (ideal, or through the D435 model) -> top-hole detection -> bracket 6D fit
   3. grasp pose: approach direction = into the face along the detected hole axis (normal to the
-     hole); jaws close across the bracket's 20 mm width (fitted CAD x-axis, made perpendicular to
+     hole); jaws close across the bracket's 40 mm width (fitted CAD x-axis, made perpendicular to
      the approach). The TCP position near the hole is searched over depth along the approach
      (<= GRASP_DEPTH) and shift along the face (+-MAX_FACE_SHIFT): keep candidates whose jaws stay
      TABLE_CLEARANCE above the table and whose fingers do not hit the part along the straight
@@ -21,10 +21,17 @@ Pipeline per scene (no ground truth used for control):
   5. success = bracket lifted by > 5 cm and touching both jaws after a 1 s hold
 
   python robot/grasp_hole.py                  # all 15 test seeds, videos of the first 2
+  python robot/grasp_hole.py --camera d435 --seeds 8 --run-ids 22   # D435 model, noise draw 22
+  python robot/grasp_hole.py --camera d435 --detector tuned --seeds 8 --run-ids 22   # + noise-aware detector
 
-Result (2026-11-03, item 40x40 bracket, ideal depth, default TCP): 13/15 lifted ~100 mm. Open:
-seeds 12, 42 -- a gripper part not covered by the finger model touches the bracket during the
-approach and pushes it ~25 mm; seed 20 slips at 51 mm (3-4 N grip). See NOTES.md.
+--camera d435 puts the rendered depth through the D435 model (camera_model/, --axial ahn for the ablation); noise draw r of seed s uses the
+same random numbers as run r in perception/eval_*.py. The grasp scene is settled by physics (~1 mm
+different from the static evaluation frames), so the same draw need not give the same detection.
+
+Result (2026-11-04, item 40x40 bracket, ideal depth, default TCP): 15/15 test seeds lifted ~100 mm
+(test set selected on that). Failures seen while selecting: 12, 42 (a gripper part not covered by
+the finger model pushes the bracket ~25 mm on approach), 54, 63 not lifted, 20 slips at 51 mm.
+See NOTES.md.
 """
 import argparse
 import json
@@ -37,7 +44,9 @@ import pybullet as p
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.join(HERE, "..")
-sys.path[:0] = [os.path.join(ROOT, "perception"), os.path.join(ROOT, "scene"), os.path.join(ROOT, "scene", "backends")]
+sys.path[:0] = [ROOT, os.path.join(ROOT, "perception"), os.path.join(ROOT, "scene"), os.path.join(ROOT, "scene", "backends")]
+import camera_model  # noqa: E402
+import hole_detector_tuned  # noqa: E402
 import pybullet_backend as pb  # noqa: E402
 from bracket_fit import OPENINGS, fit_bracket, model_points  # noqa: E402
 from config import ROOT, TABLE_TOP_Z, TEST_SEEDS  # noqa: E402
@@ -160,7 +169,7 @@ def grasp_pose(T_wc, det, fit):
     hole = fit["hole"]                                               # the hole the best fit started from
     c = T_wc[:3, :3] @ hole["center"] + T_wc[:3, 3]
     approach = -(T_wc[:3, :3] @ hole["axis"])                       # into the face, normal to the hole
-    x_obj = (T_wc @ fit["T_cam_obj"])[:3, 0]                        # bracket width direction (20 mm)
+    x_obj = (T_wc @ fit["T_cam_obj"])[:3, 0]                        # bracket width direction (40 mm)
     close = x_obj - (x_obj @ approach) * approach
     close /= np.linalg.norm(close)
     if np.cross(approach, close)[2] < 0:                            # keep hand +z (jaw plate height) upward;
@@ -266,15 +275,21 @@ def plan_arm(urdf, side, robot, tcp, R, approach, jaw_close=None):
     return plan, max(e for e, _ in errs), max(r for _, r in errs)
 
 
-def run(seed, video_path=None):
+def run(seed, video_path=None, args=None, run_idx=0):
     spec = make_scene(seed, settle=True)                            # dynamic parts for grasping
     sim = pb.build(spec)
     robot, bracket = sim["robot"], sim["bodies"]["bracket"]
     cam = pb.render_cameras(sim, spec)["cameras"]["head"]
     K = np.array(spec["camera"]["K"])
-    det = detect_holes(cam["depth"], K, seed=seed)
-    fit = fit_bracket(cam["depth"], K, det, seed=seed)
-    row = {"seed": seed, "hole_detected": det["top"] is not None, "fitted": fit is not None}
+    camera = camera_model.tag(args) if args is not None else "ideal"
+    detector = "tuned detector" if args is not None and args.detector == "tuned" else "baseline detector"
+    depth = (camera_model.depth(args, cam["depth"], K, np.random.default_rng((seed, run_idx, 0)))
+             if args is not None else cam["depth"])
+    detect = hole_detector_tuned.from_args(args)[0] if args is not None else detect_holes
+    det = detect(depth, K, seed=seed)
+    fit = fit_bracket(depth, K, det, seed=seed)
+    row = {"seed": seed, "camera": camera, "run": run_idx, "hole_detected": det["top"] is not None,
+           "fitted": fit is not None}
     if fit is None:
         p.disconnect()
         return row
@@ -288,6 +303,7 @@ def run(seed, video_path=None):
     c_det = T_wc[:3, :3] @ fit["hole"]["center"] + T_wc[:3, 3]
     gt = min(OPENINGS.values(), key=lambda o: np.linalg.norm(T_wo[:3, :3] @ o[0] + T_wo[:3, 3] - c_det))
     gt_axis = T_wo[:3, :3] @ np.array(gt[1], float)
+    row["hole_pos_err_mm"] = float(np.linalg.norm(T_wo[:3, :3] @ np.array(gt[0]) + T_wo[:3, 3] - c_det) * 1e3)
     row.update(approach_err_deg=float(np.degrees(np.arccos(np.clip(-approach @ gt_axis, -1, 1)))),
                approach_tilt_from_vertical_deg=float(np.degrees(np.arccos(np.clip(-approach[2], -1, 1)))))
     if tcp is None:
@@ -337,7 +353,9 @@ def run(seed, video_path=None):
             if writer is not None and step % VIDEO_EVERY == 0:
                 img = np.reshape(p.getCameraImage(640, 480, view, proj, renderer=p.ER_TINY_RENDERER)[2], (480, 640, 4))
                 bgr = cv2.cvtColor(img[..., :3].astype(np.uint8), cv2.COLOR_RGB2BGR)
-                cv2.putText(bgr, f"seed {seed}  {phase}", (12, 28), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (20, 20, 20), 2)
+                cv2.putText(bgr, f"seed {seed}  {camera} depth, draw {run_idx}, {detector}", (12, 440),
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.6, (20, 20, 20), 2)
+                cv2.putText(bgr, phase, (12, 466), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (20, 20, 20), 2)
                 writer.write(bgr)
             step += 1
         if n_ph + 1 == len(plan) or plan[n_ph + 1][0] != phase:     # end of a phase: diagnostics
@@ -373,6 +391,9 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--seeds", type=int, nargs="*", default=TEST_SEEDS)
     ap.add_argument("--videos", type=int, default=2, help="record videos of the first N seeds")
+    camera_model.add_args(ap)
+    hole_detector_tuned.add_args(ap)
+    ap.add_argument("--run-ids", type=int, nargs="*", default=[0], help="noise draws to run per seed")
     ap.add_argument("--tcp-offset-mm", type=float, nargs="*", default=[0.0],
                     help="TCP shift along the jaw from the URDF tip frames (+ = towards the tip); several = sweep")
     ap.add_argument("--tcp-side-mm", type=float, default=0.0,
@@ -389,14 +410,20 @@ def main():
     for off in args.tcp_offset_mm:
         set_tcp_offset(off / 1000, args.tcp_side_mm / 1000)
         for i, seed in enumerate(args.seeds):
-            video = (os.path.join(args.out, f"grasp_seed_{seed:03d}_tcp{off:+.0f}mm_side{args.tcp_side_mm:.0f}mm.mp4")
-                     if i < args.videos else None)
-            row = {"tcp_offset_mm": off, "tcp_side_mm": args.tcp_side_mm, **run(seed, video)}
-            rows.append(row)
-            print(json.dumps({k: (round(v, 2) if isinstance(v, float) else v) for k, v in row.items()}), flush=True)
-    with open(os.path.join(args.out, "results.json"), "w") as f:
+            for r in args.run_ids:
+                cam_tag = ("" if args.camera == "ideal" else f"_{camera_model.tag(args)}_run{r}") + \
+                          hole_detector_tuned.from_args(args)[1]
+                video = (os.path.join(args.out, f"grasp_seed_{seed:03d}{cam_tag}_tcp{off:+.0f}mm_side{args.tcp_side_mm:.0f}mm.mp4")
+                         if i < args.videos else None)
+                row = {"tcp_offset_mm": off, "tcp_side_mm": args.tcp_side_mm, **run(seed, video, args, r)}
+                rows.append(row)
+                print(json.dumps({k: (round(v, 2) if isinstance(v, float) else v) for k, v in row.items()
+                                  if k != "phase_log"}), flush=True)
+    det_tag = hole_detector_tuned.from_args(args)[1]
+    name = "results.json" if args.camera == "ideal" and not det_tag else f"results_{camera_model.tag(args)}{det_tag}.json"
+    with open(os.path.join(args.out, name), "w") as f:
         json.dump(rows, f, indent=1)
-    print("\n=== grasp at top hole, ideal depth, PyBullet ===")
+    print(f"\n=== grasp at top hole, {camera_model.tag(args)} depth{det_tag}, PyBullet ===")
     for off in args.tcp_offset_mm:
         rr = [r for r in rows if r["tcp_offset_mm"] == off]
         print(f"TCP offset {off:+5.1f} mm: lifted {sum(r.get('success', False) for r in rr)}/{len(rr)}, "
