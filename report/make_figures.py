@@ -1,4 +1,4 @@
-"""Figures of the report -> report/figures/ (scene.png, detection.png, grasp.png).
+"""Figures of the report -> report/figures/ (scene.png, detection.png, hole_plane.png, grasp.png).
 
   python report/make_figures.py            # ~3 min: renders 4 grasp videos (PyBullet) for grasp.png
   python report/make_figures.py --no-video # scene / detection only (scene.png then needs an existing video)
@@ -112,6 +112,38 @@ def fig_detection(seed=299, run=0):
     plt.close(fig)
 
 
+def fig_hole_plane(seed=8, run=22):
+    """Depth points around the true top hole, in its frame: ideal vs axial noise (as plot_hole_plane.py).
+    Seed 8 is a development scene: its noise draw 22 shows the hole face breaking up most clearly."""
+    import matplotlib.pyplot as plt
+    sys.path.insert(0, os.path.join(ROOT, "perception"))
+    from bracket_fit import frame_from_axis
+    from eval_holes import gt_openings, gt_top
+    from hole_detector import detect_holes
+    from plot_hole_plane import COLOURS, draw, panel
+    from extract_examples import cam_args
+    f = ideal_frame("pybullet", seed)
+    spec, cam = f["meta"]["spec"], f["meta"]["camera_pose_world_ros"]
+    K = np.array(spec["camera"]["K"])
+    ops = gt_openings(spec, cam)
+    c, n, _ = ops[gt_top(ops, f["depth"], K)[0]]
+    R = frame_from_axis(n, np.array([1.0, 0, 0]))
+    import camera_model
+    rows = [(lab, camera_model.depth(cam_args(cond), f["depth"], K, np.random.default_rng((seed, run, 0))))
+            for lab, cond in (("ideal depth", "0_ideal"), ("axial noise", "2_axial"))]
+    fig = plt.figure(figsize=(10, 4.6))
+    for i, (name, depth) in enumerate(rows):
+        pts, line = panel(depth, K, c, R, detect_holes(depth, K, seed=seed))
+        ax = fig.add_subplot(1, 2, i + 1, projection="3d")
+        draw(ax, pts, 30, -60)
+        ax.set_title(f"{name}\n{line.replace('top hole', 'detected top hole')}", fontsize=10)
+    handles = [plt.Line2D([], [], ls="", marker="o", color=col, label=lab) for lab, col in COLOURS.items()]
+    fig.legend(handles=handles, loc="lower center", ncol=4, frameon=False)
+    fig.tight_layout(rect=(0, 0.06, 1, 1))
+    fig.savefig(os.path.join(OUT, "hole_plane.png"), dpi=170, bbox_inches="tight")
+    plt.close(fig)
+
+
 def fig_grasp():
     """Two grasp moments per case; columns: seed 233 ideal / bias, seed 204 ideal / full model."""
     import matplotlib.pyplot as plt
@@ -142,6 +174,7 @@ def main():
         fig_grasp()
     fig_scene()
     fig_detection()
+    fig_hole_plane()
     print(f"figures in {OUT}")
 
 

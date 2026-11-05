@@ -136,7 +136,7 @@ rounding nudges the fitted pose, and the grasp search switches to a candidate th
 the control for the grasp planner's own sensitivity, against which the camera effects on the grasp should be
 read. Axial noise causes the largest single drop in detection, to 56\,\%: it leaves enclosed gaps on the
 profile's flat top face that pass as holes, and it breaks up the bracket's faces so that the real hole is no
-longer enclosed. Edge fattening alone does not prevent detection, since the plug it puts into the hole still
+longer enclosed (Fig.~\ref{fig:holeplane}). Edge fattening alone does not prevent detection, since the plug it puts into the hole still
 stands out on noise-free depth, but it tilts the hole axis (0.75$^\circ$ to 1.12$^\circ$) and with noise it
 lowers detection further, from 56\,\% to 39\,\% ($p = 0.005$, Fig.~\ref{fig:detection}). The depth bias is
 invisible to detection but shifts the whole pose by 10.7\,mm along the viewing ray and lowers the grasp to
@@ -167,6 +167,17 @@ full model & 54\,\% & 99\,\% (10.9\,mm off) & 57\,\% \\
 \includegraphics[width=0.85\linewidth]{all_stages.png}
 \caption{Success per stage and condition with 95\,\% exact intervals.}
 \label{fig:results}
+\end{figure}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.8\linewidth]{hole_plane.png}
+\caption{Why detection fails under axial noise: depth points within 18\,mm of the true top hole, in the hole's
+frame (height $h$ stretched about 4$\times$), coloured by what the detector made of them. With ideal depth the
+face is one clean plane and the hole is an enclosed gap (black). With axial noise ($\sigma_Z \approx 0.9$\,mm)
+many points fall outside the 1\,mm face band, the face breaks up, no gap is enclosed, and the detector picks a
+false hole 218\,mm away. Development scene (seed 8, draw 22).}
+\label{fig:holeplane}
 \end{figure}
 
 \begin{figure}[t]
