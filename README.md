@@ -108,6 +108,36 @@ Intermediate D435 results (development seeds, PyBullet, 15 seeds × 10 noise dra
 The development set was chosen so that every step succeeds with ideal depth (see below). The 15/15 results are
 therefore the baseline for the camera model, not an accuracy measure.
 
+## Final experiment
+
+Does the D435 model change the outcome of hole detection, bracket fit and grasp? 7 depth conditions (ideal,
+datasheet rules, axial noise, edge fattening, edge + axial, depth bias ±2 %, full model) on 30 held-out test seeds
+(`TEST_SEEDS`: every ideal-depth stage succeeds), 5 paired noise draws each. Protocol and hypotheses: NOTES.md Q3.
+
+```bash
+python experiments/final_sweep.py all          # select seeds, run, analyse (~20-30 min on 48 processes);
+                                               # opens a live web view (--no-view to skip)
+python experiments/run_seed.py --seed 204 --condition 6_full --run 2 [--gui]   # one case, same numbers
+python experiments/extract_examples.py         # example figures + grasp videos -> extracted_examples/
+```
+
+Results: `output/final_sweep/results/table.md` (also `.csv`, `.html`, `plots/table.png`), plots in
+`output/final_sweep/plots/`, per-draw rows in `results/rows_*.csv`, raw per-job JSON in `raw/`. Examples of
+where the camera model breaks the task: `extracted_examples/README.md`.
+
+| Condition | Hole detected | Fit, pose found (15 mm) | Grasp lifted |
+|---|---|---|---|
+| ideal | 100 % | 100 % | 100 % |
+| datasheet rules | 100 % | 100 % | 77 % |
+| axial noise | 56 % | 99 % | 63 % |
+| edge fattening | 100 % | 100 % | 63 % |
+| edge + axial | 39 % | 100 % | 65 % |
+| depth bias ±2 % | 100 % | 100 % (~10.7 mm off) | 66 % |
+| full model | 54 % | 99 % (~10.9 mm off) | 57 % |
+
+The rules-only row is the control for the grasp: it changes perception by < 1 mm, so its grasp drop (77 %) is the
+grasp planner's own sensitivity; compare the camera effects on the grasp with it.
+
 ## Development set and reference data
 
 `DEV_SEEDS = [4, 8, 23, 26, 27, 32, 37, 38, 45, 69, 73, 86, 92, 97, 112]` in `scene/config.py`. These are the
@@ -153,10 +183,13 @@ scene/           scene definition shared by both backends
 perception/      hole_detector.py, hole_detector_tuned.py (mitigation), bracket_fit.py,
                  eval_holes.py, eval_bracket_fit.py
 robot/           grasp_hole.py: IK, grasp selection and execution in PyBullet
+experiments/     final_sweep.py (final experiment), run_seed.py (one case, --gui), watch.py (live view),
+                 extract_examples.py (example figures and videos)
+extracted_examples/  failure examples (figures, grasp videos, README)
 camera_model/    d435.py: analytical D435 depth model; __init__.py: shared --camera options and ablations
 assets/cad/      part CAD (STEP) + cached stable poses
 assets/robot/    G1 + Dex1 URDF and meshes
-data/ideal/      ideal reference frames of the development seeds
+data/ideal/      ideal reference frames of the development and test seeds
 docs/            D435 datasheet, depth tuning guide, depth post-processing paper, depth testing methodology,
                  Ahn et al. 2019, Keselman et al. 2017, literature notes
 NOTES.md         working notes: decisions, results, what did not work

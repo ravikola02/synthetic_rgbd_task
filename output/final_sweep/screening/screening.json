@@ -1,0 +1,1926 @@
+{
+ "rule": "all",
+ "rule_text": "top hole visible on ideal PyBullet depth (eval_holes.gt_top) and on ideal depth: detector within 3 mm, fit success, grasp lifted",
+ "first_seed": 201,
+ "last_seed": 431,
+ "selected": [
+  204,
+  231,
+  233,
+  243,
+  245,
+  246,
+  266,
+  271,
+  292,
+  298,
+  299,
+  304,
+  306,
+  313,
+  342,
+  345,
+  348,
+  351,
+  365,
+  376,
+  379,
+  380,
+  382,
+  384,
+  385,
+  388,
+  392,
+  399,
+  408,
+  431
+ ],
+ "rejected": {
+  "no_visible_hole": [
+   202,
+   203,
+   206,
+   207,
+   208,
+   209,
+   211,
+   212,
+   213,
+   215,
+   216,
+   217,
+   218,
+   220,
+   221,
+   223,
+   224,
+   226,
+   227,
+   228,
+   229,
+   230,
+   232,
+   234,
+   236,
+   238,
+   239,
+   240,
+   241,
+   242,
+   244,
+   247,
+   248,
+   249,
+   250,
+   252,
+   253,
+   254,
+   255,
+   256,
+   257,
+   258,
+   259,
+   260,
+   261,
+   262,
+   263,
+   264,
+   265,
+   267,
+   268,
+   269,
+   272,
+   273,
+   274,
+   276,
+   278,
+   280,
+   282,
+   283,
+   284,
+   285,
+   287,
+   289,
+   290,
+   293,
+   294,
+   295,
+   296,
+   300,
+   305,
+   307,
+   308,
+   309,
+   310,
+   311,
+   312,
+   314,
+   315,
+   316,
+   318,
+   319,
+   320,
+   321,
+   322,
+   323,
+   324,
+   325,
+   326,
+   327,
+   328,
+   329,
+   332,
+   333,
+   334,
+   335,
+   336,
+   337,
+   338,
+   339,
+   340,
+   341,
+   344,
+   346,
+   347,
+   350,
+   352,
+   353,
+   354,
+   356,
+   358,
+   361,
+   362,
+   363,
+   367,
+   369,
+   370,
+   371,
+   373,
+   374,
+   375,
+   378,
+   381,
+   386,
+   387,
+   389,
+   390,
+   391,
+   393,
+   396,
+   397,
+   398,
+   400,
+   401,
+   402,
+   403,
+   404,
+   405,
+   406,
+   407,
+   409,
+   410,
+   411,
+   415,
+   417,
+   418,
+   419,
+   420,
+   421,
+   422,
+   423,
+   424,
+   425,
+   426,
+   428,
+   430
+  ],
+  "detector_wrong": [
+   201,
+   222,
+   225,
+   412
+  ],
+  "fit_failed": [],
+  "grasp_plan_infeasible": [
+   205,
+   214,
+   235,
+   237,
+   270,
+   275,
+   279,
+   281,
+   286,
+   288,
+   291,
+   297,
+   301,
+   302,
+   303,
+   331,
+   343,
+   349,
+   357,
+   359,
+   360,
+   364,
+   366,
+   368,
+   372,
+   394,
+   395,
+   413,
+   414,
+   427,
+   429
+  ],
+  "grasp_not_lifted": [
+   210,
+   219,
+   251,
+   277,
+   317,
+   330,
+   355,
+   377,
+   383,
+   416
+  ]
+ },
+ "screened": {
+  "201": {
+   "visible": [
+    "B_outer",
+    "A_outer"
+   ],
+   "ideal_detector_correct": false,
+   "ideal_fit_success": true,
+   "ideal_grasp": "lifted"
+  },
+  "202": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "203": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "204": {
+   "visible": [
+    "B_outer",
+    "A_outer"
+   ],
+   "ideal_detector_correct": true,
+   "ideal_fit_success": true,
+   "ideal_grasp": "lifted"
+  },
+  "205": {
+   "visible": [
+    "B_outer",
+    "A_outer"
+   ],
+   "ideal_detector_correct": true,
+   "ideal_fit_success": true,
+   "ideal_grasp": "IK failed"
+  },
+  "206": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "207": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "208": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "209": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "210": {
+   "visible": [
+    "B_outer",
+    "A_outer"
+   ],
+   "ideal_detector_correct": true,
+   "ideal_fit_success": true,
+   "ideal_grasp": "executed, not lifted"
+  },
+  "211": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "212": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "213": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "214": {
+   "visible": [
+    "A_outer",
+    "B_outer"
+   ],
+   "ideal_detector_correct": true,
+   "ideal_fit_success": true,
+   "ideal_grasp": "IK failed"
+  },
+  "215": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "216": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "217": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "218": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "219": {
+   "visible": [
+    "B_outer",
+    "A_outer"
+   ],
+   "ideal_detector_correct": true,
+   "ideal_fit_success": true,
+   "ideal_grasp": "executed, not lifted"
+  },
+  "220": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "221": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "222": {
+   "visible": [
+    "B_outer",
+    "A_outer"
+   ],
+   "ideal_detector_correct": false,
+   "ideal_fit_success": true,
+   "ideal_grasp": "lifted"
+  },
+  "223": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "224": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "225": {
+   "visible": [
+    "A_outer",
+    "B_outer"
+   ],
+   "ideal_detector_correct": false,
+   "ideal_fit_success": true,
+   "ideal_grasp": "lifted"
+  },
+  "226": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "227": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "228": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "229": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "230": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "231": {
+   "visible": [
+    "B_outer",
+    "A_outer"
+   ],
+   "ideal_detector_correct": true,
+   "ideal_fit_success": true,
+   "ideal_grasp": "lifted"
+  },
+  "232": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "233": {
+   "visible": [
+    "A_outer",
+    "B_outer"
+   ],
+   "ideal_detector_correct": true,
+   "ideal_fit_success": true,
+   "ideal_grasp": "lifted"
+  },
+  "234": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "235": {
+   "visible": [
+    "B_outer",
+    "A_outer"
+   ],
+   "ideal_detector_correct": true,
+   "ideal_fit_success": true,
+   "ideal_grasp": "IK failed"
+  },
+  "236": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "237": {
+   "visible": [
+    "A_outer",
+    "B_outer"
+   ],
+   "ideal_detector_correct": true,
+   "ideal_fit_success": true,
+   "ideal_grasp": "IK failed"
+  },
+  "238": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "239": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "240": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "241": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "242": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "243": {
+   "visible": [
+    "B_outer",
+    "A_outer"
+   ],
+   "ideal_detector_correct": true,
+   "ideal_fit_success": true,
+   "ideal_grasp": "lifted"
+  },
+  "244": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "245": {
+   "visible": [
+    "B_outer",
+    "A_outer"
+   ],
+   "ideal_detector_correct": true,
+   "ideal_fit_success": true,
+   "ideal_grasp": "lifted"
+  },
+  "246": {
+   "visible": [
+    "B_outer",
+    "A_outer"
+   ],
+   "ideal_detector_correct": true,
+   "ideal_fit_success": true,
+   "ideal_grasp": "lifted"
+  },
+  "247": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "248": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "249": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "250": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "251": {
+   "visible": [
+    "B_outer",
+    "A_outer"
+   ],
+   "ideal_detector_correct": true,
+   "ideal_fit_success": true,
+   "ideal_grasp": "executed, not lifted"
+  },
+  "252": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "253": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "254": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "255": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "256": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "257": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "258": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "259": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "260": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "261": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "262": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "263": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "264": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "265": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "266": {
+   "visible": [
+    "B_outer",
+    "A_outer"
+   ],
+   "ideal_detector_correct": true,
+   "ideal_fit_success": true,
+   "ideal_grasp": "lifted"
+  },
+  "267": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "268": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "269": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "270": {
+   "visible": [
+    "A_outer",
+    "B_outer"
+   ],
+   "ideal_detector_correct": true,
+   "ideal_fit_success": true,
+   "ideal_grasp": "IK failed"
+  },
+  "271": {
+   "visible": [
+    "A_outer",
+    "B_outer"
+   ],
+   "ideal_detector_correct": true,
+   "ideal_fit_success": true,
+   "ideal_grasp": "lifted"
+  },
+  "272": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "273": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "274": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "275": {
+   "visible": [
+    "A_outer",
+    "B_outer"
+   ],
+   "ideal_detector_correct": true,
+   "ideal_fit_success": true,
+   "ideal_grasp": "IK failed"
+  },
+  "276": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "277": {
+   "visible": [
+    "B_outer",
+    "A_outer"
+   ],
+   "ideal_detector_correct": true,
+   "ideal_fit_success": true,
+   "ideal_grasp": "executed, not lifted"
+  },
+  "278": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "279": {
+   "visible": [
+    "A_outer",
+    "B_outer"
+   ],
+   "ideal_detector_correct": true,
+   "ideal_fit_success": true,
+   "ideal_grasp": "IK failed"
+  },
+  "280": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "281": {
+   "visible": [
+    "B_outer",
+    "A_outer"
+   ],
+   "ideal_detector_correct": true,
+   "ideal_fit_success": true,
+   "ideal_grasp": "IK failed"
+  },
+  "282": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "283": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "284": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "285": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "286": {
+   "visible": [
+    "A_outer",
+    "B_outer"
+   ],
+   "ideal_detector_correct": true,
+   "ideal_fit_success": true,
+   "ideal_grasp": "IK failed"
+  },
+  "287": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "288": {
+   "visible": [
+    "B_outer",
+    "A_outer"
+   ],
+   "ideal_detector_correct": true,
+   "ideal_fit_success": true,
+   "ideal_grasp": "IK failed"
+  },
+  "289": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "290": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "291": {
+   "visible": [
+    "A_outer",
+    "B_outer"
+   ],
+   "ideal_detector_correct": true,
+   "ideal_fit_success": true,
+   "ideal_grasp": "IK failed"
+  },
+  "292": {
+   "visible": [
+    "A_outer",
+    "B_outer"
+   ],
+   "ideal_detector_correct": true,
+   "ideal_fit_success": true,
+   "ideal_grasp": "lifted"
+  },
+  "293": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "294": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "295": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "296": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "297": {
+   "visible": [
+    "A_outer",
+    "B_outer"
+   ],
+   "ideal_detector_correct": true,
+   "ideal_fit_success": true,
+   "ideal_grasp": "IK failed"
+  },
+  "298": {
+   "visible": [
+    "A_outer",
+    "B_outer"
+   ],
+   "ideal_detector_correct": true,
+   "ideal_fit_success": true,
+   "ideal_grasp": "lifted"
+  },
+  "299": {
+   "visible": [
+    "A_outer",
+    "B_outer"
+   ],
+   "ideal_detector_correct": true,
+   "ideal_fit_success": true,
+   "ideal_grasp": "lifted"
+  },
+  "300": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "301": {
+   "visible": [
+    "B_outer",
+    "A_outer"
+   ],
+   "ideal_detector_correct": true,
+   "ideal_fit_success": true,
+   "ideal_grasp": "IK failed"
+  },
+  "302": {
+   "visible": [
+    "A_outer",
+    "B_outer"
+   ],
+   "ideal_detector_correct": true,
+   "ideal_fit_success": true,
+   "ideal_grasp": "IK failed"
+  },
+  "303": {
+   "visible": [
+    "B_outer",
+    "A_outer"
+   ],
+   "ideal_detector_correct": true,
+   "ideal_fit_success": true,
+   "ideal_grasp": "IK failed"
+  },
+  "304": {
+   "visible": [
+    "A_outer",
+    "B_outer"
+   ],
+   "ideal_detector_correct": true,
+   "ideal_fit_success": true,
+   "ideal_grasp": "lifted"
+  },
+  "305": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "306": {
+   "visible": [
+    "B_outer",
+    "A_outer"
+   ],
+   "ideal_detector_correct": true,
+   "ideal_fit_success": true,
+   "ideal_grasp": "lifted"
+  },
+  "307": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "308": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "309": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "310": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "311": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "312": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "313": {
+   "visible": [
+    "A_outer",
+    "B_outer"
+   ],
+   "ideal_detector_correct": true,
+   "ideal_fit_success": true,
+   "ideal_grasp": "lifted"
+  },
+  "314": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "315": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "316": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "317": {
+   "visible": [
+    "B_outer",
+    "A_outer"
+   ],
+   "ideal_detector_correct": true,
+   "ideal_fit_success": true,
+   "ideal_grasp": "executed, not lifted"
+  },
+  "318": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "319": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "320": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "321": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "322": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "323": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "324": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "325": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "326": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "327": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "328": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "329": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "330": {
+   "visible": [
+    "B_outer",
+    "A_outer"
+   ],
+   "ideal_detector_correct": true,
+   "ideal_fit_success": true,
+   "ideal_grasp": "executed, not lifted"
+  },
+  "331": {
+   "visible": [
+    "B_outer",
+    "A_outer"
+   ],
+   "ideal_detector_correct": true,
+   "ideal_fit_success": true,
+   "ideal_grasp": "IK failed"
+  },
+  "332": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "333": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "334": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "335": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "336": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "337": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "338": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "339": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "340": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "341": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "342": {
+   "visible": [
+    "A_outer",
+    "B_outer"
+   ],
+   "ideal_detector_correct": true,
+   "ideal_fit_success": true,
+   "ideal_grasp": "lifted"
+  },
+  "343": {
+   "visible": [
+    "A_outer",
+    "B_outer"
+   ],
+   "ideal_detector_correct": true,
+   "ideal_fit_success": true,
+   "ideal_grasp": "IK failed"
+  },
+  "344": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "345": {
+   "visible": [
+    "B_outer",
+    "A_outer"
+   ],
+   "ideal_detector_correct": true,
+   "ideal_fit_success": true,
+   "ideal_grasp": "lifted"
+  },
+  "346": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "347": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "348": {
+   "visible": [
+    "A_outer",
+    "B_outer"
+   ],
+   "ideal_detector_correct": true,
+   "ideal_fit_success": true,
+   "ideal_grasp": "lifted"
+  },
+  "349": {
+   "visible": [
+    "B_outer",
+    "A_outer"
+   ],
+   "ideal_detector_correct": true,
+   "ideal_fit_success": true,
+   "ideal_grasp": "IK failed"
+  },
+  "350": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "351": {
+   "visible": [
+    "B_outer",
+    "A_outer"
+   ],
+   "ideal_detector_correct": true,
+   "ideal_fit_success": true,
+   "ideal_grasp": "lifted"
+  },
+  "352": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "353": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "354": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "355": {
+   "visible": [
+    "A_outer",
+    "B_outer"
+   ],
+   "ideal_detector_correct": true,
+   "ideal_fit_success": true,
+   "ideal_grasp": "executed, not lifted"
+  },
+  "356": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "357": {
+   "visible": [
+    "B_outer",
+    "A_outer"
+   ],
+   "ideal_detector_correct": true,
+   "ideal_fit_success": true,
+   "ideal_grasp": "IK failed"
+  },
+  "358": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "359": {
+   "visible": [
+    "B_outer",
+    "A_outer"
+   ],
+   "ideal_detector_correct": true,
+   "ideal_fit_success": true,
+   "ideal_grasp": "IK failed"
+  },
+  "360": {
+   "visible": [
+    "A_outer",
+    "B_outer"
+   ],
+   "ideal_detector_correct": true,
+   "ideal_fit_success": true,
+   "ideal_grasp": "IK failed"
+  },
+  "361": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "362": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "363": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "364": {
+   "visible": [
+    "B_outer",
+    "A_outer"
+   ],
+   "ideal_detector_correct": true,
+   "ideal_fit_success": true,
+   "ideal_grasp": "IK failed"
+  },
+  "365": {
+   "visible": [
+    "A_outer",
+    "B_outer"
+   ],
+   "ideal_detector_correct": true,
+   "ideal_fit_success": true,
+   "ideal_grasp": "lifted"
+  },
+  "366": {
+   "visible": [
+    "B_outer",
+    "A_outer"
+   ],
+   "ideal_detector_correct": true,
+   "ideal_fit_success": true,
+   "ideal_grasp": "IK failed"
+  },
+  "367": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "368": {
+   "visible": [
+    "A_outer",
+    "B_outer"
+   ],
+   "ideal_detector_correct": true,
+   "ideal_fit_success": true,
+   "ideal_grasp": "IK failed"
+  },
+  "369": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "370": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "371": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "372": {
+   "visible": [
+    "B_outer",
+    "A_outer"
+   ],
+   "ideal_detector_correct": true,
+   "ideal_fit_success": true,
+   "ideal_grasp": "IK failed"
+  },
+  "373": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "374": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "375": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "376": {
+   "visible": [
+    "B_outer",
+    "A_outer"
+   ],
+   "ideal_detector_correct": true,
+   "ideal_fit_success": true,
+   "ideal_grasp": "lifted"
+  },
+  "377": {
+   "visible": [
+    "B_outer",
+    "A_outer"
+   ],
+   "ideal_detector_correct": true,
+   "ideal_fit_success": true,
+   "ideal_grasp": "executed, not lifted"
+  },
+  "378": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "379": {
+   "visible": [
+    "A_outer",
+    "B_outer"
+   ],
+   "ideal_detector_correct": true,
+   "ideal_fit_success": true,
+   "ideal_grasp": "lifted"
+  },
+  "380": {
+   "visible": [
+    "A_outer",
+    "B_outer"
+   ],
+   "ideal_detector_correct": true,
+   "ideal_fit_success": true,
+   "ideal_grasp": "lifted"
+  },
+  "381": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "382": {
+   "visible": [
+    "B_outer",
+    "A_outer"
+   ],
+   "ideal_detector_correct": true,
+   "ideal_fit_success": true,
+   "ideal_grasp": "lifted"
+  },
+  "383": {
+   "visible": [
+    "B_outer",
+    "A_outer"
+   ],
+   "ideal_detector_correct": true,
+   "ideal_fit_success": true,
+   "ideal_grasp": "executed, not lifted"
+  },
+  "384": {
+   "visible": [
+    "B_outer",
+    "A_outer"
+   ],
+   "ideal_detector_correct": true,
+   "ideal_fit_success": true,
+   "ideal_grasp": "lifted"
+  },
+  "385": {
+   "visible": [
+    "B_outer",
+    "A_outer"
+   ],
+   "ideal_detector_correct": true,
+   "ideal_fit_success": true,
+   "ideal_grasp": "lifted"
+  },
+  "386": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "387": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "388": {
+   "visible": [
+    "A_outer",
+    "B_outer"
+   ],
+   "ideal_detector_correct": true,
+   "ideal_fit_success": true,
+   "ideal_grasp": "lifted"
+  },
+  "389": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "390": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "391": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "392": {
+   "visible": [
+    "B_outer",
+    "A_outer"
+   ],
+   "ideal_detector_correct": true,
+   "ideal_fit_success": true,
+   "ideal_grasp": "lifted"
+  },
+  "393": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "394": {
+   "visible": [
+    "B_outer",
+    "A_outer"
+   ],
+   "ideal_detector_correct": true,
+   "ideal_fit_success": true,
+   "ideal_grasp": "IK failed"
+  },
+  "395": {
+   "visible": [
+    "B_outer",
+    "A_outer"
+   ],
+   "ideal_detector_correct": true,
+   "ideal_fit_success": true,
+   "ideal_grasp": "IK failed"
+  },
+  "396": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "397": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "398": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "399": {
+   "visible": [
+    "B_outer",
+    "A_outer"
+   ],
+   "ideal_detector_correct": true,
+   "ideal_fit_success": true,
+   "ideal_grasp": "lifted"
+  },
+  "400": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "401": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "402": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "403": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "404": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "405": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "406": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "407": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "408": {
+   "visible": [
+    "B_outer",
+    "A_outer"
+   ],
+   "ideal_detector_correct": true,
+   "ideal_fit_success": true,
+   "ideal_grasp": "lifted"
+  },
+  "409": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "410": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "411": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "412": {
+   "visible": [
+    "B_outer",
+    "A_outer"
+   ],
+   "ideal_detector_correct": false,
+   "ideal_fit_success": true,
+   "ideal_grasp": "lifted"
+  },
+  "413": {
+   "visible": [
+    "B_outer",
+    "A_outer"
+   ],
+   "ideal_detector_correct": true,
+   "ideal_fit_success": true,
+   "ideal_grasp": "IK failed"
+  },
+  "414": {
+   "visible": [
+    "B_outer",
+    "A_outer"
+   ],
+   "ideal_detector_correct": true,
+   "ideal_fit_success": true,
+   "ideal_grasp": "IK failed"
+  },
+  "415": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "416": {
+   "visible": [
+    "B_outer",
+    "A_outer"
+   ],
+   "ideal_detector_correct": true,
+   "ideal_fit_success": true,
+   "ideal_grasp": "executed, not lifted"
+  },
+  "417": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "418": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "419": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "420": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "421": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "422": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "423": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "424": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "425": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "426": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "427": {
+   "visible": [
+    "B_outer",
+    "A_outer"
+   ],
+   "ideal_detector_correct": true,
+   "ideal_fit_success": true,
+   "ideal_grasp": "IK failed"
+  },
+  "428": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "429": {
+   "visible": [
+    "A_outer",
+    "B_outer"
+   ],
+   "ideal_detector_correct": true,
+   "ideal_fit_success": true,
+   "ideal_grasp": "IK failed"
+  },
+  "430": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "431": {
+   "visible": [
+    "A_outer",
+    "B_outer"
+   ],
+   "ideal_detector_correct": true,
+   "ideal_fit_success": true,
+   "ideal_grasp": "lifted"
+  },
+  "432": {
+   "visible": [
+    "A_outer",
+    "B_outer"
+   ],
+   "ideal_detector_correct": true,
+   "ideal_fit_success": true,
+   "ideal_grasp": "lifted"
+  },
+  "433": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "434": {
+   "visible": [
+    "A_outer",
+    "B_outer"
+   ],
+   "ideal_detector_correct": true,
+   "ideal_fit_success": true,
+   "ideal_grasp": "IK failed"
+  },
+  "435": {
+   "visible": [
+    "A_outer",
+    "B_outer"
+   ],
+   "ideal_detector_correct": true,
+   "ideal_fit_success": true,
+   "ideal_grasp": "IK failed"
+  },
+  "436": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "437": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "438": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "439": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  },
+  "440": {
+   "visible": [],
+   "ideal_detector_correct": null,
+   "ideal_fit_success": null,
+   "ideal_grasp": null
+  }
+ }
+}

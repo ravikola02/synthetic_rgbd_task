@@ -5,7 +5,8 @@ import os
 import numpy as np
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-IDEAL_DIR = os.path.join(ROOT, "data", "ideal")      # ideal frames: data/ideal/<backend>/seed_XXX/<camera>/
+IDEAL_DIR = os.environ.get("IDEAL_DIR") or os.path.join(ROOT, "data", "ideal")   # ideal frames: data/ideal/<backend>/seed_XXX/<camera>/
+                                                     # (IDEAL_DIR env: experiments/final_sweep.py --n-seeds 100 keeps its frames in output/)
 
 # ---------------------------------------------------------------- robot
 # URDF (PyBullet, IK): in the repo (see README, "Robot model"). USD (Isaac only): not in the repo
@@ -86,3 +87,11 @@ def sample_part_poses(rng):
 # Seeds 0-112 checked; 98 rejected: 69 no visible top hole, 4 detector picked the wrong hole,
 # 20 IK failed, 4 bracket pushed away / not lifted (12, 42, 54, 63), 1 slipped (20).
 DEV_SEEDS = [4, 8, 23, 26, 27, 32, 37, 38, 45, 69, 73, 86, 92, 97, 112]
+
+# ---------------------------------------------------------------- held-out test set
+# Final experiment (NOTES.md Q3, frozen protocol + amendment 3, 2026-11-05; experiments/final_sweep.py select):
+# the first 30 seeds from 201 up where every ideal PyBullet stage succeeds (top hole visible, detector within
+# 3 mm, fit success, grasp lifted) - the same rule as DEV_SEEDS. Seeds 201-431 screened; rejected: 156 no
+# visible top hole, 4 detector wrong, 31 grasp plan infeasible, 10 not lifted
+# (output/final_sweep/screening/screening.json).
+TEST_SEEDS = [204, 231, 233, 243, 245, 246, 266, 271, 292, 298, 299, 304, 306, 313, 342, 345, 348, 351, 365, 376, 379, 380, 382, 384, 385, 388, 392, 399, 408, 431]

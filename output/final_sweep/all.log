@@ -1,0 +1,715 @@
+selected 30 seeds in 201-431; rejected: no_visible_hole 156, detector_wrong 4, fit_failed 0, grasp_plan_infeasible 31, grasp_not_lifted 10
+[204, 231, 233, 243, 245, 246, 266, 271, 292, 298, 299, 304, 306, 313, 342, 345, 348, 351, 365, 376, 379, 380, 382, 384, 385, 388, 392, 399, 408, 431]
+[1/630] 0_ideal grasp seed 204: ok
+[2/630] 0_ideal grasp seed 231: ok
+[3/630] 0_ideal grasp seed 233: ok
+[4/630] 0_ideal grasp seed 243: ok
+[5/630] 0_ideal grasp seed 245: ok
+[6/630] 0_ideal grasp seed 246: ok
+[7/630] 0_ideal grasp seed 266: ok
+[8/630] 0_ideal grasp seed 271: ok
+[9/630] 0_ideal grasp seed 292: ok
+[10/630] 0_ideal grasp seed 298: ok
+[11/630] 0_ideal grasp seed 299: ok
+[12/630] 0_ideal grasp seed 304: ok
+[13/630] 0_ideal grasp seed 306: ok
+[14/630] 0_ideal grasp seed 313: ok
+[15/630] 0_ideal grasp seed 342: ok
+[16/630] 0_ideal grasp seed 345: ok
+[17/630] 0_ideal grasp seed 348: ok
+[18/630] 0_ideal grasp seed 351: ok
+[19/630] 0_ideal grasp seed 365: ok
+[20/630] 0_ideal grasp seed 376: ok
+[21/630] 0_ideal grasp seed 379: ok
+[22/630] 0_ideal grasp seed 380: ok
+[23/630] 0_ideal grasp seed 382: ok
+[24/630] 0_ideal grasp seed 384: ok
+[25/630] 0_ideal grasp seed 385: ok
+[26/630] 0_ideal grasp seed 388: ok
+[27/630] 0_ideal grasp seed 392: ok
+[28/630] 0_ideal grasp seed 399: ok
+[29/630] 0_ideal grasp seed 408: ok
+[30/630] 0_ideal grasp seed 431: ok
+[31/630] 1_rules grasp seed 204: ok
+[32/630] 1_rules grasp seed 231: ok
+[33/630] 1_rules grasp seed 233: ok
+[34/630] 1_rules grasp seed 243: ok
+[35/630] 1_rules grasp seed 245: ok
+[36/630] 1_rules grasp seed 246: ok
+[37/630] 1_rules grasp seed 266: ok
+[38/630] 1_rules grasp seed 271: ok
+[39/630] 1_rules grasp seed 292: ok
+[40/630] 1_rules grasp seed 298: ok
+[41/630] 1_rules grasp seed 299: ok
+[42/630] 1_rules grasp seed 304: ok
+[43/630] 1_rules grasp seed 306: ok
+[44/630] 1_rules grasp seed 313: ok
+[45/630] 1_rules grasp seed 342: ok
+[46/630] 1_rules grasp seed 345: ok
+[47/630] 1_rules grasp seed 348: ok
+[48/630] 1_rules grasp seed 351: ok
+[49/630] 1_rules grasp seed 365: ok
+[50/630] 1_rules grasp seed 376: ok
+[51/630] 1_rules grasp seed 379: ok
+[52/630] 1_rules grasp seed 380: ok
+[53/630] 1_rules grasp seed 382: ok
+[54/630] 1_rules grasp seed 384: ok
+[55/630] 1_rules grasp seed 385: ok
+[56/630] 1_rules grasp seed 388: ok
+[57/630] 1_rules grasp seed 392: ok
+[58/630] 1_rules grasp seed 399: ok
+[59/630] 1_rules grasp seed 408: ok
+[60/630] 1_rules grasp seed 431: ok
+[61/630] 2_axial grasp seed 204: ok
+[62/630] 2_axial grasp seed 231: ok
+[63/630] 2_axial grasp seed 233: ok
+[64/630] 2_axial grasp seed 243: ok
+[65/630] 2_axial grasp seed 245: ok
+[66/630] 2_axial grasp seed 246: ok
+[67/630] 2_axial grasp seed 266: ok
+[68/630] 2_axial grasp seed 271: ok
+[69/630] 2_axial grasp seed 292: ok
+[70/630] 2_axial grasp seed 298: ok
+[71/630] 2_axial grasp seed 299: ok
+[72/630] 2_axial grasp seed 304: ok
+[73/630] 2_axial grasp seed 306: ok
+[74/630] 2_axial grasp seed 313: ok
+[75/630] 2_axial grasp seed 342: ok
+[76/630] 2_axial grasp seed 345: ok
+[77/630] 2_axial grasp seed 348: ok
+[78/630] 2_axial grasp seed 351: ok
+[79/630] 2_axial grasp seed 365: ok
+[80/630] 2_axial grasp seed 376: ok
+[81/630] 2_axial grasp seed 379: ok
+[82/630] 2_axial grasp seed 380: ok
+[83/630] 2_axial grasp seed 382: ok
+[84/630] 2_axial grasp seed 384: ok
+[85/630] 2_axial grasp seed 385: ok
+[86/630] 2_axial grasp seed 388: ok
+[87/630] 2_axial grasp seed 392: ok
+[88/630] 2_axial grasp seed 399: ok
+[89/630] 2_axial grasp seed 408: ok
+[90/630] 2_axial grasp seed 431: ok
+[91/630] 3_edge grasp seed 204: ok
+[92/630] 3_edge grasp seed 231: ok
+[93/630] 3_edge grasp seed 233: ok
+[94/630] 3_edge grasp seed 243: ok
+[95/630] 3_edge grasp seed 245: ok
+[96/630] 3_edge grasp seed 246: ok
+[97/630] 3_edge grasp seed 266: ok
+[98/630] 3_edge grasp seed 271: ok
+[99/630] 3_edge grasp seed 292: ok
+[100/630] 3_edge grasp seed 298: ok
+[101/630] 3_edge grasp seed 299: ok
+[102/630] 3_edge grasp seed 304: ok
+[103/630] 3_edge grasp seed 306: ok
+[104/630] 3_edge grasp seed 313: ok
+[105/630] 3_edge grasp seed 342: ok
+[106/630] 3_edge grasp seed 345: ok
+[107/630] 3_edge grasp seed 348: ok
+[108/630] 3_edge grasp seed 351: ok
+[109/630] 3_edge grasp seed 365: ok
+[110/630] 3_edge grasp seed 376: ok
+[111/630] 3_edge grasp seed 379: ok
+[112/630] 3_edge grasp seed 380: ok
+[113/630] 3_edge grasp seed 382: ok
+[114/630] 3_edge grasp seed 384: ok
+[115/630] 3_edge grasp seed 385: ok
+[116/630] 3_edge grasp seed 388: ok
+[117/630] 3_edge grasp seed 392: ok
+[118/630] 3_edge grasp seed 399: ok
+[119/630] 3_edge grasp seed 408: ok
+[120/630] 3_edge grasp seed 431: ok
+[121/630] 4_edge_axial grasp seed 204: ok
+[122/630] 4_edge_axial grasp seed 231: ok
+[123/630] 4_edge_axial grasp seed 233: ok
+[124/630] 4_edge_axial grasp seed 243: ok
+[125/630] 4_edge_axial grasp seed 245: ok
+[126/630] 4_edge_axial grasp seed 246: ok
+[127/630] 4_edge_axial grasp seed 266: ok
+[128/630] 4_edge_axial grasp seed 271: ok
+[129/630] 4_edge_axial grasp seed 292: ok
+[130/630] 4_edge_axial grasp seed 298: ok
+[131/630] 4_edge_axial grasp seed 299: ok
+[132/630] 4_edge_axial grasp seed 304: ok
+[133/630] 4_edge_axial grasp seed 306: ok
+[134/630] 4_edge_axial grasp seed 313: ok
+[135/630] 4_edge_axial grasp seed 342: ok
+[136/630] 4_edge_axial grasp seed 345: ok
+[137/630] 4_edge_axial grasp seed 348: ok
+[138/630] 4_edge_axial grasp seed 351: ok
+[139/630] 4_edge_axial grasp seed 365: ok
+[140/630] 4_edge_axial grasp seed 376: ok
+[141/630] 4_edge_axial grasp seed 379: ok
+[142/630] 4_edge_axial grasp seed 380: ok
+[143/630] 4_edge_axial grasp seed 382: ok
+[144/630] 4_edge_axial grasp seed 384: ok
+[145/630] 4_edge_axial grasp seed 385: ok
+[146/630] 4_edge_axial grasp seed 388: ok
+[147/630] 4_edge_axial grasp seed 392: ok
+[148/630] 4_edge_axial grasp seed 399: ok
+[149/630] 4_edge_axial grasp seed 408: ok
+[150/630] 4_edge_axial grasp seed 431: ok
+[151/630] 5_bias grasp seed 204: ok
+[152/630] 5_bias grasp seed 231: ok
+[153/630] 5_bias grasp seed 233: ok
+[154/630] 5_bias grasp seed 243: ok
+[155/630] 5_bias grasp seed 245: ok
+[156/630] 5_bias grasp seed 246: ok
+[157/630] 5_bias grasp seed 266: ok
+[158/630] 5_bias grasp seed 271: ok
+[159/630] 5_bias grasp seed 292: ok
+[160/630] 5_bias grasp seed 298: ok
+[161/630] 5_bias grasp seed 299: ok
+[162/630] 5_bias grasp seed 304: ok
+[163/630] 5_bias grasp seed 306: ok
+[164/630] 5_bias grasp seed 313: ok
+[165/630] 5_bias grasp seed 342: ok
+[166/630] 5_bias grasp seed 345: ok
+[167/630] 5_bias grasp seed 348: ok
+[168/630] 5_bias grasp seed 351: ok
+[169/630] 5_bias grasp seed 365: ok
+[170/630] 5_bias grasp seed 376: ok
+[171/630] 5_bias grasp seed 379: ok
+[172/630] 5_bias grasp seed 380: ok
+[173/630] 5_bias grasp seed 382: ok
+[174/630] 5_bias grasp seed 384: ok
+[175/630] 5_bias grasp seed 385: ok
+[176/630] 5_bias grasp seed 388: ok
+[177/630] 5_bias grasp seed 392: ok
+[178/630] 5_bias grasp seed 399: ok
+[179/630] 5_bias grasp seed 408: ok
+[180/630] 5_bias grasp seed 431: ok
+[181/630] 6_full grasp seed 204: ok
+[182/630] 6_full grasp seed 231: ok
+[183/630] 6_full grasp seed 233: ok
+[184/630] 6_full grasp seed 243: ok
+[185/630] 6_full grasp seed 245: ok
+[186/630] 6_full grasp seed 246: ok
+[187/630] 6_full grasp seed 266: ok
+[188/630] 6_full grasp seed 271: ok
+[189/630] 6_full grasp seed 292: ok
+[190/630] 6_full grasp seed 298: ok
+[191/630] 6_full grasp seed 299: ok
+[192/630] 6_full grasp seed 304: ok
+[193/630] 6_full grasp seed 306: ok
+[194/630] 6_full grasp seed 313: ok
+[195/630] 6_full grasp seed 342: ok
+[196/630] 6_full grasp seed 345: ok
+[197/630] 6_full grasp seed 348: ok
+[198/630] 6_full grasp seed 351: ok
+[199/630] 6_full grasp seed 365: ok
+[200/630] 6_full grasp seed 376: ok
+[201/630] 6_full grasp seed 379: ok
+[202/630] 6_full grasp seed 380: ok
+[203/630] 6_full grasp seed 382: ok
+[204/630] 6_full grasp seed 384: ok
+[205/630] 6_full grasp seed 385: ok
+[206/630] 6_full grasp seed 388: ok
+[207/630] 6_full grasp seed 392: ok
+[208/630] 6_full grasp seed 399: ok
+[209/630] 6_full grasp seed 408: ok
+[210/630] 6_full grasp seed 431: ok
+[211/630] 0_ideal fit seed 204: ok
+[212/630] 0_ideal fit seed 231: ok
+[213/630] 0_ideal fit seed 233: ok
+[214/630] 0_ideal fit seed 243: ok
+[215/630] 0_ideal fit seed 245: ok
+[216/630] 0_ideal fit seed 246: ok
+[217/630] 0_ideal fit seed 266: ok
+[218/630] 0_ideal fit seed 271: ok
+[219/630] 0_ideal fit seed 292: ok
+[220/630] 0_ideal fit seed 298: ok
+[221/630] 0_ideal fit seed 299: ok
+[222/630] 0_ideal fit seed 304: ok
+[223/630] 0_ideal fit seed 306: ok
+[224/630] 0_ideal fit seed 313: ok
+[225/630] 0_ideal fit seed 342: ok
+[226/630] 0_ideal fit seed 345: ok
+[227/630] 0_ideal fit seed 348: ok
+[228/630] 0_ideal fit seed 351: ok
+[229/630] 0_ideal fit seed 365: ok
+[230/630] 0_ideal fit seed 376: ok
+[231/630] 0_ideal fit seed 379: ok
+[232/630] 0_ideal fit seed 380: ok
+[233/630] 0_ideal fit seed 382: ok
+[234/630] 0_ideal fit seed 384: ok
+[235/630] 0_ideal fit seed 385: ok
+[236/630] 0_ideal fit seed 388: ok
+[237/630] 0_ideal fit seed 392: ok
+[238/630] 0_ideal fit seed 399: ok
+[239/630] 0_ideal fit seed 408: ok
+[240/630] 0_ideal fit seed 431: ok
+[241/630] 1_rules fit seed 204: ok
+[242/630] 1_rules fit seed 231: ok
+[243/630] 1_rules fit seed 233: ok
+[244/630] 1_rules fit seed 243: ok
+[245/630] 1_rules fit seed 245: ok
+[246/630] 1_rules fit seed 246: ok
+[247/630] 1_rules fit seed 266: ok
+[248/630] 1_rules fit seed 271: ok
+[249/630] 1_rules fit seed 292: ok
+[250/630] 1_rules fit seed 298: ok
+[251/630] 1_rules fit seed 299: ok
+[252/630] 1_rules fit seed 304: ok
+[253/630] 1_rules fit seed 306: ok
+[254/630] 1_rules fit seed 313: ok
+[255/630] 1_rules fit seed 342: ok
+[256/630] 1_rules fit seed 345: ok
+[257/630] 1_rules fit seed 348: ok
+[258/630] 1_rules fit seed 351: ok
+[259/630] 1_rules fit seed 365: ok
+[260/630] 1_rules fit seed 376: ok
+[261/630] 1_rules fit seed 379: ok
+[262/630] 1_rules fit seed 380: ok
+[263/630] 1_rules fit seed 382: ok
+[264/630] 1_rules fit seed 384: ok
+[265/630] 1_rules fit seed 385: ok
+[266/630] 1_rules fit seed 388: ok
+[267/630] 1_rules fit seed 392: ok
+[268/630] 1_rules fit seed 399: ok
+[269/630] 1_rules fit seed 408: ok
+[270/630] 1_rules fit seed 431: ok
+[271/630] 2_axial fit seed 204: ok
+[272/630] 2_axial fit seed 231: ok
+[273/630] 2_axial fit seed 233: ok
+[274/630] 2_axial fit seed 243: ok
+[275/630] 2_axial fit seed 245: ok
+[276/630] 2_axial fit seed 246: ok
+[277/630] 2_axial fit seed 266: ok
+[278/630] 2_axial fit seed 271: ok
+[279/630] 2_axial fit seed 292: ok
+[280/630] 2_axial fit seed 298: ok
+[281/630] 2_axial fit seed 299: ok
+[282/630] 2_axial fit seed 304: ok
+[283/630] 2_axial fit seed 306: ok
+[284/630] 2_axial fit seed 313: ok
+[285/630] 2_axial fit seed 342: ok
+[286/630] 2_axial fit seed 345: ok
+[287/630] 2_axial fit seed 348: ok
+[288/630] 2_axial fit seed 351: ok
+[289/630] 2_axial fit seed 365: ok
+[290/630] 2_axial fit seed 376: ok
+[291/630] 2_axial fit seed 379: ok
+[292/630] 2_axial fit seed 380: ok
+[293/630] 2_axial fit seed 382: ok
+[294/630] 2_axial fit seed 384: ok
+[295/630] 2_axial fit seed 385: ok
+[296/630] 2_axial fit seed 388: ok
+[297/630] 2_axial fit seed 392: ok
+[298/630] 2_axial fit seed 399: ok
+[299/630] 2_axial fit seed 408: ok
+[300/630] 2_axial fit seed 431: ok
+[301/630] 3_edge fit seed 204: ok
+[302/630] 3_edge fit seed 231: ok
+[303/630] 3_edge fit seed 233: ok
+[304/630] 3_edge fit seed 243: ok
+[305/630] 3_edge fit seed 245: ok
+[306/630] 3_edge fit seed 246: ok
+[307/630] 3_edge fit seed 266: ok
+[308/630] 3_edge fit seed 271: ok
+[309/630] 3_edge fit seed 292: ok
+[310/630] 3_edge fit seed 298: ok
+[311/630] 3_edge fit seed 299: ok
+[312/630] 3_edge fit seed 304: ok
+[313/630] 3_edge fit seed 306: ok
+[314/630] 3_edge fit seed 313: ok
+[315/630] 3_edge fit seed 342: ok
+[316/630] 3_edge fit seed 345: ok
+[317/630] 3_edge fit seed 348: ok
+[318/630] 3_edge fit seed 351: ok
+[319/630] 3_edge fit seed 365: ok
+[320/630] 3_edge fit seed 376: ok
+[321/630] 3_edge fit seed 379: ok
+[322/630] 3_edge fit seed 380: ok
+[323/630] 3_edge fit seed 382: ok
+[324/630] 3_edge fit seed 384: ok
+[325/630] 3_edge fit seed 385: ok
+[326/630] 3_edge fit seed 388: ok
+[327/630] 3_edge fit seed 392: ok
+[328/630] 3_edge fit seed 399: ok
+[329/630] 3_edge fit seed 408: ok
+[330/630] 3_edge fit seed 431: ok
+[331/630] 4_edge_axial fit seed 204: ok
+[332/630] 4_edge_axial fit seed 231: ok
+[333/630] 4_edge_axial fit seed 233: ok
+[334/630] 4_edge_axial fit seed 243: ok
+[335/630] 4_edge_axial fit seed 245: ok
+[336/630] 4_edge_axial fit seed 246: ok
+[337/630] 4_edge_axial fit seed 266: ok
+[338/630] 4_edge_axial fit seed 271: ok
+[339/630] 4_edge_axial fit seed 292: ok
+[340/630] 4_edge_axial fit seed 298: ok
+[341/630] 4_edge_axial fit seed 299: ok
+[342/630] 4_edge_axial fit seed 304: ok
+[343/630] 4_edge_axial fit seed 306: ok
+[344/630] 4_edge_axial fit seed 313: ok
+[345/630] 4_edge_axial fit seed 342: ok
+[346/630] 4_edge_axial fit seed 345: ok
+[347/630] 4_edge_axial fit seed 348: ok
+[348/630] 4_edge_axial fit seed 351: ok
+[349/630] 4_edge_axial fit seed 365: ok
+[350/630] 4_edge_axial fit seed 376: ok
+[351/630] 4_edge_axial fit seed 379: ok
+[352/630] 4_edge_axial fit seed 380: ok
+[353/630] 4_edge_axial fit seed 382: ok
+[354/630] 4_edge_axial fit seed 384: ok
+[355/630] 4_edge_axial fit seed 385: ok
+[356/630] 4_edge_axial fit seed 388: ok
+[357/630] 4_edge_axial fit seed 392: ok
+[358/630] 4_edge_axial fit seed 399: ok
+[359/630] 4_edge_axial fit seed 408: ok
+[360/630] 4_edge_axial fit seed 431: ok
+[361/630] 5_bias fit seed 204: ok
+[362/630] 5_bias fit seed 231: ok
+[363/630] 5_bias fit seed 233: ok
+[364/630] 5_bias fit seed 243: ok
+[365/630] 5_bias fit seed 245: ok
+[366/630] 5_bias fit seed 246: ok
+[367/630] 5_bias fit seed 266: ok
+[368/630] 5_bias fit seed 271: ok
+[369/630] 5_bias fit seed 292: ok
+[370/630] 5_bias fit seed 298: ok
+[371/630] 5_bias fit seed 299: ok
+[372/630] 5_bias fit seed 304: ok
+[373/630] 5_bias fit seed 306: ok
+[374/630] 5_bias fit seed 313: ok
+[375/630] 5_bias fit seed 342: ok
+[376/630] 5_bias fit seed 345: ok
+[377/630] 5_bias fit seed 348: ok
+[378/630] 5_bias fit seed 351: ok
+[379/630] 5_bias fit seed 365: ok
+[380/630] 5_bias fit seed 376: ok
+[381/630] 5_bias fit seed 379: ok
+[382/630] 5_bias fit seed 380: ok
+[383/630] 5_bias fit seed 382: ok
+[384/630] 5_bias fit seed 384: ok
+[385/630] 5_bias fit seed 385: ok
+[386/630] 5_bias fit seed 388: ok
+[387/630] 5_bias fit seed 392: ok
+[388/630] 5_bias fit seed 399: ok
+[389/630] 5_bias fit seed 408: ok
+[390/630] 5_bias fit seed 431: ok
+[391/630] 6_full fit seed 204: ok
+[392/630] 6_full fit seed 231: ok
+[393/630] 6_full fit seed 233: ok
+[394/630] 6_full fit seed 243: ok
+[395/630] 6_full fit seed 245: ok
+[396/630] 6_full fit seed 246: ok
+[397/630] 6_full fit seed 266: ok
+[398/630] 6_full fit seed 271: ok
+[399/630] 6_full fit seed 292: ok
+[400/630] 6_full fit seed 298: ok
+[401/630] 6_full fit seed 299: ok
+[402/630] 6_full fit seed 304: ok
+[403/630] 6_full fit seed 306: ok
+[404/630] 6_full fit seed 313: ok
+[405/630] 6_full fit seed 342: ok
+[406/630] 6_full fit seed 345: ok
+[407/630] 6_full fit seed 348: ok
+[408/630] 6_full fit seed 351: ok
+[409/630] 6_full fit seed 365: ok
+[410/630] 6_full fit seed 376: ok
+[411/630] 6_full fit seed 379: ok
+[412/630] 6_full fit seed 380: ok
+[413/630] 6_full fit seed 382: ok
+[414/630] 6_full fit seed 384: ok
+[415/630] 6_full fit seed 385: ok
+[416/630] 6_full fit seed 388: ok
+[417/630] 6_full fit seed 392: ok
+[418/630] 6_full fit seed 399: ok
+[419/630] 6_full fit seed 408: ok
+[420/630] 6_full fit seed 431: ok
+[421/630] 0_ideal holes seed 204: ok
+[422/630] 0_ideal holes seed 231: ok
+[423/630] 0_ideal holes seed 233: ok
+[424/630] 0_ideal holes seed 243: ok
+[425/630] 0_ideal holes seed 245: ok
+[426/630] 0_ideal holes seed 246: ok
+[427/630] 0_ideal holes seed 266: ok
+[428/630] 0_ideal holes seed 271: ok
+[429/630] 0_ideal holes seed 292: ok
+[430/630] 0_ideal holes seed 298: ok
+[431/630] 0_ideal holes seed 299: ok
+[432/630] 0_ideal holes seed 304: ok
+[433/630] 0_ideal holes seed 306: ok
+[434/630] 0_ideal holes seed 313: ok
+[435/630] 0_ideal holes seed 342: ok
+[436/630] 0_ideal holes seed 345: ok
+[437/630] 0_ideal holes seed 348: ok
+[438/630] 0_ideal holes seed 351: ok
+[439/630] 0_ideal holes seed 365: ok
+[440/630] 0_ideal holes seed 376: ok
+[441/630] 0_ideal holes seed 379: ok
+[442/630] 0_ideal holes seed 380: ok
+[443/630] 0_ideal holes seed 382: ok
+[444/630] 0_ideal holes seed 384: ok
+[445/630] 0_ideal holes seed 385: ok
+[446/630] 0_ideal holes seed 388: ok
+[447/630] 0_ideal holes seed 392: ok
+[448/630] 0_ideal holes seed 399: ok
+[449/630] 0_ideal holes seed 408: ok
+[450/630] 0_ideal holes seed 431: ok
+[451/630] 1_rules holes seed 204: ok
+[452/630] 1_rules holes seed 231: ok
+[453/630] 1_rules holes seed 233: ok
+[454/630] 1_rules holes seed 243: ok
+[455/630] 1_rules holes seed 245: ok
+[456/630] 1_rules holes seed 246: ok
+[457/630] 1_rules holes seed 266: ok
+[458/630] 1_rules holes seed 271: ok
+[459/630] 1_rules holes seed 292: ok
+[460/630] 1_rules holes seed 298: ok
+[461/630] 1_rules holes seed 299: ok
+[462/630] 1_rules holes seed 304: ok
+[463/630] 1_rules holes seed 306: ok
+[464/630] 1_rules holes seed 313: ok
+[465/630] 1_rules holes seed 342: ok
+[466/630] 1_rules holes seed 345: ok
+[467/630] 1_rules holes seed 348: ok
+[468/630] 1_rules holes seed 351: ok
+[469/630] 1_rules holes seed 365: ok
+[470/630] 1_rules holes seed 376: ok
+[471/630] 1_rules holes seed 379: ok
+[472/630] 1_rules holes seed 380: ok
+[473/630] 1_rules holes seed 382: ok
+[474/630] 1_rules holes seed 384: ok
+[475/630] 1_rules holes seed 385: ok
+[476/630] 1_rules holes seed 388: ok
+[477/630] 1_rules holes seed 392: ok
+[478/630] 1_rules holes seed 399: ok
+[479/630] 1_rules holes seed 408: ok
+[480/630] 1_rules holes seed 431: ok
+[481/630] 2_axial holes seed 204: ok
+[482/630] 2_axial holes seed 231: ok
+[483/630] 2_axial holes seed 233: ok
+[484/630] 2_axial holes seed 243: ok
+[485/630] 2_axial holes seed 245: ok
+[486/630] 2_axial holes seed 246: ok
+[487/630] 2_axial holes seed 266: ok
+[488/630] 2_axial holes seed 271: ok
+[489/630] 2_axial holes seed 292: ok
+[490/630] 2_axial holes seed 298: ok
+[491/630] 2_axial holes seed 299: ok
+[492/630] 2_axial holes seed 304: ok
+[493/630] 2_axial holes seed 306: ok
+[494/630] 2_axial holes seed 313: ok
+[495/630] 2_axial holes seed 342: ok
+[496/630] 2_axial holes seed 345: ok
+[497/630] 2_axial holes seed 348: ok
+[498/630] 2_axial holes seed 351: ok
+[499/630] 2_axial holes seed 365: ok
+[500/630] 2_axial holes seed 376: ok
+[501/630] 2_axial holes seed 379: ok
+[502/630] 2_axial holes seed 380: ok
+[503/630] 2_axial holes seed 382: ok
+[504/630] 2_axial holes seed 384: ok
+[505/630] 2_axial holes seed 385: ok
+[506/630] 2_axial holes seed 388: ok
+[507/630] 2_axial holes seed 392: ok
+[508/630] 2_axial holes seed 399: ok
+[509/630] 2_axial holes seed 408: ok
+[510/630] 2_axial holes seed 431: ok
+[511/630] 3_edge holes seed 204: ok
+[512/630] 3_edge holes seed 231: ok
+[513/630] 3_edge holes seed 233: ok
+[514/630] 3_edge holes seed 243: ok
+[515/630] 3_edge holes seed 245: ok
+[516/630] 3_edge holes seed 246: ok
+[517/630] 3_edge holes seed 266: ok
+[518/630] 3_edge holes seed 271: ok
+[519/630] 3_edge holes seed 292: ok
+[520/630] 3_edge holes seed 298: ok
+[521/630] 3_edge holes seed 299: ok
+[522/630] 3_edge holes seed 304: ok
+[523/630] 3_edge holes seed 306: ok
+[524/630] 3_edge holes seed 313: ok
+[525/630] 3_edge holes seed 342: ok
+[526/630] 3_edge holes seed 345: ok
+[527/630] 3_edge holes seed 348: ok
+[528/630] 3_edge holes seed 351: ok
+[529/630] 3_edge holes seed 365: ok
+[530/630] 3_edge holes seed 376: ok
+[531/630] 3_edge holes seed 379: ok
+[532/630] 3_edge holes seed 380: ok
+[533/630] 3_edge holes seed 382: ok
+[534/630] 3_edge holes seed 384: ok
+[535/630] 3_edge holes seed 385: ok
+[536/630] 3_edge holes seed 388: ok
+[537/630] 3_edge holes seed 392: ok
+[538/630] 3_edge holes seed 399: ok
+[539/630] 3_edge holes seed 408: ok
+[540/630] 3_edge holes seed 431: ok
+[541/630] 4_edge_axial holes seed 204: ok
+[542/630] 4_edge_axial holes seed 231: ok
+[543/630] 4_edge_axial holes seed 233: ok
+[544/630] 4_edge_axial holes seed 243: ok
+[545/630] 4_edge_axial holes seed 245: ok
+[546/630] 4_edge_axial holes seed 246: ok
+[547/630] 4_edge_axial holes seed 266: ok
+[548/630] 4_edge_axial holes seed 271: ok
+[549/630] 4_edge_axial holes seed 292: ok
+[550/630] 4_edge_axial holes seed 298: ok
+[551/630] 4_edge_axial holes seed 299: ok
+[552/630] 4_edge_axial holes seed 304: ok
+[553/630] 4_edge_axial holes seed 306: ok
+[554/630] 4_edge_axial holes seed 313: ok
+[555/630] 4_edge_axial holes seed 342: ok
+[556/630] 4_edge_axial holes seed 345: ok
+[557/630] 4_edge_axial holes seed 348: ok
+[558/630] 4_edge_axial holes seed 351: ok
+[559/630] 4_edge_axial holes seed 365: ok
+[560/630] 4_edge_axial holes seed 376: ok
+[561/630] 4_edge_axial holes seed 379: ok
+[562/630] 4_edge_axial holes seed 380: ok
+[563/630] 4_edge_axial holes seed 382: ok
+[564/630] 4_edge_axial holes seed 384: ok
+[565/630] 4_edge_axial holes seed 385: ok
+[566/630] 4_edge_axial holes seed 388: ok
+[567/630] 4_edge_axial holes seed 392: ok
+[568/630] 4_edge_axial holes seed 399: ok
+[569/630] 4_edge_axial holes seed 408: ok
+[570/630] 4_edge_axial holes seed 431: ok
+[571/630] 5_bias holes seed 204: ok
+[572/630] 5_bias holes seed 231: ok
+[573/630] 5_bias holes seed 233: ok
+[574/630] 5_bias holes seed 243: ok
+[575/630] 5_bias holes seed 245: ok
+[576/630] 5_bias holes seed 246: ok
+[577/630] 5_bias holes seed 266: ok
+[578/630] 5_bias holes seed 271: ok
+[579/630] 5_bias holes seed 292: ok
+[580/630] 5_bias holes seed 298: ok
+[581/630] 5_bias holes seed 299: ok
+[582/630] 5_bias holes seed 304: ok
+[583/630] 5_bias holes seed 306: ok
+[584/630] 5_bias holes seed 313: ok
+[585/630] 5_bias holes seed 342: ok
+[586/630] 5_bias holes seed 345: ok
+[587/630] 5_bias holes seed 348: ok
+[588/630] 5_bias holes seed 351: ok
+[589/630] 5_bias holes seed 365: ok
+[590/630] 5_bias holes seed 376: ok
+[591/630] 5_bias holes seed 379: ok
+[592/630] 5_bias holes seed 380: ok
+[593/630] 5_bias holes seed 382: ok
+[594/630] 5_bias holes seed 384: ok
+[595/630] 5_bias holes seed 385: ok
+[596/630] 5_bias holes seed 388: ok
+[597/630] 5_bias holes seed 392: ok
+[598/630] 5_bias holes seed 399: ok
+[599/630] 5_bias holes seed 408: ok
+[600/630] 5_bias holes seed 431: ok
+[601/630] 6_full holes seed 204: ok
+[602/630] 6_full holes seed 231: ok
+[603/630] 6_full holes seed 233: ok
+[604/630] 6_full holes seed 243: ok
+[605/630] 6_full holes seed 245: ok
+[606/630] 6_full holes seed 246: ok
+[607/630] 6_full holes seed 266: ok
+[608/630] 6_full holes seed 271: ok
+[609/630] 6_full holes seed 292: ok
+[610/630] 6_full holes seed 298: ok
+[611/630] 6_full holes seed 299: ok
+[612/630] 6_full holes seed 304: ok
+[613/630] 6_full holes seed 306: ok
+[614/630] 6_full holes seed 313: ok
+[615/630] 6_full holes seed 342: ok
+[616/630] 6_full holes seed 345: ok
+[617/630] 6_full holes seed 348: ok
+[618/630] 6_full holes seed 351: ok
+[619/630] 6_full holes seed 365: ok
+[620/630] 6_full holes seed 376: ok
+[621/630] 6_full holes seed 379: ok
+[622/630] 6_full holes seed 380: ok
+[623/630] 6_full holes seed 382: ok
+[624/630] 6_full holes seed 384: ok
+[625/630] 6_full holes seed 385: ok
+[626/630] 6_full holes seed 388: ok
+[627/630] 6_full holes seed 392: ok
+[628/630] 6_full holes seed 399: ok
+[629/630] 6_full holes seed 408: ok
+[630/630] 6_full holes seed 431: ok
+done, 0 failed jobs
+detector: hole detected (right hole, < 15 mm ideal         150/150  100.0 %  [98-100]
+detector: hole detected (right hole, < 15 mm rules         150/150  100.0 %  [98-100]  p vs ideal 1
+detector: hole detected (right hole, < 15 mm axial          84/150   56.0 %  [48-64]  p vs ideal 2.71e-20
+detector: hole detected (right hole, < 15 mm edge          150/150  100.0 %  [98-100]  p vs ideal 1
+detector: hole detected (right hole, < 15 mm edge + axial   58/150   38.7 %  [31-47]  p vs ideal 4.04e-28  p vs axial 0.00487
+detector: hole detected (right hole, < 15 mm bias ±2 %     150/150  100.0 %  [98-100]  p vs ideal 1
+detector: hole detected (right hole, < 15 mm full model     81/150   54.0 %  [46-62]  p vs ideal 3.39e-21
+detector: within 3 mm (accuracy threshold)   ideal         150/150  100.0 %  [98-100]
+detector: within 3 mm (accuracy threshold)   rules         150/150  100.0 %  [98-100]  p vs ideal 1
+detector: within 3 mm (accuracy threshold)   axial          79/150   52.7 %  [44-61]  p vs ideal 8.47e-22
+detector: within 3 mm (accuracy threshold)   edge          150/150  100.0 %  [98-100]  p vs ideal 1
+detector: within 3 mm (accuracy threshold)   edge + axial   56/150   37.3 %  [30-46]  p vs ideal 1.01e-28  p vs axial 0.0128
+detector: within 3 mm (accuracy threshold)   bias ±2 %       0/150    0.0 %  [0-2]  p vs ideal 1.4e-45
+detector: within 3 mm (accuracy threshold)   full model      0/150    0.0 %  [0-2]  p vs ideal 1.4e-45
+fit: success (< 5 mm, < 10°)                 ideal         150/150  100.0 %  [98-100]
+fit: success (< 5 mm, < 10°)                 rules         150/150  100.0 %  [98-100]  p vs ideal 1
+fit: success (< 5 mm, < 10°)                 axial         149/150   99.3 %  [96-100]  p vs ideal 1
+fit: success (< 5 mm, < 10°)                 edge          150/150  100.0 %  [98-100]  p vs ideal 1
+fit: success (< 5 mm, < 10°)                 edge + axial  150/150  100.0 %  [98-100]  p vs ideal 1  p vs axial 1
+fit: success (< 5 mm, < 10°)                 bias ±2 %       0/150    0.0 %  [0-2]  p vs ideal 1.4e-45
+fit: success (< 5 mm, < 10°)                 full model      0/150    0.0 %  [0-2]  p vs ideal 1.4e-45
+fit: pose found (< 15 mm, < 10°)             ideal         150/150  100.0 %  [98-100]
+fit: pose found (< 15 mm, < 10°)             rules         150/150  100.0 %  [98-100]  p vs ideal 1
+fit: pose found (< 15 mm, < 10°)             axial         149/150   99.3 %  [96-100]  p vs ideal 1
+fit: pose found (< 15 mm, < 10°)             edge          150/150  100.0 %  [98-100]  p vs ideal 1
+fit: pose found (< 15 mm, < 10°)             edge + axial  150/150  100.0 %  [98-100]  p vs ideal 1  p vs axial 1
+fit: pose found (< 15 mm, < 10°)             bias ±2 %     150/150  100.0 %  [98-100]  p vs ideal 1
+fit: pose found (< 15 mm, < 10°)             full model    149/150   99.3 %  [96-100]  p vs ideal 1
+grasp: lifted (> 50 mm, both jaws)           ideal         150/150  100.0 %  [98-100]
+grasp: lifted (> 50 mm, both jaws)           rules         115/150   76.7 %  [69-83]  p vs ideal 5.82e-11
+grasp: lifted (> 50 mm, both jaws)           axial          95/150   63.3 %  [55-71]  p vs ideal 5.55e-17
+grasp: lifted (> 50 mm, both jaws)           edge           95/150   63.3 %  [55-71]  p vs ideal 5.55e-17
+grasp: lifted (> 50 mm, both jaws)           edge + axial   98/150   65.3 %  [57-73]  p vs ideal 4.44e-16  p vs axial 0.771
+grasp: lifted (> 50 mm, both jaws)           bias ±2 %      99/150   66.0 %  [58-74]  p vs ideal 8.88e-16
+grasp: lifted (> 50 mm, both jaws)           full model     85/150   56.7 %  [48-65]  p vs ideal 5.42e-20
+
+accuracy (median [95 % seed-bootstrap], IQR, n draws):
+detector: hole position error (mm)           ideal          0.79 [0.53-0.85]  IQR 0.49-0.93  n 30
+detector: hole position error (mm)           rules          0.76 [0.69-0.90]  IQR 0.59-0.98  n 150
+detector: hole position error (mm)           axial          0.89 [0.73-0.97]  IQR 0.53-1.14  n 84
+detector: hole position error (mm)           edge           0.55 [0.45-0.70]  IQR 0.34-0.90  n 150
+detector: hole position error (mm)           edge + axial   0.73 [0.63-0.83]  IQR 0.44-1.03  n 58
+detector: hole position error (mm)           bias ±2 %     10.21 [9.14-11.08]  IQR 8.83-11.39  n 150
+detector: hole position error (mm)           full model    10.40 [10.14-10.63]  IQR 9.37-10.84  n 81
+detector: hole axis error (°)                ideal          0.75 [0.62-0.77]  IQR 0.56-0.83  n 30
+detector: hole axis error (°)                rules          0.71 [0.64-0.79]  IQR 0.60-0.85  n 150
+detector: hole axis error (°)                axial          0.93 [0.79-1.06]  IQR 0.45-1.58  n 84
+detector: hole axis error (°)                edge           1.12 [0.99-1.34]  IQR 0.93-1.41  n 150
+detector: hole axis error (°)                edge + axial   1.26 [1.09-1.46]  IQR 0.95-1.76  n 58
+detector: hole axis error (°)                bias ±2 %      0.69 [0.63-0.74]  IQR 0.58-0.78  n 150
+detector: hole axis error (°)                full model     1.15 [0.99-1.31]  IQR 0.72-1.72  n 81
+fit: translation error (mm)                  ideal          0.37 [0.33-0.43]  IQR 0.32-0.45  n 30
+fit: translation error (mm)                  rules          0.45 [0.38-0.47]  IQR 0.36-0.49  n 150
+fit: translation error (mm)                  axial          0.77 [0.75-0.81]  IQR 0.68-0.86  n 149
+fit: translation error (mm)                  edge           0.41 [0.38-0.45]  IQR 0.37-0.47  n 150
+fit: translation error (mm)                  edge + axial   0.86 [0.82-0.91]  IQR 0.76-0.97  n 150
+fit: translation error (mm)                  bias ±2 %     10.70 [10.55-10.81]  IQR 10.38-10.90  n 150
+fit: translation error (mm)                  full model    10.88 [10.03-11.15]  IQR 9.82-11.44  n 149
+fit: rotation error (°)                      ideal          0.65 [0.55-0.71]  IQR 0.45-0.80  n 30
+fit: rotation error (°)                      rules          0.58 [0.46-0.84]  IQR 0.40-0.92  n 150
+fit: rotation error (°)                      axial          0.88 [0.79-0.98]  IQR 0.57-1.18  n 149
+fit: rotation error (°)                      edge           0.67 [0.57-0.79]  IQR 0.50-0.97  n 150
+fit: rotation error (°)                      edge + axial   1.03 [0.86-1.21]  IQR 0.73-1.41  n 150
+fit: rotation error (°)                      bias ±2 %      0.60 [0.49-0.74]  IQR 0.40-0.83  n 150
+fit: rotation error (°)                      full model     0.97 [0.89-1.14]  IQR 0.76-1.37  n 149
+grasp: hole position error at grasp time (mm ideal          0.36 [0.29-0.43]  IQR 0.26-0.45  n 30
+grasp: hole position error at grasp time (mm rules          0.44 [0.35-0.52]  IQR 0.28-0.80  n 150
+grasp: hole position error at grasp time (mm axial          0.77 [0.68-0.83]  IQR 0.56-0.98  n 149
+grasp: hole position error at grasp time (mm edge           0.52 [0.40-0.65]  IQR 0.35-0.72  n 150
+grasp: hole position error at grasp time (mm edge + axial   0.73 [0.59-0.89]  IQR 0.45-1.19  n 150
+grasp: hole position error at grasp time (mm bias ±2 %     10.04 [9.11-10.73]  IQR 7.97-11.08  n 150
+grasp: hole position error at grasp time (mm full model    10.34 [10.04-10.47]  IQR 8.81-10.78  n 149
+grasp: approach direction error (°)          ideal          0.60 [0.50-0.63]  IQR 0.47-0.68  n 30
+grasp: approach direction error (°)          rules          0.50 [0.42-0.60]  IQR 0.39-0.63  n 150
+grasp: approach direction error (°)          axial          0.81 [0.64-0.97]  IQR 0.49-1.26  n 149
+grasp: approach direction error (°)          edge           0.98 [0.82-1.06]  IQR 0.70-1.20  n 150
+grasp: approach direction error (°)          edge + axial   0.98 [0.85-1.15]  IQR 0.65-1.60  n 150
+grasp: approach direction error (°)          bias ±2 %      0.66 [0.60-0.72]  IQR 0.58-0.79  n 150
+grasp: approach direction error (°)          full model     1.17 [1.01-1.30]  IQR 0.71-1.80  n 149
+
+results: /home/ravikola/Documents/synthetic_rgbd_task/output/final_sweep/results
+plots:   /home/ravikola/Documents/synthetic_rgbd_task/output/final_sweep/plots

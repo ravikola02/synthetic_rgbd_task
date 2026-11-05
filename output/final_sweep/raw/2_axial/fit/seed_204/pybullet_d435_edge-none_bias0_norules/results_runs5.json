@@ -1,0 +1,67 @@
+[
+ {
+  "seed": 204,
+  "run": 0,
+  "hole_detected": true,
+  "opening": "B_outer",
+  "t_err_mm": 0.9339478391384682,
+  "r_err_deg": 0.8518530795172625,
+  "adds_mm": 0.9691441425535164,
+  "success": true,
+  "init_adds_mm": 1.0502678684597258,
+  "init_r_err_deg": 2.4825367365201236,
+  "icp_rmse_mm": 2.2851497946355193,
+  "inliers": 850,
+  "violations": 27
+ },
+ {
+  "seed": 204,
+  "run": 1,
+  "hole_detected": false
+ },
+ {
+  "seed": 204,
+  "run": 2,
+  "hole_detected": true,
+  "opening": "A_outer",
+  "t_err_mm": 0.8104450236813907,
+  "r_err_deg": 0.7534090486944658,
+  "adds_mm": 1.084604677694804,
+  "success": true,
+  "init_adds_mm": 1.2830489565065069,
+  "init_r_err_deg": 2.495750418226556,
+  "icp_rmse_mm": 2.2447686294346627,
+  "inliers": 860,
+  "violations": 40
+ },
+ {
+  "seed": 204,
+  "run": 3,
+  "hole_detected": true,
+  "opening": "A_outer",
+  "t_err_mm": 0.7297169584341158,
+  "r_err_deg": 0.923685976978281,
+  "adds_mm": 1.08124812243546,
+  "success": true,
+  "init_adds_mm": 1.2708821166402136,
+  "init_r_err_deg": 2.5249222445273505,
+  "icp_rmse_mm": 2.224536622889371,
+  "inliers": 870,
+  "violations": 26
+ },
+ {
+  "seed": 204,
+  "run": 4,
+  "hole_detected": true,
+  "opening": "B_outer",
+  "t_err_mm": 0.6876145778581692,
+  "r_err_deg": 1.4284800376584024,
+  "adds_mm": 1.0678147156096178,
+  "success": true,
+  "init_adds_mm": 0.9678797116617692,
+  "init_r_err_deg": 2.501764300427633,
+  "icp_rmse_mm": 2.2777707635057,
+  "inliers": 821,
+  "violations": 37
+ }
+]

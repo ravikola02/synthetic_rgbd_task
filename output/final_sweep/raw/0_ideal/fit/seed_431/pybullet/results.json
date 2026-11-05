@@ -1,0 +1,17 @@
+[
+ {
+  "seed": 431,
+  "run": 0,
+  "hole_detected": true,
+  "opening": "A_outer",
+  "t_err_mm": 0.32239438161487644,
+  "r_err_deg": 0.30890175570390993,
+  "adds_mm": 0.9344668947416641,
+  "success": true,
+  "init_adds_mm": 0.9907708336885416,
+  "init_r_err_deg": 2.998183399864231,
+  "icp_rmse_mm": 1.9354252602453006,
+  "inliers": 1184,
+  "violations": 16
+ }
+]

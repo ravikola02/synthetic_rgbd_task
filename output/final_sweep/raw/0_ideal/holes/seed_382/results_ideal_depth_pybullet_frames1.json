@@ -1,0 +1,21 @@
+[
+ {
+  "seed": 382,
+  "run": 0,
+  "gt_top": [
+   "B_outer",
+   "A_outer"
+  ],
+  "n_candidates": 5,
+  "detected": true,
+  "frames_used": 1,
+  "matched": "B_outer",
+  "pos_err_mm": 0.9259070553065226,
+  "axis_err_deg": 0.8568896189375336,
+  "diameter_mm": 6.837845012869874,
+  "n_px": 14,
+  "correct": true,
+  "right_hole": true,
+  "false_pos": 3
+ }
+]
