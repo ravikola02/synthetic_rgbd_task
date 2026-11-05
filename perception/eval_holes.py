@@ -15,7 +15,10 @@ and are equally "top").
   python perception/eval_holes.py --backend isaac      # after rendering those seeds
   python perception/eval_holes.py --max-frames 10      # retry on later frames
   python perception/eval_holes.py --camera d435 --runs 10   # D435 model, 10 noise draws per scene
-  python perception/eval_holes.py --camera d435 --axial ahn --runs 10   # ablation: Ahn axial noise
+  python perception/eval_holes.py --camera d435 --bias 0 --runs 10   # ablation: no depth bias (see camera_model/)
+
+"Correct" = within CORRECT_MM of a valid opening. With the D435 depth bias every position moves
+~10 mm along the viewing ray, so the summary also counts the "right hole" (RIGHT_HOLE_MM).
 
 Multi-frame: per test scene, run the detector on frame 0, 1, ... and stop at the first frame
 with a top-hole detection (the robot cannot know if it is correct), up to --max-frames. The
@@ -44,6 +47,8 @@ from parts import BRACKET_HOLE_DIAMETER  # noqa: E402
 from parts import BRACKET_OPENINGS as OPENINGS  # noqa: E402  (bracket hole openings, CAD frame)
 
 CORRECT_MM = 3.0
+RIGHT_HOLE_MM = 15.0    # "right hole": the detection is on a visible top hole (either opening of it) within
+                        # 15 mm, i.e. found but possibly shifted by the D435 depth bias (+-2 % ~ 10-13 mm here)
 VIS_RING = BRACKET_HOLE_DIAMETER / 2 + 0.002     # m, visibility ring radius around an opening
 
 
@@ -146,6 +151,7 @@ def evaluate(seed, run, depth, K, ops, gt, args):
                    axis_err_deg=float(np.degrees(np.arccos(np.clip(abs(a @ ng), 0, 1)))),
                    diameter_mm=float(det["top"]["diameter"] * 1e3), n_px=det["top"]["n_px"])
         row["correct"] = bool(row["pos_err_mm"] < CORRECT_MM and name in gt)
+        row["right_hole"] = bool(row["pos_err_mm"] < RIGHT_HOLE_MM and name[0] in {g[0] for g in gt})
     # candidates not near any bracket opening = false positives (e.g. on the profile)
     row["false_pos"] = int(sum(min(np.linalg.norm(h["center"] - o[0]) for o in ops.values()) * 1e3 > CORRECT_MM
                            for h in det["all"]))
@@ -160,6 +166,9 @@ def summary(rows, args):
           f"{args.runs} run(s) per scene ===")
     print(f"scene runs {len(rows)}, with a visible upward hole (GT) {len(has_gt)}")
     print(f"detected correctly {len(correct)}/{len(has_gt)} ({100 * len(correct) / max(len(has_gt), 1):.0f}%)")
+    right = [r for r in has_gt if r.get("right_hole")]
+    print(f"right hole, position within {RIGHT_HOLE_MM:.0f} mm (depth bias shift allowed) {len(right)}/{len(has_gt)}"
+          + (f", position error median {np.median([r['pos_err_mm'] for r in right]):.1f} mm" if right else ""))
     print(f"detections on frames without GT top hole: {sum(r['detected'] for r in rows if not r['gt_top'])}")
     print(f"false-positive candidates (not on a bracket opening): {sum(r['false_pos'] for r in rows)}")
     if correct:

@@ -24,7 +24,9 @@ Pipeline per scene (no ground truth used for control):
   python robot/grasp_hole.py --camera d435 --seeds 8 --run-ids 22   # D435 model, noise draw 22
   python robot/grasp_hole.py --camera d435 --detector tuned --seeds 8 --run-ids 22   # + noise-aware detector
 
---camera d435 puts the rendered depth through the D435 model (camera_model/, --axial ahn for the ablation); noise draw r of seed s uses the
+--camera d435 puts the rendered depth through the D435 model (camera_model/: edge fattening, axial noise,
+depth bias, datasheet rules; ablation options there). --close-view records the video close to the bracket.
+Noise draw r of seed s uses the
 same random numbers as run r in perception/eval_*.py. The grasp scene is settled by physics (~1 mm
 different from the static evaluation frames), so the same draw need not give the same detection.
 
@@ -320,7 +322,7 @@ def run(seed, video_path=None, args=None, run_idx=0):
     arm, fingers = arm_joints(robot, side)
     row.update(side=side, ik_pos_err_max_mm=e_max * 1e3, ik_rot_err_max_deg=r_max)
     if e_max > MAX_IK_ERR:
-        row.update(status="unreachable (IK)")
+        row.update(status="IK failed")
         p.disconnect()
         return row
 
@@ -330,7 +332,11 @@ def run(seed, video_path=None, args=None, run_idx=0):
     writer = None
     if video_path:
         writer = cv2.VideoWriter(video_path, cv2.VideoWriter_fourcc(*"mp4v"), 30, (640, 480))
-        view = p.computeViewMatrix([0.95, -0.55 if side == "left" else 0.55, 0.30], [0.33, 0.0, -0.05], [0, 0, 1])
+        eye, target = np.array([0.95, -0.55 if side == "left" else 0.55, 0.30]), np.array([0.33, 0.0, -0.05])
+        if args is not None and getattr(args, "close_view", False):        # same direction, aimed at the bracket
+            target = np.array(p.getBasePositionAndOrientation(bracket)[0]) + [0, 0, 0.05]
+            eye = target + 0.4 * (eye - [0.33, 0.0, -0.05]) / np.linalg.norm(eye - [0.33, 0.0, -0.05])
+        view = p.computeViewMatrix(eye.tolist(), target.tolist(), [0, 0, 1])
         proj = p.computeProjectionMatrixFOV(45, 640 / 480, 0.05, 5.0)
     z0 = p.getBasePositionAndOrientation(bracket)[0][2]
     q_cmd = np.array([p.getJointState(robot, j)[0] for j in arm])
@@ -391,6 +397,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--seeds", type=int, nargs="*", default=TEST_SEEDS)
     ap.add_argument("--videos", type=int, default=2, help="record videos of the first N seeds")
+    ap.add_argument("--close-view", action="store_true", help="video camera close to the bracket")
     camera_model.add_args(ap)
     hole_detector_tuned.add_args(ap)
     ap.add_argument("--run-ids", type=int, nargs="*", default=[0], help="noise draws to run per seed")

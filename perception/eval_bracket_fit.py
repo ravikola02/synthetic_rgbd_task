@@ -9,7 +9,10 @@ their depth residual on top of the depth view) and a PLY with scene + fitted mod
 
   python perception/eval_bracket_fit.py [--backend isaac]     # fixed test set config.TEST_SEEDS
   python perception/eval_bracket_fit.py --camera d435 --runs 10   # D435 model, 10 noise draws per scene
-  python perception/eval_bracket_fit.py --camera d435 --axial ahn --runs 10   # ablation: Ahn axial noise
+  python perception/eval_bracket_fit.py --camera d435 --bias 0 --runs 10   # ablation: no depth bias (see camera_model/)
+
+With the D435 depth bias every position moves ~10 mm along the viewing ray, so the summary also counts
+"pose found": rotation < SUCCESS_R_DEG and translation < FOUND_T_MM (bias shift allowed).
 
 Noise draws are seeded by (seed, run) (same as frame 0 in eval_holes), so all model variants see the
 same random numbers.
@@ -34,6 +37,7 @@ from config import TEST_SEEDS  # noqa: E402
 
 
 SUCCESS_T_MM, SUCCESS_R_DEG = 5.0, 10.0
+FOUND_T_MM = 15.0       # "pose found": right pose up to the D435 depth-bias shift (+-2 % ~ 10-13 mm here)
 
 
 def gt_pose(spec, cam_pose):
@@ -127,6 +131,10 @@ def summary(rows, args, det_tag=""):
     print(f"\n=== bracket fit from top hole{det_tag}, {camera_model.tag(args)} depth, {args.backend}, {args.runs} run(s) per scene ===")
     print(f"scene runs {len(rows)}, hole candidate found (fit attempted) {len(fitted)}, "
           f"success (t < {SUCCESS_T_MM:.0f} mm and r < {SUCCESS_R_DEG:.0f} deg) {len(ok)}/{len(rows)}")
+    found = [r for r in fitted if r["t_err_mm"] < FOUND_T_MM and r["r_err_deg"] < SUCCESS_R_DEG]
+    print(f"pose found (t < {FOUND_T_MM:.0f} mm, depth bias shift allowed, and r < {SUCCESS_R_DEG:.0f} deg) "
+          f"{len(found)}/{len(rows)}" + (f", translation median {np.median([r['t_err_mm'] for r in found]):.1f} mm, "
+                                         f"rotation median {np.median([r['r_err_deg'] for r in found]):.2f} deg" if found else ""))
     if ok:
         print("successful fits:")
         for key, lab in (("adds_mm", "ADD-S mm"), ("t_err_mm", "translation mm"), ("r_err_deg", "rotation deg"),

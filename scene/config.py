@@ -84,5 +84,5 @@ def sample_part_poses(rng):
 # Every ideal-depth stage is therefore 15/15 on this set by construction: it is the baseline the
 # camera model degrades, not an accuracy measure (that is on all seeds with a visible hole, NOTES.md).
 # Seeds 0-112 checked; 98 rejected: 69 no visible top hole, 4 detector picked the wrong hole,
-# 20 grasp unreachable (IK), 4 bracket pushed away / not lifted (12, 42, 54, 63), 1 slipped (20).
+# 20 IK failed, 4 bracket pushed away / not lifted (12, 42, 54, 63), 1 slipped (20).
 TEST_SEEDS = [4, 8, 23, 26, 27, 32, 37, 38, 45, 69, 73, 86, 92, 97, 112]

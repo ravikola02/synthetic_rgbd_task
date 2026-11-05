@@ -29,9 +29,8 @@ from scipy import ndimage
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "scene"))
 from parts import BRACKET_HOLE_DIAMETER as HOLE_DIAMETER  # noqa: E402  (item Line 8 bracket: 8.5 mm, M8)
 MAX_RANGE = 1.0               # m, workspace limit (table at 0.4-0.75 m, floor beyond ~1.3 m)
-# Thresholds for ideal depth. Chosen for the 20x20 bracket, whose legs are only 2 mm thick (the
-# 40x40 bracket's are 5 mm), so table threshold and object height stay below 2 mm; with real D435
-# noise (~1 mm) that separation becomes hard, which is a camera-model effect worth testing.
+# Thresholds set on ideal depth, well below the bracket's 5 mm leg thickness. With D435 noise (~1 mm)
+# they sit at the noise level (NOTES.md Q3); hole_detector_tuned.py scales them to the noise (mitigation).
 MIN_HEIGHT = 0.0015           # m above the table to count as an object
 TABLE_THRESH = 0.001          # m, RANSAC inlier distance for the table
 FACE_THRESH = 0.001           # m, RANSAC inlier distance for part faces
@@ -96,7 +95,7 @@ def detect_holes(depth, K, seed=0, thresholds=None):
 
     # 3. clusters
     labels, n_clusters = ndimage.label(objects, structure=np.ones((3, 3)))
-    holes = []
+    holes, faces = [], []
     for c in range(1, n_clusters + 1):
         remaining = labels == c
         # 4. peel faces
@@ -110,6 +109,7 @@ def detect_holes(depth, K, seed=0, thresholds=None):
             face_lab, nf = ndimage.label(on_plane)
             face = face_lab == (np.argmax(np.bincount(face_lab[on_plane])))   # largest connected patch
             remaining &= ~on_plane
+            faces.append({"mask": face, "normal": n_f, "d": d_f, "cluster": c})
 
             # 5. enclosed gaps in the face
             gaps, ng = ndimage.label(ndimage.binary_fill_holes(face) & ~face)
@@ -131,12 +131,12 @@ def detect_holes(depth, K, seed=0, thresholds=None):
                     if np.sqrt(ev[1] / max(ev[0], 1e-12)) > MAX_ELONGATION:
                         continue
                 holes.append({"center": X.mean(0), "axis": n_f, "diameter": diam, "n_px": int(gm.sum()),
-                              "cos_up": float(n_f @ n_t), "cluster": c})
+                              "cos_up": float(n_f @ n_t), "cluster": c, "mask": gm})
 
     # 7. top hole
     holes.sort(key=lambda h: -h["cos_up"])
     top = holes[0] if holes and holes[0]["cos_up"] > np.cos(np.radians(MAX_TOP_TILT_DEG)) else None
-    return {"top": top, "all": holes, "table_normal": n_t, "table_d": d_t, "labels": labels, "points": P}
+    return {"top": top, "all": holes, "faces": faces, "table_normal": n_t, "table_d": d_t, "labels": labels, "points": P}
 
 
 def hole_pose(hole):

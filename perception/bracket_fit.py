@@ -13,7 +13,7 @@ Hypothesis score (camera frame, depth only):
   score = inliers - 2 * violations
 
 Symmetry: the bracket maps onto itself under a 180 deg turn about (0, 1, 1)/sqrt(2)
-(swaps the legs; checked on both CAD meshes, 20x20 and 40x40).
+(swaps the legs; holds to 0.4 mm on the CAD mesh).
 """
 import os
 import sys

@@ -7,7 +7,8 @@ with the jaws approaching along the hole axis.
 
 **Status:** the scene, the ideal-depth reference set, the downstream pipeline and the analytical D435 depth
 model (`camera_model/d435.py`) are complete. Every script runs on ideal depth by default and on the D435
-model with `--camera d435`.
+model with `--camera d435`. All results so far are from the 15 development seeds (`TEST_SEEDS`) and are
+intermediate; **the final experiments on seeds held out from development are still to be done.**
 
 ## Setup
 
@@ -38,6 +39,7 @@ python scene/render.py --seed 4 --gui                 # look at the scene in the
 python perception/eval_holes.py                       # hole detector on the 15 test seeds
 python perception/eval_bracket_fit.py                 # 6D bracket fit on the 15 test seeds
 python robot/grasp_hole.py                            # grasp the 15 test seeds; videos of the first 2
+python perception/plot_hole_plane.py --seed 8 --run 22   # 3D: hole face as detected, ideal vs D435 x baseline vs tuned
 ```
 
 Add `--backend isaac` to the render and the two evaluation scripts to use Isaac frames instead. An Isaac
@@ -46,21 +48,32 @@ render handles one seed per process, because Isaac exits the Python process when
 ### D435 camera model
 
 `camera_model/d435.py` turns ideal depth into D435-like depth. It works on saved frames, independent of
-the simulator. It only includes effects that Intel's documentation (datasheet + depth tuning guide) gives a
-model for:
+the simulator. Three effects, each with a published number, applied in the order they arise in the camera:
 
-1. axial noise: Intel's σ_z = z²·s/(f·B), s = 0.08 px (tuning guide §3e), applied as disparity noise;
-   `--axial ahn` swaps in the empirical D435 fit of Ahn et al. 2019 (ablation);
-2. datasheet rules: left invalid depth band (datasheet §4.5), Min-Z 195 mm (Table 4-12), 1 mm depth unit
-   (tuning guide §8a).
+1. **edge fattening:** at depth steps the foreground grows 2 px into the background, so gaps of 4 px or less
+   close. No D435 value exists; the value is the R200's (Keselman et al. 2017 §4.2.3: gaps < 5 px merge) and
+   has to be calibrated against real D435 depth;
+2. **axial noise:** Intel's σ_z = z²·s/(f·B), s = 0.08 px (tuning guide §3e), applied as disparity noise;
+3. **depth bias:** a scale error at the datasheet's Z-accuracy limit (±2 %, Table 4-15), +2 % or −2 % with
+   equal probability per noise draw;
+
+plus the datasheet output rules: left invalid depth band (§4.5), Min-Z 195 mm (Table 4-12), 1 mm depth unit
+(tuning guide §8a). These were tested and do not change the downstream results, but keep the frames D435-like.
 
 ```bash
 python camera_model/d435.py                                     # noise levels and what each step does to a frame
 python perception/eval_holes.py --camera d435 --runs 10         # 10 noise draws per test seed
 python perception/eval_bracket_fit.py --camera d435 --runs 10
-python perception/eval_bracket_fit.py --camera d435 --axial ahn --runs 10   # ablation: Ahn et al. noise
-python robot/grasp_hole.py --camera d435 --seeds 8 --run-ids 22             # a grasp from noisy depth
+python robot/grasp_hole.py --camera d435 --seeds 45 --run-ids 0 --close-view   # a grasp from D435 depth
 ```
+
+Ablations switch one part of the model: `--edge none`, `--axial ahn` (Ahn et al. 2019 noise, ~2.7× Intel's at
+0.5 m) or `--axial none`, `--bias 0` (or a fixed `--bias 2` / `--bias -2`, in %), `--no-rules`. Noise draw r
+of seed s uses the same random numbers, including the bias sign, in every script and model variant.
+NOTES.md (Q2) lists the effects left out and why.
+
+With the depth bias every position moves ~10 mm along the viewing ray, so the evaluation summaries also
+count the "right hole" / "pose found" with that shift allowed, next to the strict 3 mm / 5 mm criteria.
 
 **Mitigation: noise-aware detector.** `perception/hole_detector_tuned.py` is the same hole detector with its
 thresholds scaled to the expected D435 noise (k·σ_z per pixel, k = 2.5 by default). It is reported separately
@@ -70,10 +83,6 @@ from the baseline comparison.
 python perception/eval_bracket_fit.py --camera d435 --runs 10 --detector tuned [--k-sigma 3]
 python robot/grasp_hole.py --camera d435 --detector tuned --seeds 8 --run-ids 22
 ```
-
-`--axial none` runs the datasheet rules alone and `--no-rules` the axial noise alone. Noise draw r of
-seed s uses the same random numbers in every script and model variant. NOTES.md (Q2) lists the effects
-left out and why.
 
 Results go to `output/` (ignored by git).
 
@@ -86,12 +95,15 @@ Results go to `output/` (ignored by git).
 | Bracket fit, 15 test seeds | 15/15; translation median 0.34 mm, rotation 0.84° |
 | Grasp, 15 test seeds | 15/15 lifted ~100 mm |
 
-| Step (D435 model, 15 test seeds × 10 noise draws, PyBullet) | Result |
-|---|---|
-| Hole detector alone | 90/150 correct; most failures pick a false hole on the profile's flat top face |
-| Bracket fit | 142/150; translation median 0.81 mm, rotation 0.96° |
-| Bracket fit, Ahn et al. noise without the rules (ablation, `--axial ahn --no-rules`) | 4/150 (most draws: no hole found) |
-| Hole detector / bracket fit with the noise-aware detector (mitigation, k = 2.5) | 144/150 / 150/150 |
+Intermediate D435 results (development seeds, PyBullet, 15 seeds × 10 noise draws; details in NOTES.md Q3):
+
+| Depth | Hole detector | Bracket fit |
+|---|---|---|
+| Intel axial noise + rules | 90/150 correct; most failures pick a false hole on the profile's flat top face | 142/150; 0.81 mm, 0.96° |
+| + edge fattening (R200 value) | 61/150 correct | 149/150; 0.94 mm, 1.13° |
+| + depth bias ±2 % | right hole 54–60/150, every position ~10 mm off | pose found 147–148/150, ~10–12 mm off; grasp lifted 50–54/75 vs 57/75 without bias |
+| Ahn et al. noise instead of Intel's | 1/150 (most draws: no hole found) | 4/150 |
+| Intel noise + rules, noise-aware detector (k = 2.5) | 144/150 | 150/150 |
 
 The test set was chosen so that every step succeeds with ideal depth (see below). The 15/15 results are
 therefore the baseline for the camera model, not an accuracy measure.
@@ -141,11 +153,12 @@ scene/           scene definition shared by both backends
 perception/      hole_detector.py, hole_detector_tuned.py (mitigation), bracket_fit.py,
                  eval_holes.py, eval_bracket_fit.py
 robot/           grasp_hole.py: IK, grasp selection and execution in PyBullet
-camera_model/    d435.py: analytical D435 depth model; __init__.py: shared --camera/--axial options
+camera_model/    d435.py: analytical D435 depth model; __init__.py: shared --camera options and ablations
 assets/cad/      part CAD (STEP) + cached stable poses
 assets/robot/    G1 + Dex1 URDF and meshes
 data/ideal/      ideal reference frames of the test seeds
-docs/            D435 datasheet, depth tuning guide, Ahn et al. 2019, literature notes
+docs/            D435 datasheet, depth tuning guide, depth post-processing paper, depth testing methodology,
+                 Ahn et al. 2019, Keselman et al. 2017, literature notes
 NOTES.md         working notes: decisions, results, what did not work
 ```
 
@@ -167,6 +180,8 @@ The steps are recorded in the `scene/parts.py` docstring.
 
 The grasp code uses `*_hand_base_link`. The torso camera frame `d435_link` comes from the original URDF.
 
-**Camera.** Specifications and the noise model are taken from the Intel RealSense D400 datasheet and the depth
-tuning guide in `docs/`; the ablation uses Ahn et al., "Analysis and Noise Modeling of the Intel RealSense D435
-for Mobile Robots", UR 2019 (Eq. 2).
+**Camera.** Specifications, the axial noise model, the depth-bias limit and the output rules are taken from the
+Intel RealSense D400 datasheet and the depth tuning guide in `docs/`. Edge fattening uses the R200 value of
+Keselman et al., "Intel RealSense Stereoscopic Depth Cameras", CVPRW 2017 (§4.2.3). The axial-noise ablation uses
+Ahn et al., "Analysis and Noise Modeling of the Intel RealSense D435 for Mobile Robots", UR 2019 (Eq. 2).
+Measured subpixel values: Intel's depth post-processing paper and the online "Projectors for D400" page.
