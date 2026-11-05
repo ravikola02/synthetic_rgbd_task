@@ -5,10 +5,11 @@ Unitree G1 humanoid. The frames are seen by the G1's head camera, an Intel RealS
 downstream task on the depth: detect the bracket's top hole in 6D, fit the bracket CAD, and grasp the bracket
 with the jaws approaching along the hole axis.
 
-**Status:** the scene, the ideal-depth reference set, the downstream pipeline and the analytical D435 depth
-model (`camera_model/d435.py`) are complete. Every script runs on ideal depth by default and on the D435
-model with `--camera d435`. All results so far are from the 15 development seeds (`DEV_SEEDS`) and are
-intermediate; **the final experiments on seeds held out from development are still to be done.**
+**Status: complete, with final results.** The scene, the ideal-depth reference set, the downstream pipeline and
+the analytical D435 depth model (`camera_model/d435.py`) are done. Every script runs on ideal depth by default
+and on the D435 model with `--camera d435`. The final experiment (7 depth conditions on 30 held-out test seeds)
+is in [Final experiment](#final-experiment), with results in `output/final_sweep/results/` and failure examples
+in `extracted_examples/`. Algorithms and math: `docs/pipeline.md`, `docs/camera_model.md`.
 
 ## Setup
 
@@ -84,7 +85,7 @@ python perception/eval_bracket_fit.py --camera d435 --runs 10 --detector tuned [
 python robot/grasp_hole.py --camera d435 --detector tuned --seeds 8 --run-ids 22
 ```
 
-Results go to `output/` (ignored by git).
+Results go to `output/` (ignored by git, except the final results in `output/final_sweep/`).
 
 ### Expected results
 
@@ -95,15 +96,7 @@ Results go to `output/` (ignored by git).
 | Bracket fit, 15 development seeds | 15/15; translation median 0.34 mm, rotation 0.84° |
 | Grasp, 15 development seeds | 15/15 lifted ~100 mm |
 
-Intermediate D435 results (development seeds, PyBullet, 15 seeds × 10 noise draws; details in NOTES.md Q3):
-
-| Depth | Hole detector | Bracket fit |
-|---|---|---|
-| Intel axial noise + rules | 90/150 correct; most failures pick a false hole on the profile's flat top face | 142/150; 0.81 mm, 0.96° |
-| + edge fattening (R200 value) | 61/150 correct | 149/150; 0.94 mm, 1.13° |
-| + depth bias ±2 % | right hole 54–60/150, every position ~10 mm off | pose found 147–148/150, ~10–12 mm off; grasp lifted 50–54/75 vs 57/75 without bias |
-| Ahn et al. noise instead of Intel's | 1/150 (most draws: no hole found) | 4/150 |
-| Intel noise + rules, noise-aware detector (k = 2.5) | 144/150 | 150/150 |
+These are ideal-depth results on the development seeds. The D435 results are in [Final experiment](#final-experiment).
 
 The development set was chosen so that every step succeeds with ideal depth (see below). The 15/15 results are
 therefore the baseline for the camera model, not an accuracy measure.
@@ -190,7 +183,7 @@ camera_model/    d435.py: analytical D435 depth model; __init__.py: shared --cam
 assets/cad/      part CAD (STEP) + cached stable poses
 assets/robot/    G1 + Dex1 URDF and meshes
 data/ideal/      ideal reference frames of the development and test seeds
-docs/            D435 datasheet, depth tuning guide, depth post-processing paper, depth testing methodology,
+docs/            pipeline.md and camera_model.md (algorithms and math); D435 datasheet, depth tuning guide, depth post-processing paper, depth testing methodology,
                  Ahn et al. 2019, Keselman et al. 2017, literature notes
 NOTES.md         working notes: decisions, results, what did not work
 ```
