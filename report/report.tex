@@ -34,7 +34,8 @@ finds the bracket in 99\,\% of the cases, but displaced by about 11\,mm. All cod
 % TODO: repository link
 
 % =====================================================================================================
-\section{Synthetic data pipeline}
+\section{Synthetic data pipeline and downstream task}
+\label{sec:pipeline}
 \paragraph{Scene.} The parts are manufacturer CAD models from item (Line~8, 40$\times$40): a profile cut to
 200\,mm and an angle bracket with its cover cap, simplified to free \O8.5\,mm holes. The table is sized to the
 G1's reach from an inverse-kinematics reachability map, which places the parts 0.47--0.68\,m from the camera.
@@ -50,6 +51,40 @@ therefore independent of the simulator. Building the pipeline exposed three rend
 biased every result: a half-pixel offset in PyBullet's image grid, Isaac ignoring a focal length given in
 stage units (rendering at 25$^\circ$ instead of 87$^\circ$ field of view), and the G1's waist sagging under soft
 joint drives so that the head camera moved while rendering.
+
+\paragraph{Downstream robot task.} The robot has to pick the bracket by its top hole, the feature a screw or
+pin goes through in assembly. Perception estimates the hole's 6D pose from depth alone: its centre and its axis
+(the rotation about the axis is undefined for a round hole). The task has three stages, each using only the
+output of the previous one and no ground truth.
+
+\paragraph{Hole detection.} The detector removes the table plane, peels planar faces off the remaining
+clusters with RANSAC, and accepts as a hole a round gap of the right size enclosed by a face. The hole's centre
+is where the gap's pixel rays meet the face plane, its axis is the face normal, and the top hole is the one
+whose axis points most upward. The thresholds (points within 1\,mm of a plane, 1.5\,mm above the table) were
+set on ideal depth.
+
+\paragraph{Pose fit (ICP).} The CAD fit recovers the full 6D pose of the bracket. Each upward hole candidate
+fixes five degrees of freedom; a search over the rotation about the hole axis scores how well the visible model
+surface matches the measured depth, and ICP refines the best match. All candidates are tried and the one with
+the best match is kept.
+
+\paragraph{Grasping.} The Dex1 parallel jaws approach along the hole axis, close across the bracket's 40\,mm
+width at an antipodal grasp point on the fitted CAD, and lift the part by 10\,cm. Inverse kinematics plans a
+pre-grasp, a straight approach, the closing and the lift for either arm, and the plan is executed in PyBullet
+with physics. A grasp succeeds if the bracket rises above 50\,mm with both jaws in contact after a one-second
+hold.
+
+\paragraph{A stand-in for a learned model.} In a real cell this step would more likely be a learned pose
+estimator or an end-to-end robot policy. We considered a model-based network (FoundationPose), but it needs a
+GPU stack and pretrained weights, against the requirement that everything run on a laptop. The geometric
+pipeline is a deliberate surrogate for it. It relies on the same depth cues a network uses, whether for pose
+estimation or inside a policy: planar faces, depth edges, small holes a few pixels wide, and surface normals.
+If the camera model destroys or shifts these cues, a model that depends on them is affected as well. Its
+thresholds play the role of learned parameters: tuned on ideal synthetic depth, they behave like the weights
+of a network trained only on ideal synthetic data and then deployed on the real sensor. Unlike a network, the
+pipeline is transparent, so every failure can be traced to the camera effect that caused it. The limitation is
+that a network trained on noisy depth may learn to tolerate some of the effects; the pipeline therefore
+measures how sensitive the cues are, not how a particular network would perform.
 
 \begin{figure}[t]
 \centering
@@ -109,16 +144,9 @@ Intel's value), so the published noise level decides between a working and a fai
 
 % =====================================================================================================
 \section{Experiment: does the camera model change the downstream outcome?}
-\paragraph{Downstream task.} The hole detector fits the table plane, peels planar faces off the remaining
-clusters with RANSAC, and accepts a hole as a round gap enclosed by a face; its centre lies on the face plane
-and its axis is the face normal. Its thresholds (1\,mm to a plane, 1.5\,mm above the table) were set on ideal
-depth and lie at the D435's noise level. The CAD fit starts from each upward hole candidate, searches the
-rotation about the hole axis and refines with ICP, keeping the best match. The grasp moves the Dex1 jaws along
-the hole axis, closes across the bracket and lifts it 10\,cm; success is a lift above 50\,mm with both jaws in
-contact. We chose this geometric pipeline over a learned pose estimator, which would need a GPU stack, because
-it relies on the same depth cues a network uses (faces, edges, holes a few pixels wide) and makes every
-failure traceable to its cause. A network trained on noisy depth may tolerate some effects, so the pipeline
-measures the sensitivity of the cues rather than the performance of a particular network.
+The experiment asks whether the camera model changes the outcome of the three stages of
+Section~\ref{sec:pipeline}: hole detection, CAD fit and grasp. The detector's thresholds lie at the D435's
+noise level ($\sigma_Z \approx 0.9$\,mm), so an effect of the noise on detection is expected.
 
 \paragraph{Protocol.} The pipeline, the camera model and the hypotheses were developed on 15 scenes, which
 were then closed. The test protocol was fixed before any test run (git tag \texttt{final-experiment}). The
