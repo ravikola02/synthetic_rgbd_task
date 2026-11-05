@@ -8,3 +8,11 @@ output/*
 output/final_sweep/screening/*
 !output/final_sweep/screening/screening.json
 output/final_sweep/raw/**/log.txt
+# LaTeX build files of the report (the PDF itself is kept)
+report/*.aux
+report/*.log
+report/*.out
+report/*.fls
+report/*.fdb_latexmk
+report/*.synctex.gz
+report/figures/videos/

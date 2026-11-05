@@ -25,7 +25,8 @@ Pipeline per scene (no ground truth used for control):
   python robot/grasp_hole.py --camera d435 --detector tuned --seeds 8 --run-ids 22   # + noise-aware detector
 
 --camera d435 puts the rendered depth through the D435 model (camera_model/: edge fattening, axial noise,
-depth bias, datasheet rules; ablation options there). --close-view records the video close to the bracket.
+depth bias, datasheet rules; ablation options there). --close-view records the video close to the bracket,
+--side-view from the grasping arm's side (report figures).
 Noise draw r of seed s uses the
 same random numbers as run r in perception/eval_*.py. The grasp scene is settled by physics (~1 mm
 different from the static evaluation frames), so the same draw need not give the same detection.
@@ -336,6 +337,10 @@ def run(seed, video_path=None, args=None, run_idx=0):
         if args is not None and getattr(args, "close_view", False):        # same direction, aimed at the bracket
             target = np.array(p.getBasePositionAndOrientation(bracket)[0]) + [0, 0, 0.05]
             eye = target + 0.4 * (eye - [0.33, 0.0, -0.05]) / np.linalg.norm(eye - [0.33, 0.0, -0.05])
+        if args is not None and getattr(args, "side_view", False):   # from the grasping arm's side: the body
+            target = np.array(p.getBasePositionAndOrientation(bracket)[0]) + [0.02, 0, 0.09]   # is beside the hand,
+            d = np.array([0.15, 1.0 if side == "left" else -1.0, 0.35])                    # not behind it
+            eye = target + 0.62 * d / np.linalg.norm(d)
         view = p.computeViewMatrix(eye.tolist(), target.tolist(), [0, 0, 1])
         proj = p.computeProjectionMatrixFOV(45, 640 / 480, 0.05, 5.0)
     z0 = p.getBasePositionAndOrientation(bracket)[0][2]
@@ -398,6 +403,8 @@ def main():
     ap.add_argument("--seeds", type=int, nargs="*", default=DEV_SEEDS)
     ap.add_argument("--videos", type=int, default=2, help="record videos of the first N seeds")
     ap.add_argument("--close-view", action="store_true", help="video camera close to the bracket")
+    ap.add_argument("--side-view", action="store_true", help="video camera beside the bracket, on the grasping arm's side "
+                    "(the hand is not drawn over the robot's body; used for the report figures)")
     camera_model.add_args(ap)
     hole_detector_tuned.add_args(ap)
     ap.add_argument("--run-ids", type=int, nargs="*", default=[0], help="noise draws to run per seed")

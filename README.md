@@ -188,6 +188,7 @@ assets/robot/    G1 + Dex1 URDF and meshes
 data/ideal/      ideal reference frames of the development and test seeds
 docs/            pipeline.md and camera_model.md (algorithms and math); D435 datasheet, depth tuning guide, depth post-processing paper, depth testing methodology,
                  Ahn et al. 2019, Keselman et al. 2017, literature notes
+report/          report.tex (the PDF report), make_figures.py (its figures -> report/figures/)
 AI_NOTES.md      working log for the AI assistant (decision history, superseded results; not for human readers)
 ```
 
