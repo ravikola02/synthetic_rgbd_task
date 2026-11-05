@@ -11,7 +11,7 @@ the hole edge (on its face) match the rendered depth within 2 mm. A detection is
 within CORRECT_MM of a valid opening (when the bracket rests on its corner, both holes tilt 45 deg
 and are equally "top").
 
-  python perception/eval_holes.py              # fixed test set config.TEST_SEEDS
+  python perception/eval_holes.py              # development set config.DEV_SEEDS
   python perception/eval_holes.py --backend isaac      # after rendering those seeds
   python perception/eval_holes.py --max-frames 10      # retry on later frames
   python perception/eval_holes.py --camera d435 --runs 10   # D435 model, 10 noise draws per scene
@@ -39,7 +39,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.join(HERE, "..")
 sys.path[:0] = [HERE, ROOT, os.path.join(ROOT, "scene"), os.path.join(ROOT, "scene", "backends")]
 import camera_model  # noqa: E402
-from config import TEST_SEEDS  # noqa: E402
+from config import DEV_SEEDS  # noqa: E402
 from frame_io import ideal_frame  # noqa: E402
 import hole_detector_tuned  # noqa: E402
 from hole_detector import MAX_TOP_TILT_DEG  # noqa: E402
@@ -100,8 +100,8 @@ def frame_depth(depth, K, args, seed, run, frame_idx):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--seeds", type=int, nargs="*", default=TEST_SEEDS,
-                    help="scene seeds; default: the fixed test set config.TEST_SEEDS (15 scenes with a visible top hole)")
+    ap.add_argument("--seeds", type=int, nargs="*", default=DEV_SEEDS,
+                    help="scene seeds; default: the development set config.DEV_SEEDS (15 scenes with a visible top hole)")
     ap.add_argument("--backend", choices=["pybullet", "isaac"], default="pybullet")
     ap.add_argument("--max-frames", type=int, default=1, help="frames tried per scene until a detection")
     camera_model.add_args(ap)

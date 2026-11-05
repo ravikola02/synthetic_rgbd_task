@@ -1,6 +1,6 @@
 """Common frame format written by every backend and read by the camera model.
 
-Ideal frames of the test seeds live in data/ideal/<backend>/seed_XXX/<camera>/ (config.IDEAL_DIR):
+Ideal frames of the development seeds live in data/ideal/<backend>/seed_XXX/<camera>/ (config.IDEAL_DIR):
 the reference that the camera model's depth is compared with.
 
 <frame_dir>/<camera>/          (camera = head)

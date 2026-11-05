@@ -165,7 +165,7 @@ if __name__ == "__main__":
     ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
     sys.path[:0] = [os.path.join(ROOT, "scene"), os.path.join(ROOT, "scene", "backends")]
     from frame_io import ideal_frame
-    f = ideal_frame("pybullet", 4)                                     # test seed 4
+    f = ideal_frame("pybullet", 4)                                     # development seed 4
     d, K, ins = f["depth"], np.asarray(f["K"]), f["instance"]
     m = ins == 4                                                       # bracket pixels
 

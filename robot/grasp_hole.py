@@ -20,7 +20,7 @@ Pipeline per scene (no ground truth used for control):
      both arms tried with restarts; nothing is executed if any waypoint misses by > MAX_IK_ERR
   5. success = bracket lifted by > 5 cm and touching both jaws after a 1 s hold
 
-  python robot/grasp_hole.py                  # all 15 test seeds, videos of the first 2
+  python robot/grasp_hole.py                  # all 15 development seeds, videos of the first 2
   python robot/grasp_hole.py --camera d435 --seeds 8 --run-ids 22   # D435 model, noise draw 22
   python robot/grasp_hole.py --camera d435 --detector tuned --seeds 8 --run-ids 22   # + noise-aware detector
 
@@ -30,8 +30,8 @@ Noise draw r of seed s uses the
 same random numbers as run r in perception/eval_*.py. The grasp scene is settled by physics (~1 mm
 different from the static evaluation frames), so the same draw need not give the same detection.
 
-Result (2026-11-04, item 40x40 bracket, ideal depth, default TCP): 15/15 test seeds lifted ~100 mm
-(test set selected on that). Failures seen while selecting: 12, 42 (a gripper part not covered by
+Result (2026-11-04, item 40x40 bracket, ideal depth, default TCP): 15/15 development seeds lifted ~100 mm
+(development set selected on that). Failures seen while selecting: 12, 42 (a gripper part not covered by
 the finger model pushes the bracket ~25 mm on approach), 54, 63 not lifted, 20 slips at 51 mm.
 See NOTES.md.
 """
@@ -51,7 +51,7 @@ import camera_model  # noqa: E402
 import hole_detector_tuned  # noqa: E402
 import pybullet_backend as pb  # noqa: E402
 from bracket_fit import OPENINGS, fit_bracket, model_points  # noqa: E402
-from config import ROOT, TABLE_TOP_Z, TEST_SEEDS  # noqa: E402
+from config import ROOT, TABLE_TOP_Z, DEV_SEEDS  # noqa: E402
 from eval_holes import pose_matrix  # noqa: E402
 from hole_detector import detect_holes  # noqa: E402
 from spec import make_scene  # noqa: E402
@@ -395,7 +395,7 @@ def run(seed, video_path=None, args=None, run_idx=0):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--seeds", type=int, nargs="*", default=TEST_SEEDS)
+    ap.add_argument("--seeds", type=int, nargs="*", default=DEV_SEEDS)
     ap.add_argument("--videos", type=int, default=2, help="record videos of the first N seeds")
     ap.add_argument("--close-view", action="store_true", help="video camera close to the bracket")
     camera_model.add_args(ap)

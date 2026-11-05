@@ -7,7 +7,7 @@ so poses rotated by 90-150 deg still had ADD-S of 2-3 mm (< the usual 10 % of di
 Writes overlays of the reconstruction for the first --vis seeds (model points coloured by
 their depth residual on top of the depth view) and a PLY with scene + fitted model points.
 
-  python perception/eval_bracket_fit.py [--backend isaac]     # fixed test set config.TEST_SEEDS
+  python perception/eval_bracket_fit.py [--backend isaac]     # development set config.DEV_SEEDS
   python perception/eval_bracket_fit.py --camera d435 --runs 10   # D435 model, 10 noise draws per scene
   python perception/eval_bracket_fit.py --camera d435 --bias 0 --runs 10   # ablation: no depth bias (see camera_model/)
 
@@ -33,7 +33,7 @@ from bracket_fit import fit_bracket, model_points, pose_errors, visible_model  #
 from eval_holes import pose_matrix  # noqa: E402
 from frame_io import depth_to_vis, ideal_frame  # noqa: E402
 import hole_detector_tuned  # noqa: E402
-from config import TEST_SEEDS  # noqa: E402
+from config import DEV_SEEDS  # noqa: E402
 
 
 SUCCESS_T_MM, SUCCESS_R_DEG = 5.0, 10.0
@@ -70,8 +70,8 @@ def save_ply(path, scene_pts, model_pts):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--seeds", type=int, nargs="*", default=TEST_SEEDS,
-                    help="scene seeds; default: the fixed test set config.TEST_SEEDS (15 scenes with a visible top hole)")
+    ap.add_argument("--seeds", type=int, nargs="*", default=DEV_SEEDS,
+                    help="scene seeds; default: the development set config.DEV_SEEDS (15 scenes with a visible top hole)")
     ap.add_argument("--backend", choices=["pybullet", "isaac"], default="pybullet")
     camera_model.add_args(ap)
     hole_detector_tuned.add_args(ap)

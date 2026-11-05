@@ -7,7 +7,7 @@ with the jaws approaching along the hole axis.
 
 **Status:** the scene, the ideal-depth reference set, the downstream pipeline and the analytical D435 depth
 model (`camera_model/d435.py`) are complete. Every script runs on ideal depth by default and on the D435
-model with `--camera d435`. All results so far are from the 15 development seeds (`TEST_SEEDS`) and are
+model with `--camera d435`. All results so far are from the 15 development seeds (`DEV_SEEDS`) and are
 intermediate; **the final experiments on seeds held out from development are still to be done.**
 
 ## Setup
@@ -36,9 +36,9 @@ export G1_USD=/path/to/g1_29dof_with_dex1_base_fix1.usd   # G1 + Dex1 USD, not i
 ```bash
 python scene/render.py --seed 4 --out /tmp/frame      # one frame: rgb, depth, instance mask, meta
 python scene/render.py --seed 4 --gui                 # look at the scene in the PyBullet GUI
-python perception/eval_holes.py                       # hole detector on the 15 test seeds
-python perception/eval_bracket_fit.py                 # 6D bracket fit on the 15 test seeds
-python robot/grasp_hole.py                            # grasp the 15 test seeds; videos of the first 2
+python perception/eval_holes.py                       # hole detector on the 15 development seeds
+python perception/eval_bracket_fit.py                 # 6D bracket fit on the 15 development seeds
+python robot/grasp_hole.py                            # grasp the 15 development seeds; videos of the first 2
 python perception/plot_hole_plane.py --seed 8 --run 22   # 3D: hole face as detected, ideal vs D435 x baseline vs tuned
 ```
 
@@ -62,7 +62,7 @@ plus the datasheet output rules: left invalid depth band (§4.5), Min-Z 195 mm (
 
 ```bash
 python camera_model/d435.py                                     # noise levels and what each step does to a frame
-python perception/eval_holes.py --camera d435 --runs 10         # 10 noise draws per test seed
+python perception/eval_holes.py --camera d435 --runs 10         # 10 noise draws per development seed
 python perception/eval_bracket_fit.py --camera d435 --runs 10
 python robot/grasp_hole.py --camera d435 --seeds 45 --run-ids 0 --close-view   # a grasp from D435 depth
 ```
@@ -90,10 +90,10 @@ Results go to `output/` (ignored by git).
 
 | Step (ideal depth) | Result |
 |---|---|
-| Hole detector, 15 test seeds | 15/15; centre error median 0.70 mm, axis 0.71° |
+| Hole detector, 15 development seeds | 15/15; centre error median 0.70 mm, axis 0.71° |
 | Hole detector, all seeds 0–200 with a visible top hole (74) | 66/74 correct; the 8 misses pick a round gap on the bracket's cover cap. No detections on the 127 scenes without a visible hole |
-| Bracket fit, 15 test seeds | 15/15; translation median 0.34 mm, rotation 0.84° |
-| Grasp, 15 test seeds | 15/15 lifted ~100 mm |
+| Bracket fit, 15 development seeds | 15/15; translation median 0.34 mm, rotation 0.84° |
+| Grasp, 15 development seeds | 15/15 lifted ~100 mm |
 
 Intermediate D435 results (development seeds, PyBullet, 15 seeds × 10 noise draws; details in NOTES.md Q3):
 
@@ -105,12 +105,12 @@ Intermediate D435 results (development seeds, PyBullet, 15 seeds × 10 noise dra
 | Ahn et al. noise instead of Intel's | 1/150 (most draws: no hole found) | 4/150 |
 | Intel noise + rules, noise-aware detector (k = 2.5) | 144/150 | 150/150 |
 
-The test set was chosen so that every step succeeds with ideal depth (see below). The 15/15 results are
+The development set was chosen so that every step succeeds with ideal depth (see below). The 15/15 results are
 therefore the baseline for the camera model, not an accuracy measure.
 
-## Test set and reference data
+## Development set and reference data
 
-`TEST_SEEDS = [4, 8, 23, 26, 27, 32, 37, 38, 45, 69, 73, 86, 92, 97, 112]` in `scene/config.py`. These are the
+`DEV_SEEDS = [4, 8, 23, 26, 27, 32, 37, 38, 45, 69, 73, 86, 92, 97, 112]` in `scene/config.py`. These are the
 first 15 seeds where, with ideal depth:
 
 1. the top hole is visible to the camera,
@@ -118,13 +118,13 @@ first 15 seeds where, with ideal depth:
 3. the bracket fit succeeds, and
 4. the grasp lifts the bracket.
 
-The selection rule and the rejection counts are in the comment above `TEST_SEEDS`.
+The selection rule and the rejection counts are in the comment above `DEV_SEEDS`.
 
-`data/ideal/<backend>/seed_XXX/head/` holds the ideal frames of the test seeds for both backends. This is
+`data/ideal/<backend>/seed_XXX/head/` holds the ideal frames of the development seeds for both backends. This is
 the reference the camera model's depth is compared against. To regenerate it:
 
 ```bash
-python scene/render.py --test-seeds                                       # PyBullet, all 15
+python scene/render.py --dev-seeds                                       # PyBullet, all 15
 for s in 4 8 23 26 27 32 37 38 45 69 73 86 92 97 112; do
   python scene/render.py --backend isaac --seed $s; done                  # Isaac
 ```
@@ -143,7 +143,7 @@ Each frame folder contains:
 
 ```
 scene/           scene definition shared by both backends
-  config.py        robot, table, placement regions, camera, TEST_SEEDS
+  config.py        robot, table, placement regions, camera, DEV_SEEDS
   parts.py         part CAD, hole geometry, symmetries, stable resting poses
   materials.py     visual / physical properties
   spec.py          seed -> backend-independent scene spec
@@ -156,7 +156,7 @@ robot/           grasp_hole.py: IK, grasp selection and execution in PyBullet
 camera_model/    d435.py: analytical D435 depth model; __init__.py: shared --camera options and ablations
 assets/cad/      part CAD (STEP) + cached stable poses
 assets/robot/    G1 + Dex1 URDF and meshes
-data/ideal/      ideal reference frames of the test seeds
+data/ideal/      ideal reference frames of the development seeds
 docs/            D435 datasheet, depth tuning guide, depth post-processing paper, depth testing methodology,
                  Ahn et al. 2019, Keselman et al. 2017, literature notes
 NOTES.md         working notes: decisions, results, what did not work

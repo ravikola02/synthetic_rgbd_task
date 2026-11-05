@@ -74,7 +74,7 @@ def sample_part_poses(rng):
     return (p[0], p[1], rng.uniform(0, 2 * np.pi)), (b[0], b[1], rng.uniform(0, 2 * np.pi))
 
 
-# ---------------------------------------------------------------- fixed test set
+# ---------------------------------------------------------------- development set
 # Used by all evaluations. Selected 2026-11-04 for the item Line 8 40x40 parts (user: "seeds for
 # which all are detected and lifted"): the first 15 seeds, in order, where with ideal PyBullet depth
 #   1. the bracket's top hole is visible to the head camera (CAD ground truth, eval_holes.gt_top)
@@ -85,4 +85,4 @@ def sample_part_poses(rng):
 # camera model degrades, not an accuracy measure (that is on all seeds with a visible hole, NOTES.md).
 # Seeds 0-112 checked; 98 rejected: 69 no visible top hole, 4 detector picked the wrong hole,
 # 20 IK failed, 4 bracket pushed away / not lifted (12, 42, 54, 63), 1 slipped (20).
-TEST_SEEDS = [4, 8, 23, 26, 27, 32, 37, 38, 45, 69, 73, 86, 92, 97, 112]
+DEV_SEEDS = [4, 8, 23, 26, 27, 32, 37, 38, 45, 69, 73, 86, 92, 97, 112]
