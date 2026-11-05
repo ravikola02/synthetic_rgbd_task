@@ -33,7 +33,7 @@ different from the static evaluation frames), so the same draw need not give the
 Result (2026-11-04, item 40x40 bracket, ideal depth, default TCP): 15/15 development seeds lifted ~100 mm
 (development set selected on that). Failures seen while selecting: 12, 42 (a gripper part not covered by
 the finger model pushes the bracket ~25 mm on approach), 54, 63 not lifted, 20 slips at 51 mm.
-See NOTES.md.
+See AI_NOTES.md.
 """
 import argparse
 import json

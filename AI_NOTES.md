@@ -1,4 +1,10 @@
-# Working notes: answers to task.md, built up as we go
+# AI notes: working log (not written for human readers)
+
+> **This file is a working log for the AI assistant, not documentation.** It records decisions, their history and
+> intermediate results as they happened, so many entries are superseded and it is not meant to be read by people.
+> For the project see `README.md`; for the methods `docs/pipeline.md` and `docs/camera_model.md`; for the final
+> results `output/final_sweep/results/table.md` and `extracted_examples/`; to reproduce `REPRODUCE.md`.
+
 
 Status legend: ✅ decided · 🟡 proposed, not yet confirmed · ⬜ open
 

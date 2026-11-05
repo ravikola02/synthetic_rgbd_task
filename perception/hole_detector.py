@@ -30,7 +30,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."
 from parts import BRACKET_HOLE_DIAMETER as HOLE_DIAMETER  # noqa: E402  (item Line 8 bracket: 8.5 mm, M8)
 MAX_RANGE = 1.0               # m, workspace limit (table at 0.4-0.75 m, floor beyond ~1.3 m)
 # Thresholds set on ideal depth, well below the bracket's 5 mm leg thickness. With D435 noise (~1 mm)
-# they sit at the noise level (NOTES.md Q3); hole_detector_tuned.py scales them to the noise (mitigation).
+# they sit at the noise level (AI_NOTES.md Q3); hole_detector_tuned.py scales them to the noise (mitigation).
 MIN_HEIGHT = 0.0015           # m above the table to count as an object
 TABLE_THRESH = 0.001          # m, RANSAC inlier distance for the table
 FACE_THRESH = 0.001           # m, RANSAC inlier distance for part faces

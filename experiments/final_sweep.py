@@ -1,13 +1,13 @@
 """Final experiment: 7 depth conditions x 3 stages (detector, bracket fit, grasp) on the held-out test seeds.
 
-Protocol: NOTES.md Q3, "Final test protocol" (frozen, git tag final-experiment, amended 2026-11-05).
+Protocol: AI_NOTES.md Q3, "Final test protocol" (frozen, git tag final-experiment, amended 2026-11-05).
 
   python experiments/final_sweep.py select        # screen seeds from 201 up, keep the first 30 that pass the rule
   python experiments/final_sweep.py run           # all conditions x stages x seeds, in parallel (resumes: done jobs skipped)
   python experiments/final_sweep.py analyse       # merge results, statistics, bar plots
   python experiments/final_sweep.py all           # the three in order
 
-Seed rule (same as DEV_SEEDS, NOTES Q3 amendment 3): every ideal-depth stage succeeds - top hole visible,
+Seed rule (same as DEV_SEEDS, AI_NOTES.md Q3 amendment 3): every ideal-depth stage succeeds - top hole visible,
 detector within 3 mm, fit success, grasp lifted. Screening runs the ideal stages on frames kept in output/<sweep>/screening/ideal/ (IDEAL_DIR), so rejected seeds
 never enter data/ideal/.
 
@@ -69,7 +69,7 @@ BACKEND = "pybullet"        # renderer of the perception frames: pybullet | isaa
 ISAAC_WORKERS = 1
 INFEASIBLE = ("IK failed", "no table-clear grasp")
 
-# condition -> camera options (NOTES Q3, frozen protocol table)
+# condition -> camera options (AI_NOTES.md Q3, frozen protocol table)
 CONDITIONS = {
     "0_ideal":      ["--camera", "ideal"],
     "1_rules":      ["--camera", "d435", "--edge", "none", "--axial", "none", "--bias", "0"],

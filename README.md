@@ -74,7 +74,7 @@ python robot/grasp_hole.py --camera d435 --seeds 45 --run-ids 0 --close-view   #
 Ablations switch one part of the model: `--edge none`, `--axial ahn` (Ahn et al. 2019 noise, ~2.7× Intel's at
 0.5 m) or `--axial none`, `--bias 0` (or a fixed `--bias 2` / `--bias -2`, in %), `--no-rules`. Noise draw r
 of seed s uses the same random numbers, including the bias sign, in every script and model variant.
-NOTES.md (Q2) lists the effects left out and why.
+AI_NOTES.md (Q2, working log) lists the effects left out and why.
 
 With the depth bias every position moves ~10 mm along the viewing ray, so the evaluation summaries also
 count the "right hole" / "pose found" with that shift allowed, next to the strict 3 mm / 5 mm criteria.
@@ -108,7 +108,7 @@ therefore the baseline for the camera model, not an accuracy measure.
 
 Does the D435 model change the outcome of hole detection, bracket fit and grasp? 7 depth conditions (ideal,
 datasheet rules, axial noise, edge fattening, edge + axial, depth bias ±2 %, full model) on 30 held-out test seeds
-(`TEST_SEEDS`: every ideal-depth stage succeeds), 5 paired noise draws each. Protocol and hypotheses: NOTES.md Q3.
+(`TEST_SEEDS`: every ideal-depth stage succeeds), 5 paired noise draws each. Protocol and hypotheses: AI_NOTES.md Q3 (working log).
 
 ```bash
 python experiments/final_sweep.py all          # select seeds, run, analyse (see REPRODUCE.md for timings);
@@ -188,7 +188,7 @@ assets/robot/    G1 + Dex1 URDF and meshes
 data/ideal/      ideal reference frames of the development and test seeds
 docs/            pipeline.md and camera_model.md (algorithms and math); D435 datasheet, depth tuning guide, depth post-processing paper, depth testing methodology,
                  Ahn et al. 2019, Keselman et al. 2017, literature notes
-NOTES.md         working notes: decisions, results, what did not work
+AI_NOTES.md      working log for the AI assistant (decision history, superseded results; not for human readers)
 ```
 
 ## Sources and modifications
