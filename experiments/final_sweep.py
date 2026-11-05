@@ -11,7 +11,7 @@ Seed rule (same as DEV_SEEDS, NOTES Q3 amendment 3): every ideal-depth stage suc
 detector within 3 mm, fit success, grasp lifted. Screening runs the ideal stages on frames kept in output/<sweep>/screening/ideal/ (IDEAL_DIR), so rejected seeds
 never enter data/ideal/.
 
-Primary result: 30 seeds (quick to replicate, ~20-30 min on 48 processes). Extended result (e.g. overnight,
+Primary result: 30 seeds (quick to replicate; timings in REPRODUCE.md). Extended result (e.g. overnight,
 ~1.5-2 h): --n-seeds 100, same rule and protocol; the first 30 of its seeds are the primary ones. It writes
 to output/final_sweep_n100/ and keeps its ideal frames there (output/final_sweep_n100/ideal/, via the
 IDEAL_DIR environment variable) instead of adding ~140 MB to the tracked data/ideal/.
@@ -64,7 +64,7 @@ PY = sys.executable
 N_SEEDS = 30
 FIRST_SEED = 201            # seeds <= 200 were used in development or in the ideal accuracy evaluation
 DRAWS = 5                   # noise draws per seed, perception and grasp (ideal: 1, it is deterministic)
-WORKERS = 48
+WORKERS = os.cpu_count() or 4      # parallel processes (results do not depend on it)
 BACKEND = "pybullet"        # renderer of the perception frames: pybullet | isaac
 ISAAC_WORKERS = 1
 INFEASIBLE = ("IK failed", "no table-clear grasp")
@@ -544,7 +544,9 @@ def accuracy(rows, seeds, res, pdir, plt, colors):
 
 def table_png(html, png):
     """Picture of results/table.html (headless Chrome screenshot, light theme, trimmed); skipped without Chrome."""
-    chrome = shutil.which("google-chrome") or shutil.which("chromium") or shutil.which("chromium-browser")
+    mac = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+    chrome = (shutil.which("google-chrome") or shutil.which("chromium") or shutil.which("chromium-browser")
+              or (mac if os.path.exists(mac) else None))
     if not chrome:
         print("no Chrome/Chromium found: table.png skipped")
         return
@@ -652,7 +654,7 @@ if __name__ == "__main__":
     ap.add_argument("stage", choices=["select", "run", "analyse", "all"])
     ap.add_argument("--n-seeds", type=int, default=N_SEEDS,
                     help="test seeds (default 30 = primary result; e.g. 100 = extended run)")
-    ap.add_argument("--workers", type=int, default=WORKERS)
+    ap.add_argument("--workers", type=int, default=WORKERS, help="parallel processes (default: CPU cores)")
     ap.add_argument("--backend", choices=["pybullet", "isaac"], default=BACKEND,
                     help="renderer of the perception frames (grasp is PyBullet in both)")
     ap.add_argument("--isaac-workers", type=int, default=ISAAC_WORKERS, help="Isaac renders at once (GPU)")

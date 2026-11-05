@@ -13,6 +13,9 @@ in `extracted_examples/`. Algorithms and math: `docs/pipeline.md`, `docs/camera_
 
 ## Setup
 
+Step-by-step reproduction on a laptop (Linux or macOS, PyBullet only), from re-analysing the published results to a
+full rerun: [REPRODUCE.md](REPRODUCE.md).
+
 ```bash
 conda env create -f environment.yml      # CPU only; PyBullet backend
 conda activate synthetic_rgbd
@@ -108,7 +111,7 @@ datasheet rules, axial noise, edge fattening, edge + axial, depth bias ±2 %, fu
 (`TEST_SEEDS`: every ideal-depth stage succeeds), 5 paired noise draws each. Protocol and hypotheses: NOTES.md Q3.
 
 ```bash
-python experiments/final_sweep.py all          # select seeds, run, analyse (~20-30 min on 48 processes);
+python experiments/final_sweep.py all          # select seeds, run, analyse (see REPRODUCE.md for timings);
                                                # opens a live web view (--no-view to skip)
 python experiments/run_seed.py --seed 204 --condition 6_full --run 2 [--gui]   # one case, same numbers
 python experiments/extract_examples.py         # example figures + grasp videos -> extracted_examples/
