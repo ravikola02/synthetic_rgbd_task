@@ -32,6 +32,12 @@ pick; fit = CAD model points on the measured surface (green) or off it (red).
 |---|---|---|---|---|
 | 08 | 246 (all draws) | datasheet rules alone | Perception is unchanged (same hole, fit 0.23 vs 0.25 mm), yet the grasp **fails (IK)**: the 1 mm depth rounding nudges the pose and the grasp search lands on a candidate the arm cannot reach. In the sweep the rules alone drop the grasp from 100 % to 77 % (7 of 30 seeds; rules have no randomness, so each seed fails or lifts on all 5 draws). Judge the camera effects on the grasp against this row (77 %), not only against ideal (100 %). | `08_control_rules_planner_sensitivity.png` |
 
+## Lifted, but misaligned
+
+| # | Seed, draw | Condition | What happens | Files |
+|---|---|---|---|---|
+| 09 | 473, 3 | full model | Counted as **lifted** in the sweep, but the grasp is off: the pose is 8.6 mm off, the jaws catch the bracket by one corner, and it swings in the grip during the lift (it moves 37 mm relative to the hand between closing and holding; ideal: < 2 mm) and hangs tilted, lifted 53 mm instead of 100 mm. With ideal depth the jaws grip it squarely. A grasp that would not survive a placement or an insertion. | `09_grasp_frames.png`, `09_ideal_grasp_seed473.mp4`, `09_full_model_grasp_seed473_draw3.mp4` |
+
 ## Points for the report
 
 1. **The detector is where the camera model bites.** Axial noise creates false holes (01, 06); edge fattening on its

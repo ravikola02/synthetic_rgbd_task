@@ -58,7 +58,7 @@ the simulator. Three effects, each with a published number, applied in the order
 1. **edge fattening:** at depth steps the foreground grows 2 px into the background, so gaps of 4 px or less
    close. No D435 value exists; the value is the R200's (Keselman et al. 2017 §4.2.3: gaps < 5 px merge) and
    has to be calibrated against real D435 depth;
-2. **axial noise:** Intel's σ_z = z²·s/(f·B), s = 0.08 px (tuning guide §3e), applied as disparity noise;
+2. **axial noise:** Intel's σ_z = z²·s/(f·B), s = 0.08 px (tuning guide p. 4), applied as disparity noise;
 3. **depth bias:** a scale error at the datasheet's Z-accuracy limit (±2 %, Table 4-15), +2 % or −2 % with
    equal probability per noise draw;
 

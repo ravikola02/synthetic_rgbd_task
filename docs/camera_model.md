@@ -43,7 +43,7 @@ invalid pixels and stays invalid).
 left imager, 17.5 mm from the centreline of the ¼-20 tripod hole (§4.8.1, Table 4-20, p. 91), and depth = 0
 at the front cover glass, $Z' = -4.2$ mm for the D435/D435i/D436 (−4.7 mm for the D435f/D435if; §4.8,
 Table 4-17, p. 89). The camera here sits at the URDF `d435_link`, and whether that frame is the left imager is
-not checked: a calibration offset, not noise, and it does not affect the pipeline's claims.
+not checked. It is a calibration offset, not noise.
 
 ## 2. Edge fattening (`edge_fattening`, `edge="r200"`)
 
@@ -88,7 +88,7 @@ $$\frac{\partial Z}{\partial d} = -\frac{fB}{d^2} = -\frac{Z^2}{fB}
 
 This is Intel's formula (BKM §3e). The error grows with the **square** of the distance.
 
-**A best case.** Intel calls this formula the "theoretical limit for the RMS depth error", which "in general you
+**A best case.** Intel calls this formula the "theoretical limitation for the RMS depth error", which "in general you
 should see … on the well textured target" (BKM §3e). The model is therefore the noise of a good, textured plane,
 not of a typical surface.
 
@@ -111,8 +111,8 @@ $$d' = d + s\,\xi, \quad \xi \sim \mathcal N(0, 1), \qquad Z' = \frac{fB}{d'} .$
 Adding the noise to the disparity (not to the depth) keeps the stereo behaviour: to first order it is Gaussian
 in depth with the $\sigma_Z$ above, with the slight asymmetry of $1/d$ for larger errors.
 
-**Ablation `axial="ahn"`** (not in the final model). Ahn et al. 2019 (Eq. 2) fitted the axial noise of a real
-D435 at 848×480 (Eq. 2, p. 710) as $\sigma_Z(Z) = 0.001063 + 0.0007278\,Z + 0.003949\,Z^2$ (m), applied directly in depth:
+**Ablation `axial="ahn"`** (not in the final model). Ahn et al. 2019 (Eq. 2, p. 710) fitted the axial noise of a real
+D435 at 848×480 as $\sigma_Z(Z) = 0.001063 + 0.0007278\,Z + 0.003949\,Z^2$ (m), applied directly in depth:
 2.41 mm at 0.5 m, about 2.7× Intel's value. The paper's angle term is left out (hand-set, not consistent with its
 own Fig. 9). On the development seeds this noise level made the baseline detector collapse (1/150 detected).
 
@@ -197,9 +197,9 @@ made only of them (e.g. "rules only", "edge only") gives the same depth for ever
 
 | Constant | Value | Source |
 |---|---|---|
-| `BASELINE_M` | 0.050 m | Datasheet Table 3-11 (D430 module) |
+| `BASELINE_M` | 0.050 m | Datasheet Table 3-49 (D435) |
 | $f$ (`FX` in `scene/config.py`) | 447 px | 848 px, HFOV 87° (datasheet) |
-| `SUBPIXEL_PX` | 0.08 px | BKM §3e |
+| `SUBPIXEL_PX` | 0.08 px | BKM p. 4 (D435 curve) |
 | `EDGE_GROW_PX` | 2 px | Keselman 2017 §4.2.3 (R200) |
 | `EDGE_STEP_PX` | 0.5 px | ours: above a 75° slope (0.29–0.37 px/px at 0.5–0.65 m) |
 | `BIAS_LIMIT` | 0.02 | Datasheet Table 4-15 |

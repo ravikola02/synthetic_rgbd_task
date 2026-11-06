@@ -60,7 +60,7 @@ SUBPIXEL_PX = 0.08      # BKM p. 4: subpixel RMS of its D435 noise curve (formul
 AHN_ABC = (0.001063, 0.0007278, 0.003949)   # Ahn et al. 2019 Eq. 2 (m, 1, 1/m)
 EDGE_GROW_PX = 2        # Keselman 2017 §4.2.3 (R200): gaps < 5 px merge -> 2 px growth from each side
 EDGE_STEP_PX = 0.5      # disparity step that counts as an edge; a plane seen at 75 deg changes by
-                        # B*tan(75)/z ~ 0.2-0.3 px per pixel here, so slanted faces are not edges
+                        # B*tan(75)/z ~ 0.3-0.4 px per pixel here, so slanted faces are not edges
 BIAS_LIMIT = 0.02       # datasheet Table 4-15: Z-accuracy +-2 %
 MIN_Z_M = 0.195         # datasheet Table 4-12, 848x480
 DEPTH_UNIT_M = 0.001    # BKM §8a, default depth unit

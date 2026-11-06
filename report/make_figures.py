@@ -26,7 +26,7 @@ from frame_io import depth_to_vis, ideal_frame  # noqa: E402
 OUT = os.path.join(HERE, "figures")
 VID = os.path.join(OUT, "videos")
 GRASPS = [(432, 0, "0_ideal")]                          # tasks.png (side view)
-EXAMPLES = os.path.join(ROOT, "extracted_examples")     # grasp.png: example 05's close-view videos
+EXAMPLES = os.path.join(ROOT, "extracted_examples")     # grasp.png: example 09's close-view videos
 
 
 def video_name(seed, run, cond):
@@ -100,12 +100,10 @@ def fig_detection(seed=299, run=0):
     cases = [case(seed, run, c) for c in ("0_ideal", "2_axial", "4_edge_axial")]
     pts = []
     for c in cases:
-        pts += [uv(c["K"], c["ops"][n][0]) for n in c["ops"]]
-        pts += [uv(c["K"], h["center"]) for h in c["det"]["all"]]
-        vs, us = np.nonzero(c["mask"])
-        pts += [(us.min(), vs.min()), (us.max(), vs.max())]
-    box = crop_box(cases[0], pts, pad=12)
-    fig, axs = plt.subplots(1, 3, figsize=(10, 4.3))
+        vs, us = np.nonzero(c["mask"])                           # the bracket only: a false pick far away
+        pts += [(us.min(), vs.min()), (us.max(), vs.max())]     # is named in the panel title instead
+    box = crop_box(cases[0], pts, pad=6)
+    fig, axs = plt.subplots(1, 3, figsize=(7.6, 2.6))
     for ax, c in zip(axs, cases):
         detection_panel(ax, c, box, f"{LABELS[c['cond']]}\n{row_text(c).split(';')[0]}")
     fig.tight_layout(w_pad=1.0)
@@ -146,10 +144,10 @@ def fig_hole_plane(seed=8, run=22):
 
 
 def fig_grasp():
-    """Seed 432, ideal vs full D435 model (draw 0), close view from extracted_examples/ (example 05)."""
+    """Seed 473, ideal vs full D435 model (draw 3), close view from extracted_examples/ (example 09)."""
     import matplotlib.pyplot as plt
-    rows = (("05_ideal_grasp_seed432.mp4", "ideal depth: lifted"),
-            ("05_full_model_grasp_seed432_draw0.mp4", "full D435 model, draw 0: lifted, pose 10 mm off"))
+    rows = (("09_ideal_grasp_seed473.mp4", "ideal depth: gripped squarely, lifted 100 mm"),
+            ("09_full_model_grasp_seed473_draw3.mp4", "full D435 model, draw 3: caught by a corner, lifted 53 mm"))
     moments = (0.45, 0.62, 0.80, 0.99)
     fig, axs = plt.subplots(2, 4, figsize=(12, 4.6))
     for i, (mp4, lab) in enumerate(rows):

@@ -156,7 +156,7 @@ measurements), occlusion shadows inside the image, and the spatially correlated 
 Intel describes without a correlation length.
 
 The noise level itself is uncertain. Ahn et al.\ \cite{ahn} fitted the axial noise of a real D435 to about
-2.7 times Intel's value at 0.5\,m, still within the range Intel measures on different surfaces (0.07--0.32\,px).
+2.7 times Intel's value at 0.5\,m, still within the range Intel measures on different surfaces (0.085--0.32\,px).
 On the development scenes this level alone collapses the pipeline (CAD fit in 4 of 150 draws, against 143 with
 Intel's value), so on these 15 scenes the choice of published noise level decides between a working and a failing
 perception stage.
@@ -171,9 +171,8 @@ noise level ($\sigma_Z \approx 0.9$\,mm), so an effect of the noise on detection
 were then closed. The test protocol was fixed before any test run (git tag \texttt{final-experiment}). The
 30 test scenes are the first seeds from 201 on for which every stage succeeds with ideal depth, with a
 collision-free arm motion, so that every failure is caused by the camera model. Seven depth conditions are compared: ideal, datasheet rules only, each
-effect alone, edge fattening with axial noise, and the full model. Each scene is run with 5 noise draws that
-are paired across conditions (same random numbers and bias sign), giving 150 draws per condition, compared
-with ideal by an exact McNemar test. Because the bias moves every position by about 10\,mm, detection and
+effect alone, edge fattening with axial noise, and the full model. Each scene is run with 5 noise draws, the same in every
+condition, giving 150 draws per condition. Because the bias moves every position by about 10\,mm, detection and
 pose count as correct within 15\,mm; the strict 3\,mm and 5\,mm criteria are reported as accuracy.
 
 \paragraph{Results.} Table~\ref{tab:results} and Fig.~\ref{fig:results} summarise the sweep.
@@ -186,22 +185,24 @@ single drop in detection, to 63\,\%; in the cases we inspected it leaves enclose
 and it breaks up the bracket's faces so that the real hole is no longer enclosed (Fig.~\ref{fig:holeplane}).
 Edge fattening alone does not prevent detection, since the plug it puts into the hole still stands out on
 noise-free depth, but it tilts the hole axis (median error 0.67$^\circ$ to 1.06$^\circ$) and with noise it lowers
-detection further, from 63\,\% to 39\,\% ($p < 10^{-4}$, Fig.~\ref{fig:detection}). Since our edge model
+detection further, from 63\,\% to 39\,\% (Fig.~\ref{fig:detection}). Since our edge model
 is likely too strong (Section~\ref{sec:realism}), this drop may overstate the effect on a real D435. The depth bias is
 invisible to detection but shifts the whole pose by 10.7\,mm along the viewing ray. The full model combines
 both: 54\,\% detection and an 11\,mm pose offset. Throughout, the CAD fit absorbs the detection errors,
 because it tries every candidate and keeps the one that matches the bracket.
 
-The grasp was more robust than we expected. Every grasp that was executed lifted the bracket, also with the
-11\,mm offset of the bias and the full model (Fig.~\ref{fig:grasp}): the open jaws (54\,mm for the 40\,mm
-bracket) appear to absorb it. All grasp failures are planning failures: the grasp target moves by a few millimetres and
+The grasp was more robust than we expected. Every grasp that was executed lifted the bracket (raised by more
+than 50\,mm with both jaws touching), also with the 11\,mm offset of the bias and the full model: the open jaws
+(54\,mm for the 40\,mm bracket) mostly absorb it. Not always cleanly: the offset can make the jaws catch the
+bracket by a corner, so that it swings in the grip (Fig.~\ref{fig:grasp}), a grasp that would not survive a
+placement. All grasp failures are planning failures: the grasp target moves by a few millimetres and
 the planner finds no reachable arm motion, or only one through the robot's own body (6 draws, all with
-the bias). The camera conditions reach 69--79\,\% against 77\,\% for the rules control, so at this sample size we
-see no clear effect of the camera model on the grasp beyond the planner's own sensitivity.
+the bias). The camera conditions reach 69--79\,\% against 77\,\% for the rules control, so we see no clear
+effect of the camera model on the grasp beyond the planner's own sensitivity.
 
 \paragraph{Second renderer.} The sweep was repeated with Isaac Sim RTX depth for the same 30 scenes and
 noise draws. Ideal depth again succeeds in every stage. Hole detection reaches 63\,\% with axial noise (as with
-PyBullet), 97\,\% with edge fattening, 46\,\% with both ($p = 0.005$ against axial alone), 98\,\% with the
+PyBullet), 97\,\% with edge fattening, 46\,\% with both, 98\,\% with the
 bias and 49\,\% with the full model; the pose is found in every draw and the bias shifts it by 10.7\,mm, as
 with PyBullet. The pattern and the sizes of the effects agree within a few percentage points, which suggests
 that they come from the camera model and not from the renderer. The grasp runs in PyBullet in both cases and is not an
@@ -222,7 +223,7 @@ depth bias $\pm$2\,\% & 100\,\% & 100\,\% (10.7\,mm off) & 79\,\% \\
 full model & 54\,\% & 99\,\% (11.1\,mm off) & 69\,\% \\
 \bottomrule
 \end{tabular}
-\caption{Success per stage, 30 test scenes $\times$ 5 paired noise draws. Detection and pose within 15\,mm.
+\caption{Success per stage, 30 test scenes $\times$ 5 noise draws. Detection and pose within 15\,mm.
 Every executed grasp lifted the bracket; the grasp failures are planning failures.}
 \label{tab:results}
 \end{table}
@@ -247,19 +248,19 @@ false hole 218\,mm away. Development scene (seed 8, draw 22).}
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=\linewidth]{detection.png}
+\includegraphics[width=0.8\linewidth]{detection.png}
 \caption{The same noise draw (seed 299) under three conditions. Green ring: true top hole; orange: hole
 candidates; red cross: the detector's pick. With axial noise the hole is still found; adding edge fattening
-fills it, and a false hole on the profile 163\,mm away wins.}
+fills it, and a false hole on the profile 163\,mm away (outside the crop) wins.}
 \label{fig:detection}
 \end{figure}
 
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=\linewidth]{grasp.png}
-\caption{One scene (seed 432) grasped with ideal depth (top) and with the full camera model (bottom, draw 0).
-Under the full model the detector picks a false hole on the profile 278\,mm away and the CAD fit recovers the
-bracket 10.2\,mm off, yet the jaws still close on it and lift it.}
+\caption{One scene (seed 473) grasped with ideal depth (top) and with the full camera model (bottom, draw 3).
+The pose is 8.6\,mm off: the jaws catch the bracket by a corner, it swings in the grip and is lifted 53\,mm
+instead of 100\,mm. The draw counts as lifted.}
 \label{fig:grasp}
 \end{figure}
 
@@ -274,7 +275,7 @@ grasp fails. The pipeline also has its own limits, which the test-scene selectio
 only for a visible hole, ideal depth reaches 90\,\% detection (the misses pick a round gap in the bracket's
 cap) but only 47\,\% grasp success, mostly from IK failures (measured before the collision check).
 
-\paragraph{Implications for learned policies.} The two perception stages respond to the camera very
+\paragraph{Implications for policies trained on such synthetic data.} The two perception stages respond to the camera very
 differently. Hole detection depends on a local cue a few pixels wide and drops from 100\,\% to 54\,\% under the
 full model. The CAD fit integrates
 over the whole visible surface and still finds the bracket in 99\,\% of the cases. This suggests caution
@@ -368,7 +369,7 @@ Depth Cameras, \emph{CVPR Workshops}, 2017.
 D435 for Mobile Robots, \emph{Int.\ Conf.\ on Ubiquitous Robots (UR)}, 2019.
 \bibitem{hammer} H. Jung, P. Ruhkamp, G. Zhai, N. Brasch, Y. Li, Y. Verdie, J. Song, Y. Zhou, A. Armagan,
 S. Ilic, A. Leonardis, N. Navab, B. Busam, On the Importance of Accurate Geometry Data for Dense 3D Vision
-Tasks, \emph{CVPR}, 2023 (HAMMER dataset).
+Tasks, \emph{CVPR}, pp.\ 780--791, 2023 (HAMMER dataset).
 \end{thebibliography}
 
 \end{document}

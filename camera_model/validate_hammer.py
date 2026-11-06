@@ -1,4 +1,4 @@
-"""Test the D435 model against real D435 depth: HAMMER dataset (Jung et al. 2022/2023).
+"""Test the D435 model against real D435 depth: HAMMER dataset (Jung et al., CVPR 2023, docs/Jung_HAMMER_CVPR2023.pdf).
 
 HAMMER records 13 indoor scenes with a RealSense D435 (projector on, 848x480) and gives, for every frame,
 ground-truth depth rendered into the same D435 view from 3D scans (objects 0.8 mm RMSE; walls / table from
