@@ -17,6 +17,7 @@
   "side": "right",
   "ik_pos_err_max_mm": 0.09705687454009934,
   "ik_rot_err_max_deg": 0.05610311518717908,
+  "body_clearance_plan_mm": 38.98611221972878,
   "phase_log": [
    {
     "phase": "to pre-grasp",
@@ -265,6 +266,7 @@
     "bracket_moved_mm": 100.1
    }
   ],
+  "body_clearance_exec_mm": 39.092919275106716,
   "lift_mm": 99.83625049367095,
   "touches_both_jaws": true,
   "success": true,
@@ -285,9 +287,10 @@
   "face_shift_mm": 16.000000000000036,
   "grasp_width_mm": 25.40128049646298,
   "jaw_close_mm": -12.199359751768512,
-  "side": "left",
-  "ik_pos_err_max_mm": 54.411030919918225,
-  "ik_rot_err_max_deg": 23.67238301975429,
+  "side": "right",
+  "ik_pos_err_max_mm": 54.66301269033887,
+  "ik_rot_err_max_deg": 22.33387023516635,
+  "body_clearance_plan_mm": 2.9435545832237846,
   "status": "IK failed"
  },
  {
@@ -305,9 +308,10 @@
   "face_shift_mm": 4.000000000000024,
   "grasp_width_mm": 39.76344441157982,
   "jaw_close_mm": -5.018277794210092,
-  "side": "right",
-  "ik_pos_err_max_mm": 54.92255407681575,
-  "ik_rot_err_max_deg": 22.361343125955333,
+  "side": "left",
+  "ik_pos_err_max_mm": 66.72979682074035,
+  "ik_rot_err_max_deg": 28.139100734074106,
+  "body_clearance_plan_mm": 0.7305113535918017,
   "status": "IK failed"
  },
  {
@@ -326,8 +330,9 @@
   "grasp_width_mm": 39.74185348947946,
   "jaw_close_mm": -5.02907325526027,
   "side": "left",
-  "ik_pos_err_max_mm": 52.83815261717687,
-  "ik_rot_err_max_deg": 25.289389865402374,
+  "ik_pos_err_max_mm": 49.293240923086124,
+  "ik_rot_err_max_deg": 25.981759107044585,
+  "body_clearance_plan_mm": 0.610577977747326,
   "status": "IK failed"
  },
  {
@@ -345,9 +350,10 @@
   "face_shift_mm": 4.000000000000024,
   "grasp_width_mm": 39.754205358896236,
   "jaw_close_mm": -5.022897320551886,
-  "side": "right",
-  "ik_pos_err_max_mm": 52.7939000807299,
-  "ik_rot_err_max_deg": 22.1258683387787,
+  "side": "left",
+  "ik_pos_err_max_mm": 66.7561050082702,
+  "ik_rot_err_max_deg": 27.769931908445304,
+  "body_clearance_plan_mm": 0.540314978796347,
   "status": "IK failed"
  }
 ]

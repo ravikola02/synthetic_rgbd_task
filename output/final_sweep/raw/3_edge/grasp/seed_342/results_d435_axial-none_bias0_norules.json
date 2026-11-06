@@ -14,9 +14,10 @@
   "face_shift_mm": 13.000000000000032,
   "grasp_width_mm": 39.692419541989246,
   "jaw_close_mm": -5.053790229005376,
-  "side": "right",
-  "ik_pos_err_max_mm": 52.3857038420555,
-  "ik_rot_err_max_deg": 22.18471543972762,
+  "side": "left",
+  "ik_pos_err_max_mm": 50.38531420770156,
+  "ik_rot_err_max_deg": 24.224726042088882,
+  "body_clearance_plan_mm": 0.5854204455423262,
   "status": "IK failed"
  },
  {
@@ -34,9 +35,10 @@
   "face_shift_mm": 13.000000000000032,
   "grasp_width_mm": 39.692419541989246,
   "jaw_close_mm": -5.053790229005376,
-  "side": "right",
-  "ik_pos_err_max_mm": 52.3857038420555,
-  "ik_rot_err_max_deg": 22.18471543972762,
+  "side": "left",
+  "ik_pos_err_max_mm": 50.38531420770156,
+  "ik_rot_err_max_deg": 24.224726042088882,
+  "body_clearance_plan_mm": 0.5854204455423262,
   "status": "IK failed"
  },
  {
@@ -54,9 +56,10 @@
   "face_shift_mm": 13.000000000000032,
   "grasp_width_mm": 39.692419541989246,
   "jaw_close_mm": -5.053790229005376,
-  "side": "right",
-  "ik_pos_err_max_mm": 52.3857038420555,
-  "ik_rot_err_max_deg": 22.18471543972762,
+  "side": "left",
+  "ik_pos_err_max_mm": 50.38531420770156,
+  "ik_rot_err_max_deg": 24.224726042088882,
+  "body_clearance_plan_mm": 0.5854204455423262,
   "status": "IK failed"
  },
  {
@@ -74,9 +77,10 @@
   "face_shift_mm": 13.000000000000032,
   "grasp_width_mm": 39.692419541989246,
   "jaw_close_mm": -5.053790229005376,
-  "side": "right",
-  "ik_pos_err_max_mm": 52.3857038420555,
-  "ik_rot_err_max_deg": 22.18471543972762,
+  "side": "left",
+  "ik_pos_err_max_mm": 50.38531420770156,
+  "ik_rot_err_max_deg": 24.224726042088882,
+  "body_clearance_plan_mm": 0.5854204455423262,
   "status": "IK failed"
  },
  {
@@ -94,9 +98,10 @@
   "face_shift_mm": 13.000000000000032,
   "grasp_width_mm": 39.692419541989246,
   "jaw_close_mm": -5.053790229005376,
-  "side": "right",
-  "ik_pos_err_max_mm": 52.3857038420555,
-  "ik_rot_err_max_deg": 22.18471543972762,
+  "side": "left",
+  "ik_pos_err_max_mm": 50.38531420770156,
+  "ik_rot_err_max_deg": 24.224726042088882,
+  "body_clearance_plan_mm": 0.5854204455423262,
   "status": "IK failed"
  }
 ]

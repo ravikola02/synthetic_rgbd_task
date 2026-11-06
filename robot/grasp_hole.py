@@ -17,7 +17,8 @@ Pipeline per scene (no ground truth used for control):
   4. trajectory: ready pose -> pre-grasp (PRE_GRASP_DIST out along the hole axis, jaws open,
      joint-space move) -> straight-line approach -> close jaws -> straight-line lift (LIFT_HEIGHT)
      IK: damped least squares on the arm's 7 joints only, in a separate kinematics-only client,
-     both arms tried with restarts; nothing is executed if any waypoint misses by > MAX_IK_ERR
+     both arms tried with restarts; nothing is executed if any waypoint misses by > MAX_IK_ERR, or if the
+     arm comes closer than BODY_CLEARANCE to the robot's own body anywhere along the motion ("body collision")
   5. success = bracket lifted by > 5 cm and touching both jaws after a 1 s hold
 
   python robot/grasp_hole.py                  # all 15 development seeds, videos of the first 2
@@ -63,6 +64,10 @@ LIFT_HEIGHT = 0.10            # m
 TABLE_CLEARANCE = 0.004       # m, lowest jaw corner above the table
 MAX_FACE_SHIFT = 0.025        # m, TCP shift along the face (hole is 20 mm from the leg tip on the 40x40 bracket)
 MAX_IK_ERR = 0.005            # m
+BODY_CLEARANCE = 0.010        # m, min distance of the grasping arm (upper arm to jaws) from the rest of the
+                              # robot along the whole planned motion; PyBullet runs without self-collision,
+                              # so without this check IK solutions could pass the arm through the torso
+IK_RESTARTS = 8               # IK restarts per arm, from perturbed arm poses, to find a collision-free one
 PAD_LEN = 0.015               # m, pad length behind the TCP counted as contact region
 MIN_PAD_POINTS = 15           # CAD surface samples (of 4000) facing EACH pad (antipodal grasp)
 MODEL_PTS, MODEL_NRM = model_points()
@@ -114,6 +119,18 @@ def arm_joints(robot, side):
     return [idx[n] for n in names], [idx[f"{side}_dex1_finger_joint_1"], idx[f"{side}_dex1_finger_joint_2"]]
 
 
+def body_link_sets(robot, side, client=0):
+    """Links of the grasping arm (upper arm to jaws) and the rest of the robot that it must not touch
+    (pelvis, legs, torso, head, the other arm); the arm's shoulder pitch/roll links sit on the torso."""
+    names = {j: p.getJointInfo(robot, j, physicsClientId=client)[12].decode()
+             for j in range(p.getNumJoints(robot, physicsClientId=client))}
+    has_col = [j for j in names if p.getCollisionShapeData(robot, j, physicsClientId=client)]
+    arm = [j for j in has_col if names[j].startswith(side + "_") and
+           any(t in names[j] for t in ("shoulder_yaw", "elbow", "wrist", "dex1"))]
+    body = [-1] + [j for j in has_col if j not in arm and not names[j].startswith(side + "_shoulder")]
+    return arm, body
+
+
 class Kinematics:
     """IK on a kinematics-only copy of the robot (separate PyBullet client)."""
 
@@ -130,6 +147,14 @@ class Kinematics:
                                                        "wrist_roll", "wrist_pitch", "wrist_yaw")]
         self.cols = [self.movable.index(j) for j in self.arm]
         self.lim = np.array([p.getJointInfo(self.r, j, physicsClientId=self.c)[8:10] for j in self.arm])
+        self.arm_links, self.body_links = body_link_sets(self.r, side, self.c)
+
+    def clearance(self, q_all, limit=0.1):
+        """Smallest distance (m, capped at limit) between the arm links and the rest of the robot."""
+        self.set(q_all)
+        d = [c[8] for a in self.arm_links for b in self.body_links
+             for c in p.getClosestPoints(self.r, self.r, limit, a, b, physicsClientId=self.c)]
+        return min(d, default=limit)
 
     def set(self, q_all):
         for j, q in q_all.items():
@@ -244,38 +269,51 @@ def jaw_target(width):
 
 
 def plan_arm(urdf, side, robot, tcp, R, approach, jaw_close=None):
-    """IK for all waypoints with one arm; returns (plan, max pos err m, max rot err deg)."""
+    """IK for all waypoints with one arm; returns (plan, max pos err m, max rot err deg, min body clearance m).
+
+    IK restarts from perturbed arm poses until a plan reaches every waypoint and keeps the arm BODY_CLEARANCE
+    away from the robot's body along the whole motion (the move to the pre-grasp is checked at joint-space
+    steps, as it is executed); otherwise the plan with the best pre-grasp IK is returned with its clearance."""
     kin = Kinematics(urdf, side)
     q_now = {j: p.getJointState(robot, j)[0] for j in kin.movable}
-    best = None
-    for restart in range(4):                                         # restarts from perturbed arm poses
+    jc = JAW_SHUT if jaw_close is None else jaw_close
+    fallback = None
+    for restart in range(IK_RESTARTS):
         q0 = dict(q_now)
         if restart:
             rng = np.random.default_rng(restart)
             for k, j in enumerate(kin.arm):
                 q0[j] = float(np.clip(q0[j] + rng.normal(0, 0.5), *kin.lim[k]))
-        q_pre, e, r = kin.solve(q0, tcp - PRE_GRASP_DIST * approach, R)
-        if best is None or e < best[1]:
-            best = (q_pre, e, r)
-        if e < 1e-3:
-            break
-    q_pre, e_pre, r_pre = best
-    plan, errs = [("to pre-grasp", q_pre, JAW_OPEN, 360, tcp - PRE_GRASP_DIST * approach)], [(e_pre, r_pre)]
-    q_prev = {**q_now, **dict(zip(kin.arm, q_pre))}
-    for k in range(1, 11):                                           # straight-line approach
-        qk, e, r = kin.solve(q_prev, tcp - PRE_GRASP_DIST * approach * (1 - k / 10), R)
-        q_prev.update(zip(kin.arm, qk)); errs.append((e, r))
-        plan.append(("approach", qk, JAW_OPEN, 24, tcp - PRE_GRASP_DIST * approach * (1 - k / 10)))
-    jc = JAW_SHUT if jaw_close is None else jaw_close
-    plan.append(("close", qk, jc, 240, tcp))
-    plan.append(("squeeze", qk, jc, 120, tcp))                # let the grip force build before lifting
-    for k in range(1, 11):                                           # straight-line lift
-        qk, e, r = kin.solve(q_prev, tcp + np.array([0, 0, LIFT_HEIGHT * k / 10]), R)
-        q_prev.update(zip(kin.arm, qk)); errs.append((e, r))
-        plan.append(("lift", qk, jc, 24, tcp + np.array([0, 0, LIFT_HEIGHT * k / 10])))
-    plan.append(("hold", qk, jc, 240, tcp + np.array([0, 0, LIFT_HEIGHT])))
+        q_pre, e_pre, r_pre = kin.solve(q0, tcp - PRE_GRASP_DIST * approach, R)
+        if e_pre >= 1e-3 and fallback is not None:
+            continue
+        plan, errs, configs = [("to pre-grasp", q_pre, JAW_OPEN, 360, tcp - PRE_GRASP_DIST * approach)], \
+            [(e_pre, r_pre)], []
+        q_start = np.array([q_now[j] for j in kin.arm])
+        for t in np.linspace(0, 1, 21)[1:]:                             # executed as a joint-space ramp
+            configs.append(q_start + t * (np.array(q_pre) - q_start))
+        q_prev = {**q_now, **dict(zip(kin.arm, q_pre))}
+        for k in range(1, 11):                                           # straight-line approach
+            qk, e, r = kin.solve(q_prev, tcp - PRE_GRASP_DIST * approach * (1 - k / 10), R)
+            q_prev.update(zip(kin.arm, qk)); errs.append((e, r)); configs.append(np.array(qk))
+            plan.append(("approach", qk, JAW_OPEN, 24, tcp - PRE_GRASP_DIST * approach * (1 - k / 10)))
+        plan.append(("close", qk, jc, 240, tcp))
+        plan.append(("squeeze", qk, jc, 120, tcp))                # let the grip force build before lifting
+        for k in range(1, 11):                                           # straight-line lift
+            qk, e, r = kin.solve(q_prev, tcp + np.array([0, 0, LIFT_HEIGHT * k / 10]), R)
+            q_prev.update(zip(kin.arm, qk)); errs.append((e, r)); configs.append(np.array(qk))
+            plan.append(("lift", qk, jc, 24, tcp + np.array([0, 0, LIFT_HEIGHT * k / 10])))
+        plan.append(("hold", qk, jc, 240, tcp + np.array([0, 0, LIFT_HEIGHT])))
+        e_max, r_max = max(e for e, _ in errs), max(r for _, r in errs)
+        clear = min(kin.clearance({**q_now, **dict(zip(kin.arm, q))}) for q in configs)
+        result = (plan, e_max, r_max, clear)
+        if e_max <= MAX_IK_ERR and clear >= BODY_CLEARANCE:
+            p.disconnect(kin.c)
+            return result
+        if fallback is None or (e_pre < 1e-3 <= fallback[0]):
+            fallback = (e_pre, result)
     p.disconnect(kin.c)
-    return plan, max(e for e, _ in errs), max(r for _, r in errs)
+    return fallback[1]
 
 
 def run(seed, video_path=None, args=None, run_idx=0):
@@ -318,14 +356,19 @@ def run(seed, video_path=None, args=None, run_idx=0):
                jaw_close_mm=jaw_close * 1e3)
 
     plans = {sd: plan_arm(spec["robot"]["urdf"], sd, robot, tcp, R, approach, jaw_close) for sd in ("left", "right")}
-    side = min(plans, key=lambda sd: plans[sd][1])
-    plan, e_max, r_max = plans[side]
+    ok = [sd for sd in plans if plans[sd][1] <= MAX_IK_ERR and plans[sd][3] >= BODY_CLEARANCE]
+    reach = [sd for sd in plans if plans[sd][1] <= MAX_IK_ERR]
+    side = min(ok or reach or plans, key=lambda sd: plans[sd][1])
+    plan, e_max, r_max, clear = plans[side]
     arm, fingers = arm_joints(robot, side)
-    row.update(side=side, ik_pos_err_max_mm=e_max * 1e3, ik_rot_err_max_deg=r_max)
-    if e_max > MAX_IK_ERR:
-        row.update(status="IK failed")
+    row.update(side=side, ik_pos_err_max_mm=e_max * 1e3, ik_rot_err_max_deg=r_max,
+               body_clearance_plan_mm=clear * 1e3)
+    if not ok:
+        row.update(status="body collision" if reach else "IK failed")
         p.disconnect()
         return row
+    arm_links, body_links = body_link_sets(robot, side)
+    exec_clear = 0.1
 
     # execute with physics
     for f in fingers:
@@ -361,6 +404,9 @@ def run(seed, video_path=None, args=None, run_idx=0):
                                         force=JAW_FORCE, maxVelocity=JAW_SPEED)              # before the other
 
             p.stepSimulation()
+            if step % 24 == 0:                                       # check: the executed motion stays clear too
+                exec_clear = min([exec_clear] + [c[8] for a in arm_links for b in body_links
+                                                 for c in p.getClosestPoints(robot, robot, exec_clear, a, b)])
             if writer is not None and step % VIDEO_EVERY == 0:
                 img = np.reshape(p.getCameraImage(640, 480, view, proj, renderer=p.ER_TINY_RENDERER)[2], (480, 640, 4))
                 bgr = cv2.cvtColor(img[..., :3].astype(np.uint8), cv2.COLOR_RGB2BGR)
@@ -392,6 +438,7 @@ def run(seed, video_path=None, args=None, run_idx=0):
 
     lift = p.getBasePositionAndOrientation(bracket)[0][2] - z0
     touching = [len(p.getContactPoints(robot, bracket, linkIndexA=f)) > 0 for f in fingers]
+    row.update(body_clearance_exec_mm=exec_clear * 1e3)
     row.update(lift_mm=lift * 1e3, touches_both_jaws=all(touching), success=bool(lift > 0.05 and all(touching)),
                status="lifted" if lift > 0.05 and all(touching) else "executed, not lifted")
     p.disconnect()

@@ -67,7 +67,7 @@ DRAWS = 5                   # noise draws per seed, perception and grasp (ideal:
 WORKERS = os.cpu_count() or 4      # parallel processes (results do not depend on it)
 BACKEND = "pybullet"        # renderer of the perception frames: pybullet | isaac
 ISAAC_WORKERS = 1
-INFEASIBLE = ("IK failed", "no table-clear grasp")
+INFEASIBLE = ("IK failed", "body collision", "no table-clear grasp")
 
 # condition -> camera options (AI_NOTES.md Q3, frozen protocol table)
 CONDITIONS = {

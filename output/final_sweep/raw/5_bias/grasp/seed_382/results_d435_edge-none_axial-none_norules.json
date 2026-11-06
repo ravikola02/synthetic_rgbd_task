@@ -14,9 +14,10 @@
   "face_shift_mm": 3.0000000000000235,
   "grasp_width_mm": 39.830160321753546,
   "jaw_close_mm": -4.98491983912323,
-  "side": "right",
-  "ik_pos_err_max_mm": 42.35271887376262,
-  "ik_rot_err_max_deg": 25.24694884689156,
+  "side": "left",
+  "ik_pos_err_max_mm": 49.13930135055646,
+  "ik_rot_err_max_deg": 25.897591705058858,
+  "body_clearance_plan_mm": 3.4066303106340263,
   "status": "IK failed"
  },
  {
@@ -35,8 +36,9 @@
   "grasp_width_mm": 39.71779735617978,
   "jaw_close_mm": -5.041101321910112,
   "side": "left",
-  "ik_pos_err_max_mm": 35.83231360029134,
-  "ik_rot_err_max_deg": 60.77918101709688,
+  "ik_pos_err_max_mm": 58.87608497611443,
+  "ik_rot_err_max_deg": 21.019191481682554,
+  "body_clearance_plan_mm": 4.724788266528884,
   "status": "IK failed"
  },
  {
@@ -55,8 +57,9 @@
   "grasp_width_mm": 39.71779735617978,
   "jaw_close_mm": -5.041101321910112,
   "side": "left",
-  "ik_pos_err_max_mm": 35.83231360029134,
-  "ik_rot_err_max_deg": 60.77918101709688,
+  "ik_pos_err_max_mm": 58.87608497611443,
+  "ik_rot_err_max_deg": 21.019191481682554,
+  "body_clearance_plan_mm": 4.724788266528884,
   "status": "IK failed"
  },
  {
@@ -75,8 +78,9 @@
   "grasp_width_mm": 39.71779735617978,
   "jaw_close_mm": -5.041101321910112,
   "side": "left",
-  "ik_pos_err_max_mm": 35.83231360029134,
-  "ik_rot_err_max_deg": 60.77918101709688,
+  "ik_pos_err_max_mm": 58.87608497611443,
+  "ik_rot_err_max_deg": 21.019191481682554,
+  "body_clearance_plan_mm": 4.724788266528884,
   "status": "IK failed"
  },
  {
@@ -94,9 +98,10 @@
   "face_shift_mm": 3.0000000000000235,
   "grasp_width_mm": 39.830160321753546,
   "jaw_close_mm": -4.98491983912323,
-  "side": "right",
-  "ik_pos_err_max_mm": 42.35271887376262,
-  "ik_rot_err_max_deg": 25.24694884689156,
+  "side": "left",
+  "ik_pos_err_max_mm": 49.13930135055646,
+  "ik_rot_err_max_deg": 25.897591705058858,
+  "body_clearance_plan_mm": 3.4066303106340263,
   "status": "IK failed"
  }
 ]

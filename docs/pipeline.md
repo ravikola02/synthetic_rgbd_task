@@ -165,15 +165,21 @@ Perception output only (detected hole + fitted CAD), no ground truth for control
    $$\Delta\mathbf q = J^\top\left(JJ^\top + \lambda^2 I\right)^{-1}\mathbf e, \qquad \lambda = 0.02,$$
    - each step is clipped to 0.2 rad and to the joint limits;
    - up to 300 iterations;
-   - up to 4 attempts for the pre-grasp: from the current arm pose, then from 3 perturbed ones ($\mathcal N(0, 0.5)$ rad);
+   - up to 8 attempts: from the current arm pose, then from 7 perturbed ones ($\mathcal N(0, 0.5)$ rad);
    - both arms are tried, and the better one is used.
 
    Waypoints: pre-grasp 10 cm out along $-\mathbf a$, a straight-line approach in 10 steps, close, squeeze,
    a straight lift of 10 cm in 10 steps, then a 1 s hold. Nothing is executed if any waypoint misses by more
    than 5 mm ("IK failed").
+   - **Body collision check.** PyBullet runs without self-collision, so the planner checks it: along the whole
+     motion (the move to the pre-grasp at 20 joint-space steps, every approach and lift waypoint), the grasping
+     arm from the upper arm to the jaws must stay at least 10 mm from the rest of the robot (pelvis, legs,
+     torso, head, other arm), measured with `getClosestPoints` on the collision meshes. An attempt that fails
+     this is discarded and the next one tried; if no attempt of either arm is clear, nothing is executed
+     ("body collision"). The clearance during execution is logged too (`body_clearance_exec_mm`).
 4. **Execution** with physics at 240 Hz: position-controlled joints, jaws closing slowly at equal speed, and
    rubber-like pad friction. **Success** = the bracket is lifted more than 5 cm and touches both jaws after the
-   hold. Statuses: lifted / executed, not lifted / IK failed / no table-clear grasp / no fit.
+   hold. Statuses: lifted / executed, not lifted / IK failed / body collision / no table-clear grasp / no fit.
 
 ## 6. Experiment and statistics (`experiments/final_sweep.py`)
 

@@ -15,8 +15,9 @@
   "grasp_width_mm": 39.75013163469825,
   "jaw_close_mm": -5.024934182650878,
   "side": "left",
-  "ik_pos_err_max_mm": 55.04234637169307,
-  "ik_rot_err_max_deg": 24.555914952694973,
+  "ik_pos_err_max_mm": 52.94675519315467,
+  "ik_rot_err_max_deg": 29.63102581098617,
+  "body_clearance_plan_mm": 0.4386060234211481,
   "status": "IK failed"
  },
  {
@@ -37,6 +38,7 @@
   "side": "right",
   "ik_pos_err_max_mm": 0.09659221730582288,
   "ik_rot_err_max_deg": 0.057195920778315625,
+  "body_clearance_plan_mm": 39.44487150095347,
   "phase_log": [
    {
     "phase": "to pre-grasp",
@@ -285,6 +287,7 @@
     "bracket_moved_mm": 99.7
    }
   ],
+  "body_clearance_exec_mm": 39.520241318837364,
   "lift_mm": 99.62665197588102,
   "touches_both_jaws": true,
   "success": true,
@@ -308,6 +311,7 @@
   "side": "right",
   "ik_pos_err_max_mm": 0.09928188922236578,
   "ik_rot_err_max_deg": 0.05664597080017214,
+  "body_clearance_plan_mm": 40.282802807701756,
   "phase_log": [
    {
     "phase": "to pre-grasp",
@@ -556,6 +560,7 @@
     "bracket_moved_mm": 99.8
    }
   ],
+  "body_clearance_exec_mm": 40.372101532273646,
   "lift_mm": 99.70402090830716,
   "touches_both_jaws": true,
   "success": true,
@@ -579,6 +584,7 @@
   "side": "right",
   "ik_pos_err_max_mm": 0.09997093771440906,
   "ik_rot_err_max_deg": 0.05691914172273912,
+  "body_clearance_plan_mm": 40.10035352412326,
   "phase_log": [
    {
     "phase": "to pre-grasp",
@@ -827,6 +833,7 @@
     "bracket_moved_mm": 99.8
    }
   ],
+  "body_clearance_exec_mm": 40.20064695612979,
   "lift_mm": 99.75729356547464,
   "touches_both_jaws": true,
   "success": true,
@@ -850,6 +857,7 @@
   "side": "right",
   "ik_pos_err_max_mm": 0.09999897610032188,
   "ik_rot_err_max_deg": 0.05700459911202474,
+  "body_clearance_plan_mm": 39.57666984398945,
   "phase_log": [
    {
     "phase": "to pre-grasp",
@@ -1098,6 +1106,7 @@
     "bracket_moved_mm": 99.7
    }
   ],
+  "body_clearance_exec_mm": 39.67106974627878,
   "lift_mm": 99.66332006681,
   "touches_both_jaws": true,
   "success": true,

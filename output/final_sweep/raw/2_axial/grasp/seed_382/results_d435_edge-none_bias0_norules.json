@@ -17,6 +17,7 @@
   "side": "left",
   "ik_pos_err_max_mm": 0.0998530946833045,
   "ik_rot_err_max_deg": 0.05664994769487625,
+  "body_clearance_plan_mm": 40.28021766305643,
   "phase_log": [
    {
     "phase": "to pre-grasp",
@@ -265,6 +266,7 @@
     "bracket_moved_mm": 99.8
    }
   ],
+  "body_clearance_exec_mm": 40.32606130939161,
   "lift_mm": 99.74400964321126,
   "touches_both_jaws": true,
   "success": true,
@@ -288,6 +290,7 @@
   "side": "left",
   "ik_pos_err_max_mm": 0.09720309741320114,
   "ik_rot_err_max_deg": 0.05666630092049416,
+  "body_clearance_plan_mm": 38.08843768543109,
   "phase_log": [
    {
     "phase": "to pre-grasp",
@@ -536,6 +539,7 @@
     "bracket_moved_mm": 99.8
    }
   ],
+  "body_clearance_exec_mm": 38.181600688801296,
   "lift_mm": 99.76821465127499,
   "touches_both_jaws": true,
   "success": true,
@@ -559,6 +563,7 @@
   "side": "left",
   "ik_pos_err_max_mm": 0.0975034884350867,
   "ik_rot_err_max_deg": 0.05588819466688086,
+  "body_clearance_plan_mm": 38.973902074458316,
   "phase_log": [
    {
     "phase": "to pre-grasp",
@@ -807,6 +812,7 @@
     "bracket_moved_mm": 100.0
    }
   ],
+  "body_clearance_exec_mm": 39.08842113172292,
   "lift_mm": 99.92069144584906,
   "touches_both_jaws": true,
   "success": true,
@@ -827,9 +833,10 @@
   "face_shift_mm": 14.000000000000034,
   "grasp_width_mm": 39.7710173134798,
   "jaw_close_mm": -5.0144913432601,
-  "side": "right",
-  "ik_pos_err_max_mm": 61.206209714251386,
-  "ik_rot_err_max_deg": 33.92821158867662,
+  "side": "left",
+  "ik_pos_err_max_mm": 50.708185835472825,
+  "ik_rot_err_max_deg": 25.146436538682252,
+  "body_clearance_plan_mm": 4.284696203570371,
   "status": "IK failed"
  },
  {
@@ -848,8 +855,9 @@
   "grasp_width_mm": 39.719197183053446,
   "jaw_close_mm": -5.040401408473279,
   "side": "right",
-  "ik_pos_err_max_mm": 65.03639754468465,
-  "ik_rot_err_max_deg": 27.21368246296246,
+  "ik_pos_err_max_mm": 58.85005613703145,
+  "ik_rot_err_max_deg": 33.42890072254568,
+  "body_clearance_plan_mm": 3.897866155271306,
   "status": "IK failed"
  }
 ]

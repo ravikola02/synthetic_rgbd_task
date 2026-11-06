@@ -20,21 +20,23 @@ import numpy as np
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path[:0] = [HERE, os.path.join(HERE, "..")]
 from camera_model.d435 import sigma_ahn, sigma_intel  # noqa: E402
-from hole_detector import FACE_THRESH, MIN_HEIGHT, TABLE_THRESH, detect_holes  # noqa: E402
+from hole_detector import (DIAM_RANGE, FACE_THRESH, MAX_ELONGATION, MIN_HEIGHT, MIN_HOLE_PX,  # noqa: E402
+                           TABLE_THRESH, detect_holes)
 
 K_SIGMA = 2.5           # thresholds in units of the expected noise (2.5 sigma keeps ~99 % of a Gaussian)
 
 
-def thresholds(K, k_sigma=K_SIGMA, axial="intel"):
-    """Per-pixel thresholds (functions of the depth image) for detect_holes."""
+def thresholds(K, k_sigma=K_SIGMA, axial="intel", limits=None):
+    """Per-pixel thresholds (functions of the depth image) for detect_holes; limits: optional hole-shape
+    limits {"min_hole_px", "diam_range", "max_elongation"} (default: the baseline values)."""
     sigma = (lambda z: sigma_intel(z, K[0, 0])) if axial == "intel" else sigma_ahn
     return {"table": lambda d: np.maximum(TABLE_THRESH, k_sigma * sigma(d)),
             "face": lambda d: np.maximum(FACE_THRESH, k_sigma * sigma(d)),
-            "min_height": lambda d: np.maximum(MIN_HEIGHT, k_sigma * sigma(d))}
+            "min_height": lambda d: np.maximum(MIN_HEIGHT, k_sigma * sigma(d)), **(limits or {})}
 
 
-def detect_holes_tuned(depth, K, seed=0, k_sigma=K_SIGMA, axial="intel"):
-    return detect_holes(depth, K, seed=seed, thresholds=thresholds(np.asarray(K), k_sigma, axial))
+def detect_holes_tuned(depth, K, seed=0, k_sigma=K_SIGMA, axial="intel", limits=None):
+    return detect_holes(depth, K, seed=seed, thresholds=thresholds(np.asarray(K), k_sigma, axial, limits))
 
 
 # ------------------------------------------------------------------ command-line options (eval scripts)
@@ -44,11 +46,19 @@ def add_args(ap):
     ap.add_argument("--k-sigma", type=float, default=K_SIGMA, help="tuned detector: thresholds in units of sigma_z")
     ap.add_argument("--tune-axial", choices=["intel", "ahn"], default="intel",
                     help="tuned detector: noise model its thresholds assume")
+    ap.add_argument("--min-hole-px", type=int, default=MIN_HOLE_PX, help="tuned detector: smallest hole (pixels)")
+    ap.add_argument("--diam-range", type=float, nargs=2, default=list(DIAM_RANGE),
+                    help="tuned detector: accepted hole diameter, fractions of the true diameter")
+    ap.add_argument("--max-elongation", type=float, default=MAX_ELONGATION, help="tuned detector: roundness limit")
 
 
 def from_args(args):
     """(detect function(depth, K, seed), name suffix for outputs)."""
     if args.detector == "baseline":
         return detect_holes, ""
+    limits = {"min_hole_px": args.min_hole_px, "diam_range": tuple(args.diam_range),
+              "max_elongation": args.max_elongation}
     suffix = f"_tuned{args.k_sigma:g}" + ("" if args.tune_axial == "intel" else f"{args.tune_axial}")
-    return (lambda d, K, seed=0: detect_holes_tuned(d, K, seed, args.k_sigma, args.tune_axial)), suffix
+    if limits != {"min_hole_px": MIN_HOLE_PX, "diam_range": tuple(DIAM_RANGE), "max_elongation": MAX_ELONGATION}:
+        suffix += f"_px{args.min_hole_px}_d{args.diam_range[0]:g}-{args.diam_range[1]:g}_e{args.max_elongation:g}"
+    return (lambda d, K, seed=0: detect_holes_tuned(d, K, seed, args.k_sigma, args.tune_axial, limits)), suffix

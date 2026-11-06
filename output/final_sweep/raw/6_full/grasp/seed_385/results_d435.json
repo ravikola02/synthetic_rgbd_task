@@ -15,8 +15,9 @@
   "grasp_width_mm": 39.61279370689259,
   "jaw_close_mm": -5.093603146553705,
   "side": "right",
-  "ik_pos_err_max_mm": 65.79667184382559,
-  "ik_rot_err_max_deg": 20.757771781039605,
+  "ik_pos_err_max_mm": 72.80571022029795,
+  "ik_rot_err_max_deg": 29.304415118486855,
+  "body_clearance_plan_mm": 11.37804816050476,
   "status": "IK failed"
  },
  {
@@ -37,6 +38,7 @@
   "side": "left",
   "ik_pos_err_max_mm": 1.3556394070925126,
   "ik_rot_err_max_deg": 0.8059083533634384,
+  "body_clearance_plan_mm": 32.44031001377618,
   "phase_log": [
    {
     "phase": "to pre-grasp",
@@ -285,6 +287,7 @@
     "bracket_moved_mm": 101.1
    }
   ],
+  "body_clearance_exec_mm": 32.437611567719024,
   "lift_mm": 101.02060277633575,
   "touches_both_jaws": true,
   "success": true,
@@ -306,8 +309,9 @@
   "grasp_width_mm": 39.8215513404104,
   "jaw_close_mm": -4.9892243297948,
   "side": "right",
-  "ik_pos_err_max_mm": 57.888884940469424,
-  "ik_rot_err_max_deg": 21.435096812248652,
+  "ik_pos_err_max_mm": 61.24834338255155,
+  "ik_rot_err_max_deg": 25.760571402584794,
+  "body_clearance_plan_mm": 11.742390409595817,
   "status": "IK failed"
  },
  {
@@ -326,8 +330,9 @@
   "grasp_width_mm": 39.636399257284644,
   "jaw_close_mm": -5.081800371357675,
   "side": "right",
-  "ik_pos_err_max_mm": 56.29939728560756,
-  "ik_rot_err_max_deg": 19.39819843371937,
+  "ik_pos_err_max_mm": 59.42740599663064,
+  "ik_rot_err_max_deg": 22.517017519945146,
+  "body_clearance_plan_mm": 12.702080358211632,
   "status": "IK failed"
  },
  {
@@ -346,8 +351,9 @@
   "grasp_width_mm": 39.762277224533946,
   "jaw_close_mm": -5.018861387733029,
   "side": "right",
-  "ik_pos_err_max_mm": 60.74680131173845,
-  "ik_rot_err_max_deg": 22.09560124110954,
+  "ik_pos_err_max_mm": 60.262427628807146,
+  "ik_rot_err_max_deg": 24.76237609171306,
+  "body_clearance_plan_mm": 11.666067131291985,
   "status": "IK failed"
  }
 ]

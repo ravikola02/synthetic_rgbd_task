@@ -78,8 +78,10 @@ def per_pixel(value, depth):
 
 
 def detect_holes(depth, K, seed=0, thresholds=None):
-    """thresholds: optional {"min_height", "table", "face"} -> metres or function(depth image) -> metres."""
-    th = {"min_height": MIN_HEIGHT, "table": TABLE_THRESH, "face": FACE_THRESH, **(thresholds or {})}
+    """thresholds: optional {"min_height", "table", "face"} -> metres or function(depth image) -> metres,
+    and hole-shape limits {"min_hole_px", "diam_range", "max_elongation"} (defaults: the module constants)."""
+    th = {"min_height": MIN_HEIGHT, "table": TABLE_THRESH, "face": FACE_THRESH, "min_hole_px": MIN_HOLE_PX,
+          "diam_range": DIAM_RANGE, "max_elongation": MAX_ELONGATION, **(thresholds or {})}
     th_height, th_table, th_face = (per_pixel(th[k], depth) for k in ("min_height", "table", "face"))
     rng = np.random.default_rng(seed)
     R = rays(K, depth.shape)
@@ -115,7 +117,7 @@ def detect_holes(depth, K, seed=0, thresholds=None):
             gaps, ng = ndimage.label(ndimage.binary_fill_holes(face) & ~face)
             for g in range(1, ng + 1):
                 gm = gaps == g
-                if gm.sum() < MIN_HOLE_PX:
+                if gm.sum() < th["min_hole_px"]:
                     continue
                 r = R[gm]
                 t = -d_f / (r @ n_f)                     # ray-plane intersection
@@ -124,11 +126,11 @@ def detect_holes(depth, K, seed=0, thresholds=None):
                 # pixel footprint on the plane: z^2 cos(alpha) / (fx fy |n.rhat|)
                 area = np.sum(X[:, 2] ** 2 * rhat[:, 2] / (K[0, 0] * K[1, 1] * np.abs(rhat @ n_f)))
                 diam = np.sqrt(4 * area / np.pi)
-                if not (DIAM_RANGE[0] * HOLE_DIAMETER <= diam <= DIAM_RANGE[1] * HOLE_DIAMETER):
+                if not (th["diam_range"][0] * HOLE_DIAMETER <= diam <= th["diam_range"][1] * HOLE_DIAMETER):
                     continue
                 if len(X) >= 3:                          # roundness: principal spreads within the plane
                     ev = np.sort(np.linalg.eigvalsh(np.cov((X - X.mean(0)).T)))[1:]
-                    if np.sqrt(ev[1] / max(ev[0], 1e-12)) > MAX_ELONGATION:
+                    if np.sqrt(ev[1] / max(ev[0], 1e-12)) > th["max_elongation"]:
                         continue
                 holes.append({"center": X.mean(0), "axis": n_f, "diameter": diam, "n_px": int(gm.sum()),
                               "cos_up": float(n_f @ n_t), "cluster": c, "mask": gm})

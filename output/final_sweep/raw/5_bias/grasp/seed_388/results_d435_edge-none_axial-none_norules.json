@@ -17,6 +17,7 @@
   "side": "right",
   "ik_pos_err_max_mm": 35.467040288549526,
   "ik_rot_err_max_deg": 30.28816722676105,
+  "body_clearance_plan_mm": -31.839481653756053,
   "status": "IK failed"
  },
  {
@@ -37,6 +38,7 @@
   "side": "right",
   "ik_pos_err_max_mm": 35.467040288549526,
   "ik_rot_err_max_deg": 30.28816722676105,
+  "body_clearance_plan_mm": -31.839481653756053,
   "status": "IK failed"
  },
  {
@@ -57,6 +59,7 @@
   "side": "right",
   "ik_pos_err_max_mm": 38.82283632823736,
   "ik_rot_err_max_deg": 28.84048610444002,
+  "body_clearance_plan_mm": -29.518033349800664,
   "status": "IK failed"
  },
  {
@@ -77,6 +80,7 @@
   "side": "right",
   "ik_pos_err_max_mm": 38.82283632823736,
   "ik_rot_err_max_deg": 28.84048610444002,
+  "body_clearance_plan_mm": -29.518033349800664,
   "status": "IK failed"
  },
  {
@@ -97,6 +101,7 @@
   "side": "right",
   "ik_pos_err_max_mm": 35.467040288549526,
   "ik_rot_err_max_deg": 30.28816722676105,
+  "body_clearance_plan_mm": -31.839481653756053,
   "status": "IK failed"
  }
 ]

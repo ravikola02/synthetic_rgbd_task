@@ -1,11 +1,11 @@
 """Figures of the report -> report/figures/ (scene.png, detection.png, hole_plane.png, grasp.png).
 
-  python report/make_figures.py            # ~3 min: renders 4 grasp videos (PyBullet) for grasp.png
+  python report/make_figures.py            # ~1 min: renders the grasp video for tasks.png (grasp.png uses extracted_examples/ videos)
   python report/make_figures.py --no-video # scene / detection only (scene.png then needs an existing video)
 
 Uses the same cases and random numbers as experiments/extract_examples.py (draw r of seed s =
-np.random.default_rng((s, r, 0))). Grasp videos use grasp_hole.py --side-view, so the hand is not drawn over
-the robot's body.
+np.random.default_rng((s, r, 0))). grasp.png reuses example 06's close-view grasp videos from
+extracted_examples/ (made by experiments/extract_examples.py).
 """
 import argparse
 import glob
@@ -25,7 +25,8 @@ from frame_io import depth_to_vis, ideal_frame  # noqa: E402
 
 OUT = os.path.join(HERE, "figures")
 VID = os.path.join(OUT, "videos")
-GRASPS = [(233, 1, "0_ideal"), (233, 1, "5_bias"), (204, 2, "0_ideal"), (204, 2, "6_full")]
+GRASPS = [(204, 2, "0_ideal")]                          # tasks.png (side view)
+EXAMPLES = os.path.join(ROOT, "extracted_examples")     # grasp.png: example 06's close-view videos
 
 
 def video_name(seed, run, cond):
@@ -145,20 +146,46 @@ def fig_hole_plane(seed=8, run=22):
 
 
 def fig_grasp():
-    """Two grasp moments per case; columns: seed 233 ideal / bias, seed 204 ideal / full model."""
+    """Seed 204, ideal vs full D435 model (draw 2), close view from extracted_examples/ (example 06)."""
     import matplotlib.pyplot as plt
-    moments = ((0.62, "closing"), (0.99, "after lift"))
-    rows = [("ideal depth", [GRASPS[0], GRASPS[2]]), ("camera model", [GRASPS[1], GRASPS[3]])]
-    fig, axs = plt.subplots(2, 4, figsize=(14, 4.9))
-    for i, (rlab, jobs) in enumerate(rows):
-        for k, (seed, run, cond) in enumerate(jobs):
-            for m, (fr, mlab) in enumerate(moments):
-                ax = axs[i, 2 * k + m]
-                ax.imshow(frame(video_name(seed, run, cond), fr))
-                lab = {"0_ideal": "ideal", "5_bias": "depth bias +2 %"}.get(cond, LABELS[cond])
-                style(ax, f"seed {seed}, {lab}: {mlab}")
-    fig.tight_layout(w_pad=0.4, h_pad=1.6)
+    rows = (("04_ideal_grasp_seed204.mp4", "ideal depth: lifted"),
+            ("06_full_model_grasp_seed204_draw2.mp4", "full D435 model, draw 2: tipped over"))
+    moments = (0.45, 0.62, 0.80, 0.99)
+    fig, axs = plt.subplots(2, 4, figsize=(12, 4.6))
+    for i, (mp4, lab) in enumerate(rows):
+        for j, fr in enumerate(moments):
+            axs[i, j].imshow(frame(os.path.join(EXAMPLES, mp4), fr))
+            style(axs[i, j], lab if j == 0 else "")
+    fig.tight_layout(w_pad=0.4, h_pad=1.2)
     fig.savefig(os.path.join(OUT, "grasp.png"), dpi=170, bbox_inches="tight")
+    plt.close(fig)
+
+
+def fig_tasks(seed=204, run=2):
+    """The three stages on ideal depth: detected top hole, fitted CAD, grasp (uses the seed-204 ideal video)."""
+    import matplotlib.pyplot as plt
+    from bracket_fit import model_points, visible_model
+    c = case(seed, run, "0_ideal")
+    vs, us = np.nonzero(c["mask"])
+    box = crop_box(c, [(us.min(), vs.min()), (us.max(), vs.max())], pad=8)
+    c["det"]["all"] = [h for h in c["det"]["all"]                              # candidates on the bracket only
+                       if box[0] <= uv(c["K"], h["center"])[0] <= box[1] and box[2] <= uv(c["K"], h["center"])[1] <= box[3]]
+    u0, u1, v0, v1 = box
+    img = frame(video_name(seed, run, "0_ideal"), 0.62)
+    fig, axs = plt.subplots(1, 3, figsize=(8, 2.6), gridspec_kw={"width_ratios": [1, 1, 1.6]})
+    detection_panel(axs[0], c, box, "1  hole detection")
+    axs[1].imshow(depth_to_vis(c["depth"], c["K"]).mean(axis=2)[v0:v1, u0:u1], cmap="gray",
+                  extent=(u0, u1, v1, v0), vmin=0, vmax=255)
+    pts, nrm = model_points()
+    _, u, v = visible_model(c["fit"]["T_cam_obj"], pts, nrm, c["K"], c["depth"].shape)
+    axs[1].scatter(u + 0.5, v + 0.5, s=1.5, c="#1baf7a", lw=0)
+    axs[1].set_xlim(u0, u1)
+    axs[1].set_ylim(v1, v0)
+    style(axs[1], "2  pose fit (ICP)")
+    axs[2].imshow(img[110:, 120:-60])
+    style(axs[2], "3  grasp along the hole axis")
+    fig.tight_layout(w_pad=0.6)
+    fig.savefig(os.path.join(OUT, "tasks.png"), dpi=200, bbox_inches="tight")
     plt.close(fig)
 
 

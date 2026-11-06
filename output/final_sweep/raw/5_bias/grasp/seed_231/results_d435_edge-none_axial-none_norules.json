@@ -17,6 +17,7 @@
   "side": "right",
   "ik_pos_err_max_mm": 0.019301842082993584,
   "ik_rot_err_max_deg": 0.05284190772616741,
+  "body_clearance_plan_mm": 41.40381327570352,
   "phase_log": [
    {
     "phase": "to pre-grasp",
@@ -265,6 +266,7 @@
     "bracket_moved_mm": 100.0
    }
   ],
+  "body_clearance_exec_mm": 41.40052874154603,
   "lift_mm": 100.01413549105183,
   "touches_both_jaws": true,
   "success": true,
@@ -288,6 +290,7 @@
   "side": "right",
   "ik_pos_err_max_mm": 0.019301842082993584,
   "ik_rot_err_max_deg": 0.05284190772616741,
+  "body_clearance_plan_mm": 41.40381327570352,
   "phase_log": [
    {
     "phase": "to pre-grasp",
@@ -536,6 +539,7 @@
     "bracket_moved_mm": 100.0
    }
   ],
+  "body_clearance_exec_mm": 41.40052874154603,
   "lift_mm": 100.01413549105183,
   "touches_both_jaws": true,
   "success": true,
@@ -559,6 +563,7 @@
   "side": "left",
   "ik_pos_err_max_mm": 0.09861153465785173,
   "ik_rot_err_max_deg": 0.056117631519376404,
+  "body_clearance_plan_mm": 24.792256720621573,
   "phase_log": [
    {
     "phase": "to pre-grasp",
@@ -807,6 +812,7 @@
     "bracket_moved_mm": 100.0
    }
   ],
+  "body_clearance_exec_mm": 24.791428278027897,
   "lift_mm": 99.66992874023794,
   "touches_both_jaws": true,
   "success": true,
@@ -830,6 +836,7 @@
   "side": "right",
   "ik_pos_err_max_mm": 0.019301842082993584,
   "ik_rot_err_max_deg": 0.05284190772616741,
+  "body_clearance_plan_mm": 41.40381327570352,
   "phase_log": [
    {
     "phase": "to pre-grasp",
@@ -1078,6 +1085,7 @@
     "bracket_moved_mm": 100.0
    }
   ],
+  "body_clearance_exec_mm": 41.40052874154603,
   "lift_mm": 100.01413549105183,
   "touches_both_jaws": true,
   "success": true,
@@ -1101,6 +1109,7 @@
   "side": "right",
   "ik_pos_err_max_mm": 0.019301842082993584,
   "ik_rot_err_max_deg": 0.05284190772616741,
+  "body_clearance_plan_mm": 41.40381327570352,
   "phase_log": [
    {
     "phase": "to pre-grasp",
@@ -1349,6 +1358,7 @@
     "bracket_moved_mm": 100.0
    }
   ],
+  "body_clearance_exec_mm": 41.40052874154603,
   "lift_mm": 100.01413549105183,
   "touches_both_jaws": true,
   "success": true,

@@ -17,6 +17,7 @@
   "side": "left",
   "ik_pos_err_max_mm": 3.5392529294437067,
   "ik_rot_err_max_deg": 2.032374823369027,
+  "body_clearance_plan_mm": 41.40656784165394,
   "phase_log": [
    {
     "phase": "to pre-grasp",
@@ -265,6 +266,7 @@
     "bracket_moved_mm": 102.7
    }
   ],
+  "body_clearance_exec_mm": 41.40344440148222,
   "lift_mm": 102.58521022245274,
   "touches_both_jaws": true,
   "success": true,
@@ -288,6 +290,7 @@
   "side": "left",
   "ik_pos_err_max_mm": 2.5991453550358057,
   "ik_rot_err_max_deg": 1.635881390463603,
+  "body_clearance_plan_mm": 38.44320138191814,
   "phase_log": [
    {
     "phase": "to pre-grasp",
@@ -536,6 +539,7 @@
     "bracket_moved_mm": 101.8
    }
   ],
+  "body_clearance_exec_mm": 38.43970324265989,
   "lift_mm": 101.73409590156251,
   "touches_both_jaws": true,
   "success": true,
@@ -559,6 +563,7 @@
   "side": "left",
   "ik_pos_err_max_mm": 1.7002432050153646,
   "ik_rot_err_max_deg": 1.0231518767884151,
+  "body_clearance_plan_mm": 40.626672587584494,
   "phase_log": [
    {
     "phase": "to pre-grasp",
@@ -807,6 +812,7 @@
     "bracket_moved_mm": 101.3
    }
   ],
+  "body_clearance_exec_mm": 40.623398904287335,
   "lift_mm": 101.20582904959019,
   "touches_both_jaws": true,
   "success": true,
@@ -830,6 +836,7 @@
   "side": "left",
   "ik_pos_err_max_mm": 2.691099247793032,
   "ik_rot_err_max_deg": 1.6571188595256805,
+  "body_clearance_plan_mm": 38.98919505443451,
   "phase_log": [
    {
     "phase": "to pre-grasp",
@@ -1078,6 +1085,7 @@
     "bracket_moved_mm": 102.2
    }
   ],
+  "body_clearance_exec_mm": 38.986418707342665,
   "lift_mm": 102.10002672673703,
   "touches_both_jaws": true,
   "success": true,
@@ -1099,8 +1107,9 @@
   "grasp_width_mm": 39.71731253592363,
   "jaw_close_mm": -5.041343732038187,
   "side": "left",
-  "ik_pos_err_max_mm": 126.12076667298497,
-  "ik_rot_err_max_deg": 66.4289235701282,
+  "ik_pos_err_max_mm": 52.03493228405605,
+  "ik_rot_err_max_deg": 22.74442671686393,
+  "body_clearance_plan_mm": -9.739807093611482,
   "status": "IK failed"
  }
 ]

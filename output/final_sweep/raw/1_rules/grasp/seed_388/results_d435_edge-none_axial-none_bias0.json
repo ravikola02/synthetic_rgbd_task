@@ -15,8 +15,9 @@
   "grasp_width_mm": 39.75546697872728,
   "jaw_close_mm": -5.022266510636361,
   "side": "right",
-  "ik_pos_err_max_mm": 44.31943924561556,
-  "ik_rot_err_max_deg": 30.671993439382273,
+  "ik_pos_err_max_mm": 37.06342036456522,
+  "ik_rot_err_max_deg": 26.557303266118893,
+  "body_clearance_plan_mm": -28.735077394838935,
   "status": "IK failed"
  },
  {
@@ -35,8 +36,9 @@
   "grasp_width_mm": 39.75546697872728,
   "jaw_close_mm": -5.022266510636361,
   "side": "right",
-  "ik_pos_err_max_mm": 44.31943924561556,
-  "ik_rot_err_max_deg": 30.671993439382273,
+  "ik_pos_err_max_mm": 37.06342036456522,
+  "ik_rot_err_max_deg": 26.557303266118893,
+  "body_clearance_plan_mm": -28.735077394838935,
   "status": "IK failed"
  },
  {
@@ -55,8 +57,9 @@
   "grasp_width_mm": 39.75546697872728,
   "jaw_close_mm": -5.022266510636361,
   "side": "right",
-  "ik_pos_err_max_mm": 44.31943924561556,
-  "ik_rot_err_max_deg": 30.671993439382273,
+  "ik_pos_err_max_mm": 37.06342036456522,
+  "ik_rot_err_max_deg": 26.557303266118893,
+  "body_clearance_plan_mm": -28.735077394838935,
   "status": "IK failed"
  },
  {
@@ -75,8 +78,9 @@
   "grasp_width_mm": 39.75546697872728,
   "jaw_close_mm": -5.022266510636361,
   "side": "right",
-  "ik_pos_err_max_mm": 44.31943924561556,
-  "ik_rot_err_max_deg": 30.671993439382273,
+  "ik_pos_err_max_mm": 37.06342036456522,
+  "ik_rot_err_max_deg": 26.557303266118893,
+  "body_clearance_plan_mm": -28.735077394838935,
   "status": "IK failed"
  },
  {
@@ -95,8 +99,9 @@
   "grasp_width_mm": 39.75546697872728,
   "jaw_close_mm": -5.022266510636361,
   "side": "right",
-  "ik_pos_err_max_mm": 44.31943924561556,
-  "ik_rot_err_max_deg": 30.671993439382273,
+  "ik_pos_err_max_mm": 37.06342036456522,
+  "ik_rot_err_max_deg": 26.557303266118893,
+  "body_clearance_plan_mm": -28.735077394838935,
   "status": "IK failed"
  }
 ]

@@ -17,6 +17,7 @@
   "side": "right",
   "ik_pos_err_max_mm": 0.08117252864240079,
   "ik_rot_err_max_deg": 0.05664266564488925,
+  "body_clearance_plan_mm": 48.90150217022466,
   "phase_log": [
    {
     "phase": "to pre-grasp",
@@ -265,6 +266,7 @@
     "bracket_moved_mm": 100.3
    }
   ],
+  "body_clearance_exec_mm": 48.89753573353361,
   "lift_mm": 100.2571535887952,
   "touches_both_jaws": true,
   "success": true,
@@ -288,6 +290,7 @@
   "side": "right",
   "ik_pos_err_max_mm": 0.08132653725507676,
   "ik_rot_err_max_deg": 0.05691789495437003,
+  "body_clearance_plan_mm": 48.830827093948486,
   "phase_log": [
    {
     "phase": "to pre-grasp",
@@ -536,6 +539,7 @@
     "bracket_moved_mm": 100.3
    }
   ],
+  "body_clearance_exec_mm": 48.82831327067595,
   "lift_mm": 100.27316538819211,
   "touches_both_jaws": true,
   "success": true,
@@ -557,12 +561,13 @@
   "grasp_width_mm": 39.78276151667041,
   "jaw_close_mm": -5.008619241664794,
   "side": "left",
-  "ik_pos_err_max_mm": 0.024950356077108583,
-  "ik_rot_err_max_deg": 0.055381815034477096,
+  "ik_pos_err_max_mm": 0.02327887813283238,
+  "ik_rot_err_max_deg": 0.03449954643072091,
+  "body_clearance_plan_mm": 22.311554133734283,
   "phase_log": [
    {
     "phase": "to pre-grasp",
-    "tcp_err_mm": 0.0,
+    "tcp_err_mm": 0.1,
     "jaw_mm": [
      4.0,
      4.0
@@ -578,7 +583,7 @@
     "jaw_table_contacts": 0,
     "jaw_bracket_dist_mm": [
      84.3,
-     83.9
+     83.8
     ],
     "jaw_closest_on_bracket_cad_mm": [
      [
@@ -591,13 +596,13 @@
       -16.8,
       -7.4,
       1.0,
-      83.9
+      83.8
      ]
     ],
     "bracket_in_tcp_frame_mm": [
      96.5,
-     2.8,
-     10.8
+     2.9,
+     10.7
     ],
     "bracket_moved_mm": 0.0
    },
@@ -619,7 +624,7 @@
     "jaw_table_contacts": 0,
     "jaw_bracket_dist_mm": [
      7.7,
-     2.2
+     2.1
     ],
     "jaw_closest_on_bracket_cad_mm": [
      [
@@ -632,7 +637,7 @@
       -21.0,
       -8.3,
       -13.5,
-      2.2
+      2.1
      ]
     ],
     "bracket_in_tcp_frame_mm": [
@@ -647,56 +652,56 @@
     "tcp_err_mm": 0.1,
     "jaw_mm": [
      -3.0,
-     0.9
+     0.8
     ],
     "jaw_bracket_contacts": [
      1,
      4
     ],
     "jaw_bracket_force_N": [
-     6.23,
-     5.63
+     6.59,
+     6.0
     ],
     "jaw_table_contacts": 0,
     "jaw_bracket_dist_mm": [
      -0.1,
-     -0.2
+     -0.3
     ],
     "jaw_closest_on_bracket_cad_mm": [
      [
       21.0,
-      -13.2,
-      -14.4,
+      -11.1,
+      -14.5,
       -0.1
      ],
      [
       -21.0,
-      -8.4,
-      -13.7,
-      -0.2
+      -17.1,
+      -3.0,
+      -0.3
      ]
     ],
     "bracket_in_tcp_frame_mm": [
-     -3.4,
-     2.2,
+     -3.5,
+     2.1,
      10.8
     ],
-    "bracket_moved_mm": 0.8
+    "bracket_moved_mm": 0.9
    },
    {
     "phase": "squeeze",
-    "tcp_err_mm": 0.1,
+    "tcp_err_mm": 0.2,
     "jaw_mm": [
-     -4.8,
-     2.7
+     -4.7,
+     2.6
     ],
     "jaw_bracket_contacts": [
-     1,
+     2,
      4
     ],
     "jaw_bracket_force_N": [
-     4.71,
-     4.63
+     5.68,
+     5.27
     ],
     "jaw_table_contacts": 0,
     "jaw_bracket_dist_mm": [
@@ -706,38 +711,38 @@
     "jaw_closest_on_bracket_cad_mm": [
      [
       21.0,
-      -13.7,
-      -14.0,
+      -8.8,
+      -14.6,
       -0.0
      ],
      [
       -21.0,
-      -8.6,
-      -14.0,
+      -17.7,
+      -3.0,
       -0.3
      ]
     ],
     "bracket_in_tcp_frame_mm": [
-     -3.3,
+     -3.5,
      3.9,
-     11.0
+     10.8
     ],
-    "bracket_moved_mm": 1.0
+    "bracket_moved_mm": 0.9
    },
    {
     "phase": "lift",
-    "tcp_err_mm": 0.2,
+    "tcp_err_mm": 0.3,
     "jaw_mm": [
      -4.8,
      2.7
     ],
     "jaw_bracket_contacts": [
-     1,
+     2,
      4
     ],
     "jaw_bracket_force_N": [
-     4.39,
-     4.4
+     4.6,
+     4.63
     ],
     "jaw_table_contacts": 0,
     "jaw_bracket_dist_mm": [
@@ -747,23 +752,23 @@
     "jaw_closest_on_bracket_cad_mm": [
      [
       21.0,
-      -13.8,
-      -13.9,
+      -8.9,
+      -14.6,
       -0.0
      ],
      [
       -21.0,
-      -8.7,
-      -14.0,
+      -17.8,
+      -3.0,
       -0.2
      ]
     ],
     "bracket_in_tcp_frame_mm": [
-     -3.2,
+     -3.4,
      3.9,
-     11.1
+     11.0
     ],
-    "bracket_moved_mm": 99.8
+    "bracket_moved_mm": 99.9
    },
    {
     "phase": "hold",
@@ -773,12 +778,12 @@
      2.7
     ],
     "jaw_bracket_contacts": [
-     1,
+     2,
      4
     ],
     "jaw_bracket_force_N": [
-     4.44,
-     4.44
+     4.67,
+     4.67
     ],
     "jaw_table_contacts": 0,
     "jaw_bracket_dist_mm": [
@@ -788,26 +793,27 @@
     "jaw_closest_on_bracket_cad_mm": [
      [
       21.0,
-      -13.9,
-      -13.8,
+      -8.9,
+      -14.5,
       -0.1
      ],
      [
       -21.0,
-      -8.6,
-      -13.7,
+      -17.6,
+      -3.5,
       -0.2
      ]
     ],
     "bracket_in_tcp_frame_mm": [
-     -3.1,
+     -3.4,
      3.9,
-     11.2
+     11.1
     ],
-    "bracket_moved_mm": 100.0
+    "bracket_moved_mm": 100.1
    }
   ],
-  "lift_mm": 100.01371691042158,
+  "body_clearance_exec_mm": 22.30960030666458,
+  "lift_mm": 100.11565027765603,
   "touches_both_jaws": true,
   "success": true,
   "status": "lifted"
@@ -830,6 +836,7 @@
   "side": "right",
   "ik_pos_err_max_mm": 0.09656058363797372,
   "ik_rot_err_max_deg": 0.05641367603337313,
+  "body_clearance_plan_mm": 48.10973376672231,
   "phase_log": [
    {
     "phase": "to pre-grasp",
@@ -1078,6 +1085,7 @@
     "bracket_moved_mm": 100.2
    }
   ],
+  "body_clearance_exec_mm": 48.10436765633767,
   "lift_mm": 100.07526429376874,
   "touches_both_jaws": true,
   "success": true,
@@ -1101,6 +1109,7 @@
   "side": "right",
   "ik_pos_err_max_mm": 0.09994922638004543,
   "ik_rot_err_max_deg": 0.056870265687511905,
+  "body_clearance_plan_mm": 47.80949253524616,
   "phase_log": [
    {
     "phase": "to pre-grasp",
@@ -1349,6 +1358,7 @@
     "bracket_moved_mm": 100.1
    }
   ],
+  "body_clearance_exec_mm": 47.804354050697704,
   "lift_mm": 100.00615692873531,
   "touches_both_jaws": true,
   "success": true,

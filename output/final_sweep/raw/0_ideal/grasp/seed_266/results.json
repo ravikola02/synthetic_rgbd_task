@@ -17,6 +17,7 @@
   "side": "left",
   "ik_pos_err_max_mm": 3.0595084232908487,
   "ik_rot_err_max_deg": 2.0919779444407216,
+  "body_clearance_plan_mm": 52.38276702496878,
   "phase_log": [
    {
     "phase": "to pre-grasp",
@@ -265,6 +266,7 @@
     "bracket_moved_mm": 100.3
    }
   ],
+  "body_clearance_exec_mm": 52.37881393198124,
   "lift_mm": 100.17963111859137,
   "touches_both_jaws": true,
   "success": true,

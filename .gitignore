@@ -20,3 +20,5 @@ report/*.fls
 report/*.fdb_latexmk
 report/*.synctex.gz
 report/figures/videos/
+# HAMMER sample (camera_model/validate_hammer.py fetch; CC BY-NC-SA, not redistributed)
+data/hammer/
