@@ -22,19 +22,28 @@
 \section{Overview}
 A humanoid robot in a manufacturing cell picks an angle bracket from a table next to an aluminium profile,
 using its head depth camera. We take the Unitree G1 as the robot and its head camera, an Intel RealSense D435,
-as the reference sensor. The D435 is an active infrared stereo camera, documented in Intel's datasheet
+as the reference sensor. The D435 is an active infrared    stereo camera, documented in Intel's datasheet
 \cite{d435ds} and depth tuning guide \cite{bkm}, and its stereo failure modes are the ones small metal
-features are expected to provoke. The work centres on the camera's depth model; the downstream task is deliberately simple.
+features are expected to provoke. The work centres on the camera's depth model and it's effects on the downstream perception and robot tasks.
 
-We render labelled RGB-D frames of the cell in two simulators from one scene description, corrupt the ideal
-depth with an analytical D435 model built from published numbers, and run a depth-only pipeline on it: detect
+We render labelled RGB-D frames of the cell in simulation from scene description, corrupt the ideal
+depth with an analytical D435 model built from published numbers, and run a depth-only pipeline on it. The task is to detect
 the bracket's top hole in 6D, fit the bracket's CAD model, and grasp the bracket with the jaws approaching
-along the hole axis. On 30 held-out test scenes, all of which succeed with ideal depth, the full camera model
+along the hole axis (Fig.~\ref{fig:tasks}). On 30 held-out test scenes, all of which succeed with ideal depth, the full camera model
 lowers hole detection from 100\,\% to 54\,\%. The CAD fit still finds the bracket in 99\,\% of the cases, but
 displaced by about 11\,mm, and every grasp that is executed lifts the bracket; grasp success falls to
 69\,\%, close to the 77\,\% that the grasp planner reaches with noise-free depth rounded to the D435's 1\,mm
 unit. All code runs on a laptop.
 % TODO: repository link
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.85\linewidth]{tasks.png}
+\caption{The three stages on ideal depth (seed 432). Detection: hole candidates (orange), true openings
+(green rings) and the chosen top hole (red $\times$). Pose fit: the fitted CAD model's visible points. Grasp:
+the G1 picks the bracket; inset: the jaws approach along the detected hole axis (red arrow).}
+\label{fig:tasks}
+\end{figure}
 
 % =====================================================================================================
 \section{Synthetic data pipeline and downstream task}
@@ -45,14 +54,12 @@ G1's reach from an inverse-kinematics reachability map, which places the parts 0
 Each random seed defines a scene: both parts lie in stable resting poses sampled by their probability, and the
 arms are raised to the sides so that the head camera sees the table unobstructed (Fig.~\ref{fig:scene}).
 
-\paragraph{Rendering and labels.} A backend-independent scene description is rendered by PyBullet (CPU,
-about 2\,s per frame) and by Isaac Sim 5.1 (RTX). The two agree on the parts' depth to 0.00\,mm median, so the
-experiments use PyBullet, which reviewers can run on a laptop. Each frame holds an RGB image, ideal z-depth
+\paragraph{Rendering and labels.} Scenes are rendered by PyBullet (CPU, about 2\,s per frame), which runs on
+a laptop. Each frame holds an RGB image, ideal z-depth
 (848$\times$480, the D435's recommended depth resolution, $f = 447$\,px), an instance mask, and the camera
 intrinsics, camera pose and 6D part poses as ground truth. The camera model operates on saved frames and is
-therefore independent of the simulator. Building the pipeline exposed three rendering errors that would have
-biased the results: a half-pixel offset in PyBullet's image grid, Isaac ignoring a focal length given in
-stage units (rendering at 25$^\circ$ instead of 87$^\circ$ field of view), and the G1's waist sagging under soft
+therefore independent of the simulator. Building the pipeline exposed two rendering errors that would have
+biased the results: a half-pixel offset in PyBullet's image grid, and the G1's waist sagging under soft
 joint drives so that the head camera moved while rendering.
 
 \paragraph{Downstream robot task.} The robot has to pick the bracket by its top hole, the feature a screw or
@@ -78,14 +85,6 @@ within 10\,mm of the robot's own body anywhere along the motion, since PyBullet 
 self-collision. The plan is executed in PyBullet with physics. A grasp succeeds if the bracket rises above 50\,mm with both jaws in contact after a one-second
 hold.
 
-\begin{figure}[htbp]
-\centering
-\includegraphics[width=0.85\linewidth]{tasks.png}
-\caption{The three stages on ideal depth (seed 432). Detection: hole candidates (orange), true openings
-(green rings) and the chosen top hole (red $\times$). Pose fit: the fitted CAD model's visible points. Grasp:
-the jaws approach along the hole axis.}
-\label{fig:tasks}
-\end{figure}
 
 \paragraph{A stand-in for a learned model.} In a real cell this step would more likely be a learned pose
 estimator or an end-to-end robot policy. We considered a model-based network (FoundationPose), but it needs a
@@ -200,13 +199,8 @@ the planner finds no reachable arm motion, or only one through the robot's own b
 the bias). The camera conditions reach 69--79\,\% against 77\,\% for the rules control, so we see no clear
 effect of the camera model on the grasp beyond the planner's own sensitivity.
 
-\paragraph{Second renderer.} The sweep was repeated with Isaac Sim RTX depth for the same 30 scenes and
-noise draws. Ideal depth again succeeds in every stage. Hole detection reaches 63\,\% with axial noise (as with
-PyBullet), 97\,\% with edge fattening, 46\,\% with both, 98\,\% with the
-bias and 49\,\% with the full model; the pose is found in every draw and the bias shifts it by 10.7\,mm, as
-with PyBullet. The pattern and the sizes of the effects agree within a few percentage points, which suggests
-that they come from the camera model and not from the renderer. The grasp runs in PyBullet in both cases and is not an
-independent check.
+A repeat of the perception stages on Isaac Sim depth of the same scenes gave a similar pattern, within a few
+percentage points.
 
 \begin{table}[htbp]
 \centering
@@ -230,8 +224,10 @@ Every executed grasp lifted the bracket; the grasp failures are planning failure
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=0.85\linewidth]{all_stages.png}
-\caption{Success per stage and condition with 95\,\% exact intervals.}
+\includegraphics[width=0.8\linewidth]{stages.png}
+\caption{Success per stage for the main conditions, 30 test scenes $\times$ 5 draws, with 95\,\% exact
+intervals. The fit is shown with the strict 5\,mm criterion, which the 10\,mm bias shift fails; within 15\,mm
+the pose is found in 99--100\,\% of draws (Table~\ref{tab:results}).}
 \label{fig:results}
 \end{figure}
 
@@ -355,8 +351,7 @@ wrong page numbers, a citation attributed to the wrong camera (Keselman's values
 miscounted result. The main disagreement concerned edge fattening: the AI recommended modelling it with a
 swept width from the start and later ranked it first again. I declined, because no D435 value exists and an
 invented width would break traceability. In the end I tested it only with the one published number and marked
-it as needing calibration. The AI also recommended BlenderProc as the simulator; I chose Isaac Sim for its
-physics and robot integration and kept PyBullet so that the work runs on a laptop.
+it as needing calibration.
 
 % =====================================================================================================
 \begin{thebibliography}{9}

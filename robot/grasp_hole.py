@@ -27,7 +27,8 @@ Pipeline per scene (no ground truth used for control):
 
 --camera d435 puts the rendered depth through the D435 model (camera_model/: edge fattening, axial noise,
 depth bias, datasheet rules; ablation options there). --close-view records the video close to the bracket,
---side-view from the grasping arm's side (report figures).
+--side-view from the grasping arm's side, --iso-view isometric, --axis-view close-up
+with the hole axis drawn (report figures).
 Noise draw r of seed s uses the
 same random numbers as run r in perception/eval_*.py. The grasp scene is settled by physics (~1 mm
 different from the static evaluation frames), so the same draw need not give the same detection.
@@ -384,8 +385,25 @@ def run(seed, video_path=None, args=None, run_idx=0):
             target = np.array(p.getBasePositionAndOrientation(bracket)[0]) + [0.02, 0, 0.09]   # is beside the hand,
             d = np.array([0.15, 1.0 if side == "left" else -1.0, 0.35])                    # not behind it
             eye = target + 0.62 * d / np.linalg.norm(d)
+        if args is not None and getattr(args, "iso_view", False):    # isometric: whole robot and the table
+            target = np.array([0.2, 0.0, 0.0])
+            d = np.array([1.0, 0.75 if side == "left" else -0.75, 0.85])
+            eye = target + 1.6 * d / np.linalg.norm(d)
+        axis_px = None
+        if args is not None and getattr(args, "axis_view", False):   # close-up across the approach, hole axis drawn
+            side_dir = R[:, 2] if R[0, 2] >= 0 else -R[:, 2]             # from the side away from the robot,
+            target = tcp - 0.03 * approach                                # turned and raised: hole face and jaws
+            az, el = np.radians(getattr(args, "axis_az", 35.0)), np.radians(getattr(args, "axis_el", 30.0))
+            d = np.cos(el) * (np.cos(az) * side_dir + np.sin(az) * R[:, 1]) - np.sin(el) * approach
+            eye = target + 0.24 * d / np.linalg.norm(d)
         view = p.computeViewMatrix(eye.tolist(), target.tolist(), [0, 0, 1])
         proj = p.computeProjectionMatrixFOV(45, 640 / 480, 0.05, 5.0)
+        if args is not None and getattr(args, "axis_view", False):   # hole axis: from the opening outwards
+            M = np.array(proj).reshape(4, 4).T @ np.array(view).reshape(4, 4).T
+            def px(X):
+                c = M @ [*X, 1.0]
+                return int((c[0] / c[3] + 1) * 320), int((1 - c[1] / c[3]) * 240)
+            axis_px = (px(c_det + 0.01 * approach), px(c_det - 0.12 * approach))
     z0 = p.getBasePositionAndOrientation(bracket)[0][2]
     q_cmd = np.array([p.getJointState(robot, j)[0] for j in arm])
     step = 0
@@ -410,6 +428,8 @@ def run(seed, video_path=None, args=None, run_idx=0):
             if writer is not None and step % VIDEO_EVERY == 0:
                 img = np.reshape(p.getCameraImage(640, 480, view, proj, renderer=p.ER_TINY_RENDERER)[2], (480, 640, 4))
                 bgr = cv2.cvtColor(img[..., :3].astype(np.uint8), cv2.COLOR_RGB2BGR)
+                if axis_px is not None:
+                    cv2.arrowedLine(bgr, axis_px[1], axis_px[0], (40, 40, 214), 2, tipLength=0.08)
                 cv2.putText(bgr, f"seed {seed}  {camera} depth, draw {run_idx}, {detector}", (12, 440),
                             cv2.FONT_HERSHEY_SIMPLEX, 0.6, (20, 20, 20), 2)
                 cv2.putText(bgr, phase, (12, 466), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (20, 20, 20), 2)
@@ -450,6 +470,10 @@ def main():
     ap.add_argument("--seeds", type=int, nargs="*", default=DEV_SEEDS)
     ap.add_argument("--videos", type=int, default=2, help="record videos of the first N seeds")
     ap.add_argument("--close-view", action="store_true", help="video camera close to the bracket")
+    ap.add_argument("--axis-view", action="store_true", help="video camera: close-up across the approach, hole axis drawn")
+    ap.add_argument("--axis-az", type=float, default=35.0, help="--axis-view: camera turned about the approach (deg)")
+    ap.add_argument("--axis-el", type=float, default=30.0, help="--axis-view: camera raised against the approach (deg)")
+    ap.add_argument("--iso-view", action="store_true", help="video camera: isometric view of the robot and the table")
     ap.add_argument("--side-view", action="store_true", help="video camera beside the bracket, on the grasping arm's side "
                     "(the hand is not drawn over the robot's body; used for the report figures)")
     camera_model.add_args(ap)

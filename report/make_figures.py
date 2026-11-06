@@ -160,7 +160,7 @@ def fig_grasp():
 
 
 def fig_tasks(seed=432, run=0):
-    """The three stages on ideal depth: detected top hole, fitted CAD, grasp (uses the seed-204 ideal video)."""
+    """The three stages on ideal depth: detected top hole, fitted CAD, grasp (isometric video, rendered if missing)."""
     import matplotlib.pyplot as plt
     from bracket_fit import model_points, visible_model
     c = case(seed, run, "0_ideal")
@@ -169,8 +169,19 @@ def fig_tasks(seed=432, run=0):
     c["det"]["all"] = [h for h in c["det"]["all"]                              # candidates on the bracket only
                        if box[0] <= uv(c["K"], h["center"])[0] <= box[1] and box[2] <= uv(c["K"], h["center"])[1] <= box[3]]
     u0, u1, v0, v1 = box
-    img = frame(video_name(seed, run, "0_ideal"), 0.62)
-    fig, axs = plt.subplots(1, 3, figsize=(8, 2.6), gridspec_kw={"width_ratios": [1, 1, 1.6]})
+    vids = {}
+    for view in ("iso", "axis"):              # isometric: robot + table; axis: close-up, hole axis drawn
+        vids[view] = video_name(seed, run, "0_ideal").replace(".mp4", f"_{view}.mp4")
+        if not os.path.exists(vids[view]):
+            tmp = vids[view] + "_tmp"
+            subprocess.run([PY, "robot/grasp_hole.py", "--seeds", str(seed), "--run-ids", str(run), "--videos", "1",
+                            f"--{view}-view", "--out", tmp, *CONDITIONS["0_ideal"]], cwd=ROOT,
+                           stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            shutil.move(glob.glob(os.path.join(tmp, "*.mp4"))[0], vids[view])
+            shutil.rmtree(tmp, ignore_errors=True)
+    img = frame(vids["iso"], 0.62)
+    close = frame(vids["axis"], 0.42)[50:390, 120:500]
+    fig, axs = plt.subplots(1, 3, figsize=(8, 2.6), gridspec_kw={"width_ratios": [1, 1, 1.25]})
     detection_panel(axs[0], c, box, "1  hole detection")
     axs[1].imshow(depth_to_vis(c["depth"], c["K"]).mean(axis=2)[v0:v1, u0:u1], cmap="gray",
                   extent=(u0, u1, v1, v0), vmin=0, vmax=255)
@@ -180,10 +191,48 @@ def fig_tasks(seed=432, run=0):
     axs[1].set_xlim(u0, u1)
     axs[1].set_ylim(v1, v0)
     style(axs[1], "2  pose fit (ICP)")
-    axs[2].imshow(img[110:, 120:-60])
+    axs[2].imshow(img[15:, 90:570])
     style(axs[2], "3  grasp along the hole axis")
+    ins = axs[2].inset_axes([0.0, 0.0, 0.37, 0.46])                 # corner: approach along the hole axis
+    ins.imshow(close)
+    ins.set_xticks([])
+    ins.set_yticks([])
+    for sp in ins.spines.values():
+        sp.set_color("#8a8a85")
     fig.tight_layout(w_pad=0.6)
     fig.savefig(os.path.join(OUT, "tasks.png"), dpi=200, bbox_inches="tight")
+    plt.close(fig)
+
+
+def fig_stages(conds=("0_ideal", "2_axial", "4_edge_axial", "5_bias", "6_full")):
+    """Success per stage for the main conditions (from output/final_sweep/results/summary.csv), 95 % exact
+    intervals; same metrics and colours as the sweep's all_stages.png."""
+    import csv
+    import matplotlib.pyplot as plt
+    with open(os.path.join(ROOT, "output", "final_sweep", "results", "summary.csv")) as f:
+        summary = list(csv.DictReader(f))
+    metrics = [(("holes", "right_hole"), "#2a78d6", "hole detected (15 mm)"),
+               (("fit", "success"), "#eb6834", "fit success (5 mm, 10°)"),
+               (("grasp", "lifted"), "#1baf7a", "grasp lifted")]
+    x, w = np.arange(len(conds)), 0.8 / len(metrics)
+    fig, ax = plt.subplots(figsize=(7, 2.9))
+    for i, (m, col, name) in enumerate(metrics):
+        rr = {r["condition"]: r for r in summary if (r["stage"], r["metric"]) == m}
+        y = np.array([float(rr[c]["rate"]) * 100 for c in conds])
+        err = np.array([[y[j] - 100 * float(rr[c]["cp_lo"]), 100 * float(rr[c]["cp_hi"]) - y[j]]
+                        for j, c in enumerate(conds)]).T
+        pos = x + (i - 1) * w
+        ax.bar(pos, y, w * 0.92, color=col, label=name, zorder=2)
+        ax.errorbar(pos, y, yerr=err, fmt="none", ecolor="#2b2b2b", elinewidth=1, capsize=2.5, zorder=3)
+    ax.set_xticks(x, [LABELS[c] for c in conds])
+    ax.set_ylim(0, 105)
+    ax.set_ylabel("success (%)")
+    ax.grid(axis="y", color="#e4e3df", zorder=0)
+    for sp in ("top", "right"):
+        ax.spines[sp].set_visible(False)
+    ax.legend(frameon=False, fontsize=8, ncol=3, loc="upper center", bbox_to_anchor=(0.5, 1.16))
+    fig.tight_layout()
+    fig.savefig(os.path.join(OUT, "stages.png"), dpi=200, bbox_inches="tight")
     plt.close(fig)
 
 
@@ -201,6 +250,7 @@ def main():
     fig_scene()
     fig_detection()
     fig_hole_plane()
+    fig_stages()
     print(f"figures in {OUT}")
 
 

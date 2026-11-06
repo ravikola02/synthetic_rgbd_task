@@ -544,9 +544,7 @@ def accuracy(rows, seeds, res, pdir, plt, colors):
 
 def table_png(html, png):
     """Picture of results/table.html (headless Chrome screenshot, light theme, trimmed); skipped without Chrome."""
-    mac = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
-    chrome = (shutil.which("google-chrome") or shutil.which("chromium") or shutil.which("chromium-browser")
-              or (mac if os.path.exists(mac) else None))
+    chrome = shutil.which("google-chrome") or shutil.which("chromium") or shutil.which("chromium-browser")
     if not chrome:
         print("no Chrome/Chromium found: table.png skipped")
         return

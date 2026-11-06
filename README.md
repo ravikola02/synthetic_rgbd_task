@@ -14,7 +14,7 @@ in `extracted_examples/`. A check of the camera model against real D435 depth (H
 
 ## Setup
 
-Step-by-step reproduction on a laptop (Linux or macOS, PyBullet only), from re-analysing the published results to a
+Step-by-step reproduction on a Linux laptop (PyBullet only), from re-analysing the published results to a
 full rerun: [REPRODUCE.md](REPRODUCE.md).
 
 ```bash

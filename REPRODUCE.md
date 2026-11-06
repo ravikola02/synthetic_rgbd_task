@@ -1,6 +1,6 @@
 # Reproducing the results on a laptop
 
-Everything below runs on the CPU with **PyBullet**: Linux or macOS, no GPU. Isaac Sim (NVIDIA GPU, Linux) is
+Everything below runs on Linux, on the CPU with **PyBullet**, no GPU. Isaac Sim (NVIDIA GPU, Linux) is
 only an optional renderer cross-check and is not needed for any result.
 
 There are four levels. Pick the one that fits the time you have:
@@ -14,35 +14,12 @@ There are four levels. Pick the one that fits the time you have:
 
 ## Setup
 
-### Linux
-
 ```bash
 git clone https://github.com/ravikola02/synthetic_rgbd_task.git
 cd synthetic_rgbd_task
 conda env create -f environment.yml          # Python 3.11, CPU only
 conda activate synthetic_rgbd
 ```
-
-### macOS (Apple Silicon or Intel)
-
-Only the PyBullet path works on macOS (Isaac Sim has no macOS version). The pip package of PyBullet has no
-ready-made macOS build for every Python version and may compile from source, which needs Apple's command line
-tools. The simplest route is PyBullet from conda-forge, with the rest from pip:
-
-```bash
-xcode-select --install                       # command line tools (once; skip if already installed)
-# conda: Miniforge is recommended (https://github.com/conda-forge/miniforge)
-git clone https://github.com/ravikola02/synthetic_rgbd_task.git
-cd synthetic_rgbd_task
-conda create -n synthetic_rgbd -c conda-forge python=3.11 pybullet
-conda activate synthetic_rgbd
-pip install numpy==1.26.0 scipy==1.15.3 trimesh==4.5.1 shapely==2.2.0 mapbox_earcut==2.1.0 rtree==1.3.0 \
-            networkx==3.3 cascadio==0.1.1 pillow==11.3.0 opencv-python-headless==4.11.0.86 matplotlib==3.10.3
-```
-
-(These are the pip pins of `environment.yml` without PyBullet.) If you prefer `conda env create -f
-environment.yml` on macOS, it works as well once the command line tools are installed; PyBullet is then built
-from source, which takes several minutes. The macOS steps were not tested on a Mac by us; the Linux steps were.
 
 ### Check the install
 
@@ -55,7 +32,7 @@ The first run converts the part CAD (STEP) into meshes in `assets/meshes/` (a fe
 commands are run from the repo root.
 
 **Optional: Chrome / Chromium** is used only to make `plots/table.png` (a picture of the results table). It is
-found on the PATH (Linux) or at `/Applications/Google Chrome.app` (macOS); without it that one picture is
+found on the PATH (`google-chrome`, `chromium` or `chromium-browser`); without it that one picture is
 skipped and everything else runs.
 
 ## Level 1: re-analyse the published results (< 1 min)
