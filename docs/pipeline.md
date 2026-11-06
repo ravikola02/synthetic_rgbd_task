@@ -52,6 +52,9 @@ exact part and camera poses.
   $(c, r+1)$, while $K$ puts pixel centres at $+\tfrac12$. Without the shift every image was off by half a pixel,
   which the hole detector exposed as a systematic offset against CAD ground truth.
 - **Isaac Sim 5.1** (RTX) uses its `distance_to_image_plane` annotator, which is z-depth directly.
+  The G1 asset's joint drives are soft (stiffness 100), so the waist sagged under gravity and the torso-mounted
+  head camera moved while frames rendered (holes off by about 1 px and 1.2 mm in depth). The backend sets stiff
+  drives (kp 10⁶, kd 10⁴); the camera now drifts by 0.003 mm and its pose equals the PyBullet one.
 - **Ground truth** comes from the CAD and the exact poses. The bracket's hole *openings* are 2 holes × 2 faces
   (outer, and inner one leg thickness deeper), each with a centre and an outward normal in the CAD frame. They
   are transformed into the camera frame, $\mathbf c_{\text{cam}} = T_{cw}T_{wo}\,\mathbf c_{\text{obj}}$.
