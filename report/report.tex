@@ -3,12 +3,16 @@
 \documentclass[10pt,a4paper]{article}
 \usepackage[margin=2cm]{geometry}
 \usepackage{graphicx}
+\usepackage{float}
 \usepackage{booktabs}
 \usepackage[section]{placeins}   % figures stay inside their own section
 \usepackage{amsmath}
 \usepackage{enumitem}
 \usepackage[hidelinks]{hyperref}
 \setlist{nosep}
+% let figures share pages with text instead of collecting on float-only pages
+\renewcommand{\topfraction}{0.8}\renewcommand{\bottomfraction}{0.6}\renewcommand{\textfraction}{0.12}
+\renewcommand{\floatpagefraction}{0.85}\setcounter{topnumber}{3}\setcounter{totalnumber}{5}
 \graphicspath{{figures/}{../output/final_sweep/plots/}}
 
 \title{Synthetic RGB-D of a manufacturing cell with a RealSense D435 depth model}
@@ -208,6 +212,13 @@ pose count as correct within 15\,mm; the strict 3\,mm and 5\,mm criteria are rep
 
 \paragraph{Results.} Table~\ref{tab:results} and Fig.~\ref{fig:results} summarise the sweep; per stage:
 % TODO: verdict per hypothesis, if wanted as a list
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\linewidth]{stages.png}
+\caption{Success per stage with 95\,\% intervals; fit with the strict 5\,mm criterion.}
+\label{fig:results}
+\end{figure}
+
 \begin{itemize}[itemsep=6pt, topsep=6pt, leftmargin=1.2em]
   \item \emph{Hole detection} was affected by axial noise and edge fattening. Axial noise caused the largest
 single drop, to 63\,\%: it broke up the bracket's faces so that the real hole was no longer enclosed, and left
@@ -216,6 +227,23 @@ alone did not prevent detection but tilted the hole axis (0.67$^\circ$ to 1.06$^
 detection to 39\,\%, filling holes that noise alone left open (Fig.~\ref{fig:detection}). Our edge model is
 likely too strong (Section~\ref{sec:realism}), so this drop may be overstated. The bias and the rules left
 detection almost unchanged; the full model reached 54\,\%.
+\end{itemize}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\linewidth]{hole_plane.png}
+\caption{Depth points around the true top hole, ideal and with axial noise (black: the enclosed hole).}
+\label{fig:holeplane}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\linewidth]{detection.png}
+\caption{Hole detection on one noise draw. Green: true hole; red $\times$: the detector's pick.}
+\label{fig:detection}
+\end{figure}
+
+\begin{itemize}[itemsep=6pt, topsep=6pt, leftmargin=1.2em]
   \item \emph{CAD fit} was affected only by the depth bias, which shifted the whole pose by 10.7\,mm along the
 viewing ray (11\,mm under the full model). Noise and edge fattening did not stop it: by trying every
 candidate, the fit absorbed the detection errors and found the bracket in 99--100\,\% of draws.
@@ -252,27 +280,6 @@ full model & 54\,\% & 99\,\% (11.1\,mm off) & 69\,\% \\
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=0.8\linewidth]{stages.png}
-\caption{Success per stage with 95\,\% intervals; fit with the strict 5\,mm criterion.}
-\label{fig:results}
-\end{figure}
-
-\begin{figure}[htbp]
-\centering
-\includegraphics[width=0.8\linewidth]{hole_plane.png}
-\caption{Depth points around the true top hole, ideal and with axial noise (black: the enclosed hole).}
-\label{fig:holeplane}
-\end{figure}
-
-\begin{figure}[htbp]
-\centering
-\includegraphics[width=0.8\linewidth]{detection.png}
-\caption{Hole detection on one noise draw. Green: true hole; red $\times$: the detector's pick.}
-\label{fig:detection}
-\end{figure}
-
-\begin{figure}[htbp]
-\centering
 \includegraphics[width=\linewidth]{grasp.png}
 \caption{The same scene grasped with ideal depth (top) and the full camera model (bottom).}
 \label{fig:grasp}
@@ -290,6 +297,14 @@ pipeline, and a policy trained on that state may see less of the sim-to-real gap
 everything: a systematic error such as the depth bias passed through the fit as an 11\,mm offset, which our
 jaws absorbed but a tighter grasp might not, and which moved the target the arm has to reach. We did not train a policy; this is an argument from the contrast between the two stages, not a
 measured result.
+
+\paragraph{Mitigation.} Adapting a model to the camera model is the analogue of training it on the camera
+model's data. We tried this for the detector on the 15 development scenes (5 draws each), scaling its
+thresholds with the modelled noise to $\max(\text{baseline}, k\,\sigma_Z)$. With axial noise alone,
+detection rose from 48\,\% to 100\,\% ($k = 2.5$). With edge fattening added, the same scaling closed holes
+and lowered detection (36\,\% to 16\,\%); only separate thresholds, a narrow face band and a raised object
+height, improved it (to 53\,\%). Under the full model no setting beat the baseline, and no threshold can remove
+the bias offset. Tuned and scored on the same development scenes, these numbers are optimistic.
 
 % =====================================================================================================
 \section{How realistic is the camera model?}
@@ -323,7 +338,10 @@ it predicts real success rates.
 brittleness. Even the 1\,mm rounding alone failed 7 of the 30 scenes, the same scenes in every draw: it moved
 the estimated hole by under 1\,mm, which switched the planner to another arm or grasp depth whose motion
 collided with the robot's body or had no inverse-kinematics solution. The camera causes these failures, but how
-many of them occur depends on the planner; a planner that tries several candidates would separate the two.
+many of them occur depends on the planner; a planner that tries several candidates would separate the two. The scene selection may add to this: test scenes
+were kept only if the grasp succeeded with ideal depth, which can favour scenes where the planner only just
+finds a plan and fails at the smallest change. The experiment therefore has scope for improvement on the grasp
+side.
 
 \paragraph{What we could not validate.} Without a camera or the parts, several steps rest on assumptions:
 the camera model was compared with real D435 depth only on household scenes (Section~\ref{sec:realism}), not
