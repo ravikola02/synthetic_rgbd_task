@@ -171,6 +171,14 @@ invisible to detection but shifts the whole pose by 10.7\,mm along the viewing r
 66\,\%. The full model degrades every stage. Throughout, the CAD fit absorbs most perception errors, because it
 tries every candidate and keeps the one that matches the bracket.
 
+\paragraph{Second renderer.} The sweep was repeated with Isaac Sim RTX depth for the same 30 scenes and
+noise draws. Ideal depth again succeeds in every stage. Hole detection reaches 61\,\% with axial noise,
+97\,\% with edge fattening, 48\,\% with both ($p = 0.022$ against axial alone), 98\,\% with the bias and
+53\,\% with the full model; the pose is found in 99--100\,\% of draws and the bias shifts it by 10.7\,mm, as
+with PyBullet. The pattern and the sizes of the effects agree within a few percentage points, so they come
+from the camera model and not from the renderer. The grasp runs in PyBullet in both cases and is not an
+independent check.
+
 \begin{table}[t]
 \centering
 \begin{tabular}{lccc}
@@ -273,7 +281,8 @@ exist.
 % =====================================================================================================
 \section*{Use of AI tools}
 I used Claude Code throughout. It found, read and summarised the sources (datasheet, tuning guide, papers),
-looked up values and page references, wrote and ran the code under my decisions, and proofread the documents.
+looked up values and page references, and wrote and ran the code under my decisions. It drafted the report's
+prose from my notes and decisions; I revised and rewrote every section myself.
 I did not read the sources in full myself; instead I had claims checked against the source text, which found
 wrong page numbers, a citation attributed to the wrong camera (Keselman's values are for the R200) and a
 miscounted result. The main disagreement concerned edge fattening: the AI recommended modelling it with a
