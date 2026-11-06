@@ -130,7 +130,7 @@ camera.
     \qquad\Rightarrow\qquad
     \sigma_Z \approx \frac{Z^2}{fB}\,s ,
   \end{equation}
-  with Intel's subpixel accuracy $s = 0.08$\,px \cite{bkm}, giving $\sigma_Z = 0.9$\,mm at 0.5\,m.
+  with $s = 0.08$\,px, the subpixel error of Intel's D435 noise curve \cite{bkm}, giving $\sigma_Z = 0.9$\,mm at 0.5\,m.
   \item \emph{Depth bias} at the datasheet's accuracy limit of $\pm 2\,\%$: $Z' = (1+b)\,Z$ with
   $b = \pm 0.02$, the sign drawn with equal probability. Since back-projection is linear in $Z$, every 3D point
   moves along its own viewing ray; shapes and orientations are preserved and the part shifts by about 10\,mm.

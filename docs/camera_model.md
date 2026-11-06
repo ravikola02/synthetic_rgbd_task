@@ -10,31 +10,40 @@ a published number, plus the output rules from the datasheet, in the order they 
 | Step | Effect | Kind | Source of the number |
 |---|---|---|---|
 | 1 | Edge fattening | deterministic | Keselman et al. 2017 §4.2.3 (R200: gaps < 5 px merge) |
-| 2 | Axial noise | random (per pixel) | Intel BKM tuning guide §3e (subpixel RMS 0.08 px) |
-| 3 | Depth bias | random (sign per draw) | Datasheet Table 4-15 (Z-accuracy ±2 %) |
+| 2 | Axial noise | random (per pixel) | Intel BKM tuning guide §3e formula, p. 4 curve (subpixel RMS 0.08 px) |
+| 3 | Depth bias | random (sign per draw) | Datasheet Table 4-15 (Z-accuracy ±2 %); form and sign assumed |
 | 4 | Output rules: left invalid band, Min-Z, 1 mm unit | deterministic | Datasheet §4.5, Table 4-12; BKM §8a |
 
 ## 1. Camera geometry
 
 **Image and intrinsics.** The 848×480 depth stream (the datasheet's recommended resolution) with depth field of
-view $\mathrm{HFOV} = 87°$ gives the focal length in pixels:
+view $\mathrm{HFOV} = 87°$ (datasheet Table 3-49, D435, HD 16:9 modes; 848×480 is 16:9) gives the focal length
+in pixels:
 
 $$f = \frac{W}{2\tan(\mathrm{HFOV}/2)} = \frac{848}{2\tan 43.5°} \approx 447\ \text{px}, \qquad
 K = \begin{pmatrix} f & 0 & c_x \\ 0 & f & c_y \\ 0 & 0 & 1 \end{pmatrix},\quad (c_x, c_y) = (424, 240).$$
 
 **Depth is z-depth.** The D435 reports $Z$, the distance along the optical axis, not the range along the ray
-(datasheet §2.3). The renderers produce the same quantity. A pixel $(u, v)$ with depth $Z$ back-projects to
+(datasheet §2.3, p. 19: "a measurement from the parallel plane of the imagers and not the absolute range").
+The renderers produce the same quantity (our check, not a datasheet statement). A pixel $(u, v)$ with depth $Z$
+back-projects to (pixel centres at $+\tfrac12$: our convention)
 
 $$\mathbf{p} = Z\,\mathbf{r}(u, v), \qquad \mathbf{r}(u,v) = \left(\frac{u + \tfrac12 - c_x}{f},\ \frac{v + \tfrac12 - c_y}{f},\ 1\right)^\top .$$
 
 **Stereo.** The D435 matches the image of its left IR imager against the right one, with baseline
-$B = 50$ mm (datasheet Table 3-11). A point at depth $Z$ appears shifted between the two images by the disparity
+$B = 50$ mm (datasheet Table 3-49, D435; same as the D430 module in Table 3-11). A point at depth $Z$ appears shifted between the two images by the disparity
 
 $$d = \frac{f B}{Z}\ \ \text{[px]}, \qquad Z = \frac{f B}{d}.$$
 
 At the parts' distance (0.47–0.57 m) $d \approx 39$–$48$ px. Several effects are simplest in disparity, so
 the model converts $Z \to d$, applies them, and converts back (`to_disparity`, `to_depth`; $Z = 0$ marks
 invalid pixels and stays invalid).
+
+**Not modelled: depth origin and start point.** The datasheet places the depth origin at the x-y centre of the
+left imager, 17.5 mm from the centreline of the ¼-20 tripod hole (§4.8.1, Table 4-20, p. 91), and depth = 0
+at the front cover glass, $Z' = -4.2$ mm for the D435/D435i/D436 (−4.7 mm for the D435f/D435if; §4.8,
+Table 4-17, p. 89). The camera here sits at the URDF `d435_link`, and whether that frame is the left imager is
+not checked: a calibration offset, not noise, and it does not affect the pipeline's claims.
 
 ## 2. Edge fattening (`edge_fattening`, `edge="r200"`)
 
@@ -79,12 +88,21 @@ $$\frac{\partial Z}{\partial d} = -\frac{fB}{d^2} = -\frac{Z^2}{fB}
 
 This is Intel's formula (BKM §3e). The error grows with the **square** of the distance.
 
-**Number.** $s = 0.08$ px, the value of the BKM's D435 curve (Intel measures 0.07–0.11 px on good targets, up to
-0.32 px on a black shiny surface). With $f = 447$ px and $B = 0.05$ m:
+**A best case.** Intel calls this formula the "theoretical limit for the RMS depth error", which "in general you
+should see … on the well textured target" (BKM §3e). The model is therefore the noise of a good, textured plane,
+not of a typical surface.
+
+**Number.** $s = 0.08$ px, the value of the BKM's D435 curve (BKM p. 4). The BKM expects "Subpixel < 0.1 and
+even approaching 0.05" on a well-textured target (§3e). Intel's measured values (PP, on a **D415** at 0.58 m,
+same D4 processor): 0.085 px (projector off) and 0.1 px (projector 70 mW) on a textured background, 0.32 px on a
+black shiny notebook. With $f = 447$ px (HFOV 87°) and $B = 0.05$ m:
 
 | $Z$ | 0.40 m | 0.50 m | 0.55 m | 0.60 m | 1.0 m |
 |---|---|---|---|---|---|
 | $\sigma_Z$ (Intel) | 0.57 mm | 0.89 mm | 1.08 mm | 1.29 mm | 3.6 mm |
+
+The BKM's own D435 curve uses HFOV = 90° (f ≈ 424 px), so its σ is about 5 % above these values; we keep the
+datasheet's 87°.
 
 **Algorithm.** Applied where it arises, in disparity, independently per pixel:
 
@@ -94,20 +112,27 @@ Adding the noise to the disparity (not to the depth) keeps the stereo behaviour:
 in depth with the $\sigma_Z$ above, with the slight asymmetry of $1/d$ for larger errors.
 
 **Ablation `axial="ahn"`** (not in the final model). Ahn et al. 2019 (Eq. 2) fitted the axial noise of a real
-D435 at 848×480 as $\sigma_Z(Z) = 0.001063 + 0.0007278\,Z + 0.003949\,Z^2$ (m), applied directly in depth:
+D435 at 848×480 (Eq. 2, p. 710) as $\sigma_Z(Z) = 0.001063 + 0.0007278\,Z + 0.003949\,Z^2$ (m), applied directly in depth:
 2.41 mm at 0.5 m, about 2.7× Intel's value. The paper's angle term is left out (hand-set, not consistent with its
 own Fig. 9). On the development seeds this noise level made the baseline detector collapse (1/150 detected).
 
-**Limits.** Real D435 noise is spatially correlated (the BKM's "egg carton" pattern) with no published size;
+**Limits.** Real D435 noise is spatially correlated (the BKM's "egg carton" pattern, p. 4) with no published size;
 here it is independent per pixel.
 
 ## 4. Depth bias (`depth_bias`, `bias="random"`)
 
 **Number.** The datasheet gives the absolute depth accuracy only as a limit: $|\Delta Z| \le 2\,\%$ of the
-distance (Table 4-15; white wall, $\le 2$ m). It gives no model of the error's form.
+distance (Table 4-15, p. 85: $\le 2$ m, 80 % ROI, HD resolution; p. 86 note 4: texture-less white target,
+default laser power 150 mW; note 1: "typical conditions"). It gives no model of the error's form.
 
-**Model.** At the limit, as a scale error, with a random sign per noise draw (a unit's calibration error could
-be either way):
+**What the number means.** Intel's testing methodology (`docs/RealSense_DepthQualityTesting.pdf`, §1.3.1,
+Table 1-2-1) defines Z-accuracy on a flat target parallel to the camera as "Median(Image – GT)", averaged over
+N frames and given in % of the ground-truth distance. It is a systematic offset, not noise, which is why it
+enters as a bias.
+
+**Model (our assumptions).** The source gives one offset at one distance per test; it states neither how the
+error depends on $Z$ nor its sign. We take it at the limit, as a scale error, with a random sign per noise draw
+(a unit's calibration error could be either way):
 
 $$Z' = (1 + b)\,Z, \qquad b = \pm 0.02 \ \text{with probability } \tfrac12 \text{ each}.$$
 

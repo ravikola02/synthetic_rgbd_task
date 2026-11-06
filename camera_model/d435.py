@@ -20,20 +20,25 @@ with a published number, plus the datasheet output rules. Applied in the order t
    The D435 measures disparity d (px) between its two IR imagers: z = f*B/d. The matcher finds d to a
    fraction of a pixel; this subpixel error s (px RMS) propagates to depth as (BKM §3e)
        sigma_z = z^2 * s / (f * B)
-   s = 0.08 px (BKM's D435 curve; Intel measures 0.07-0.11 px on good targets, up to 0.32 px on a black
-   shiny surface). Applied where it arises: disparity + N(0, s) per pixel. Here (f = 447 px, B = 50 mm):
-   0.89 mm at 0.50 m, 1.08 mm at 0.55 m.
+   BKM calls this the "theoretical limit", seen on a well-textured target, so it is a best case.
+   s = 0.08 px (BKM p. 4: value of its D435 curve; BKM §3e: "Subpixel < 0.1 and even approaching 0.05" on a
+   well-textured target). Intel's measured values (PP, D415 at 0.58 m): 0.085-0.1 px on a textured
+   background, 0.32 px on a black shiny notebook. Applied where it arises: disparity + N(0, s) per pixel.
+   Here (f = 447 px from the datasheet's HFOV 87 deg; BKM's curve uses HFOV 90 deg, f = 424 px, i.e. ~5 %
+   higher sigma), B = 50 mm: 0.89 mm at 0.50 m, 1.08 mm at 0.55 m.
    axial="ahn": ablation, Ahn et al. 2019 Eq. 2 (docs/793350771-ANM.pdf), fitted on a real D435 at
    848x480: sigma_z = 0.001063 + 0.0007278 z + 0.003949 z^2 (m, angle term left out: hand-set and not
    consistent with the paper's Fig. 9). Applied in depth. 2.41 mm at 0.50 m (~2.7x Intel).
    Both Gaussian and independent per pixel. The real noise is spatially correlated ("egg carton",
-   BKM §3e) with no published size; not modelled.
+   BKM p. 4) with no published size; not modelled.
 
 3. DEPTH BIAS (random sign), bias="random"
    Datasheet Table 4-15 (p. 85) gives Z-accuracy (absolute error) only as a limit: +-2 % of distance
-   (white wall, <= 2 m). Modelled at the limit as a scale error along the viewing ray, depth * (1 + b),
-   with b = +2 % or -2 % at equal probability per noise draw (the sign of a unit's calibration error is
-   unknown). 10 mm at 0.5 m. bias=<float> fixes b (e.g. 0.02); bias=0 switches it off.
+   (<= 2 m, 80 % ROI, HD resolution; white texture-less target, 150 mW laser, p. 86 note 4; "typical
+   conditions"). Defined in the testing methodology (docs/RealSense_DepthQualityTesting.pdf §1.3.1) as the
+   median signed error over a plane, in % of the distance, i.e. a systematic offset. Own assumptions:
+   modelled at the limit as a scale error along the viewing ray, depth * (1 + b), with b = +2 % or -2 % at
+   equal probability per noise draw (the source gives neither the form nor the sign). 10 mm at 0.5 m. bias=<float> fixes b (e.g. 0.02); bias=0 switches it off.
    The sign is always drawn first, so draw r has the same sign and the same noise in every variant.
 
 4. DATASHEET RULES (deterministic), rules=True
@@ -50,8 +55,8 @@ Effects left out and why: AI_LOGS.md Q2 ("Final list of effects").
 """
 import numpy as np
 
-BASELINE_M = 0.050      # datasheet Table 3-11 (D430 module)
-SUBPIXEL_PX = 0.08      # BKM §3e: typical subpixel RMS (value used for its D435 curve)
+BASELINE_M = 0.050      # datasheet Table 3-49 (D435, D430 module; same in Table 3-11)
+SUBPIXEL_PX = 0.08      # BKM p. 4: subpixel RMS of its D435 noise curve (formula: BKM §3e)
 AHN_ABC = (0.001063, 0.0007278, 0.003949)   # Ahn et al. 2019 Eq. 2 (m, 1, 1/m)
 EDGE_GROW_PX = 2        # Keselman 2017 §4.2.3 (R200): gaps < 5 px merge -> 2 px growth from each side
 EDGE_STEP_PX = 0.5      # disparity step that counts as an edge; a plane seen at 75 deg changes by
