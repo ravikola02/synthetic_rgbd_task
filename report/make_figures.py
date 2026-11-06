@@ -1,10 +1,10 @@
-"""Figures of the report -> report/figures/ (scene.png, detection.png, hole_plane.png, grasp.png).
+"""Figures of the report -> report/figures/ (scene.png, tasks.png, detection.png, hole_plane.png, grasp.png).
 
   python report/make_figures.py            # ~1 min: renders the grasp video for tasks.png (grasp.png uses extracted_examples/ videos)
   python report/make_figures.py --no-video # scene / detection only (scene.png then needs an existing video)
 
 Uses the same cases and random numbers as experiments/extract_examples.py (draw r of seed s =
-np.random.default_rng((s, r, 0))). grasp.png reuses example 06's close-view grasp videos from
+np.random.default_rng((s, r, 0))). grasp.png reuses example 05's close-view grasp videos from
 extracted_examples/ (made by experiments/extract_examples.py).
 """
 import argparse
@@ -25,8 +25,8 @@ from frame_io import depth_to_vis, ideal_frame  # noqa: E402
 
 OUT = os.path.join(HERE, "figures")
 VID = os.path.join(OUT, "videos")
-GRASPS = [(204, 2, "0_ideal")]                          # tasks.png (side view)
-EXAMPLES = os.path.join(ROOT, "extracted_examples")     # grasp.png: example 06's close-view videos
+GRASPS = [(432, 0, "0_ideal")]                          # tasks.png (side view)
+EXAMPLES = os.path.join(ROOT, "extracted_examples")     # grasp.png: example 05's close-view videos
 
 
 def video_name(seed, run, cond):
@@ -72,7 +72,7 @@ def overview(seed, eye=(1.05, -0.75, 0.55), target=(0.25, 0.0, 0.05)):
     return img[..., :3]
 
 
-def fig_scene(seed=204, run=2):
+def fig_scene(seed=432, run=0):
     """Robot at the table, head-camera RGB, ideal depth and full-model depth around the parts."""
     import matplotlib.pyplot as plt
     f = ideal_frame("pybullet", seed)
@@ -146,10 +146,10 @@ def fig_hole_plane(seed=8, run=22):
 
 
 def fig_grasp():
-    """Seed 204, ideal vs full D435 model (draw 2), close view from extracted_examples/ (example 06)."""
+    """Seed 432, ideal vs full D435 model (draw 0), close view from extracted_examples/ (example 05)."""
     import matplotlib.pyplot as plt
-    rows = (("04_ideal_grasp_seed204.mp4", "ideal depth: lifted"),
-            ("06_full_model_grasp_seed204_draw2.mp4", "full D435 model, draw 2: tipped over"))
+    rows = (("05_ideal_grasp_seed432.mp4", "ideal depth: lifted"),
+            ("05_full_model_grasp_seed432_draw0.mp4", "full D435 model, draw 0: lifted, pose 10 mm off"))
     moments = (0.45, 0.62, 0.80, 0.99)
     fig, axs = plt.subplots(2, 4, figsize=(12, 4.6))
     for i, (mp4, lab) in enumerate(rows):
@@ -161,7 +161,7 @@ def fig_grasp():
     plt.close(fig)
 
 
-def fig_tasks(seed=204, run=2):
+def fig_tasks(seed=432, run=0):
     """The three stages on ideal depth: detected top hole, fitted CAD, grasp (uses the seed-204 ideal video)."""
     import matplotlib.pyplot as plt
     from bracket_fit import model_points, visible_model
@@ -199,6 +199,7 @@ def main():
         with ThreadPoolExecutor(len(GRASPS)) as ex:
             list(ex.map(render_video, GRASPS))
         fig_grasp()
+        fig_tasks()
     fig_scene()
     fig_detection()
     fig_hole_plane()

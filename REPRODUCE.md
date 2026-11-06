@@ -10,7 +10,7 @@ There are four levels. Pick the one that fits the time you have:
 | 1. Re-analyse the published results | tables and plots rebuilt from the per-draw results in the repo | < 1 min |
 | 2. One case | one seed / condition / noise draw end to end, same numbers as the sweep | ~1 min |
 | 3. Full rerun of the final experiment | all 7 conditions × 30 test seeds × 5 draws × 3 stages | ~1.5–3 h |
-| 4. Full rerun including seed selection | as 3, plus re-screening seeds 201–431 for the test set | +15–30 min |
+| 4. Full rerun including seed selection | as 3, plus re-screening seeds 201–557 for the test set | +20–40 min |
 
 ## Setup
 
@@ -48,7 +48,7 @@ from source, which takes several minutes. The macOS steps were not tested on a M
 
 ```bash
 python camera_model/d435.py                  # prints the D435 noise levels; no rendering
-python scene/render.py --seed 204 --out /tmp/frame   # renders one frame (rgb, depth, instance mask, meta)
+python scene/render.py --seed 432 --out /tmp/frame   # renders one frame (rgb, depth, instance mask, meta)
 ```
 
 The first run converts the part CAD (STEP) into meshes in `assets/meshes/` (a few seconds, once). All
@@ -74,15 +74,16 @@ Results: `output/final_sweep/results/table.md` (also `.csv`, `.html`), `summary.
 ## Level 2: one case (~1 min)
 
 ```bash
-python experiments/run_seed.py --seed 204 --condition 6_full --run 2          # headless
-python experiments/run_seed.py --seed 204 --condition 6_full --run 2 --gui    # watch the grasp (PyBullet GUI)
-python experiments/run_seed.py --seed 204 --condition 0_ideal --video         # grasp video (mp4)
+python experiments/run_seed.py --seed 432 --condition 6_full --run 0          # headless
+python experiments/run_seed.py --seed 432 --condition 6_full --run 0 --gui    # watch the grasp (PyBullet GUI)
+python experiments/run_seed.py --seed 432 --condition 0_ideal --video         # grasp video (mp4)
 ```
 
 Conditions: `0_ideal 1_rules 2_axial 3_edge 4_edge_axial 5_bias 6_full`. `--run` is the noise draw (0–4 in the
-sweep). This is example 06 of `extracted_examples/` (the full D435 model tips the bracket over). The printout
-should match the sweep's row for seed 204, draw 2: detector picks a false hole, fit ~11.6 mm off,
-"executed, not lifted". Outputs: `output/run_seed/`.
+sweep). This is example 05 of `extracted_examples/` (under the full D435 model the detector picks a false hole,
+the pose is 10 mm off, and the bracket is still lifted). The printout should match the sweep's row for seed 432,
+draw 0: "detector: wrong hole, position error 277.8 mm", "fit: pose found ..., t 10.2 mm", "grasp: lifted".
+Outputs: `output/run_seed/`.
 
 The example figures and videos can be rebuilt with `python experiments/extract_examples.py` (~5–10 min; add
 `--no-video` for figures only, ~2 min).
@@ -127,10 +128,20 @@ python experiments/final_sweep.py all        # screen seeds from 201 up, then ru
 ```
 
 Screening renders seeds from 201 upward and keeps the first 30 for which every ideal-depth stage succeeds (top
-hole visible, detector within 3 mm, fit success, grasp lifted). It should select the same 30 seeds as
-`TEST_SEEDS` in `scene/config.py` (seeds 201–431; screening details in `screening/screening.json`). On another
+hole visible, detector within 3 mm, fit success, grasp lifted with a collision-free arm motion). It should select the same 30 seeds as
+`TEST_SEEDS` in `scene/config.py` (seeds 201–557; screening details in `screening/screening.json`). On another
 platform an ideal grasp could flip for the reason above and change the list; in that case use Level 3, which
 fixes the published seeds.
+
+## Optional: camera model vs real D435 depth (HAMMER)
+
+```bash
+python camera_model/validate_hammer.py       # fetches a 45 MB sample once (data/hammer/), then analyses (~1 min)
+```
+
+Downloads 108 frames of the HAMMER dataset (real D435 depth + ground truth, CC BY-NC-SA 4.0) by HTTP range
+requests from its 170 GB archive, applies the model to the ground truth and compares noise, bias, invalid pixels
+and edge behaviour (`output/hammer/summary.md`, `hammer_vs_model.png`; report Section 5).
 
 ## Optional: Isaac Sim cross-check (Linux + NVIDIA GPU)
 

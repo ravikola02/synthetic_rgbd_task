@@ -44,7 +44,7 @@ with a published number, plus the datasheet output rules. Applied in the order t
    c. quantisation (BKM §8a): 16-bit depth in 1 mm units -> round to 1 mm.
    Tested: no significant effect on the downstream task here; kept so the frames are D435-like.
 
-Effects left out and why: AI_NOTES.md Q2 ("Final list of effects").
+Effects left out and why: AI_LOGS.md Q2 ("Final list of effects").
 
     python camera_model/d435.py     # noise levels and what each step does to a test frame
 """

@@ -209,6 +209,6 @@ Perception output only (detected hole + fitted CAD), no ground truth for control
 
 ```bash
 python experiments/final_sweep.py all        # select seeds, run, analyse; live web view
-python experiments/run_seed.py --seed 204 --condition 6_full --run 2 --gui
+python experiments/run_seed.py --seed 432 --condition 6_full --run 0 --gui
 python experiments/extract_examples.py       # extracted_examples/
 ```

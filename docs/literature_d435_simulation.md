@@ -114,7 +114,7 @@ Isaac's built-in `SingleViewDepthSensor` set to D435 values is a free extra base
 
 Read Ahn et al. first for D435 coefficients, then Zhang et al. for the physics-based route, then HAMMER for validation data.
 
-1. Ahn et al., Analysis and Noise Modeling of the Intel RealSense D435 for Mobile Robots, UR 2019: full text (docs/793350771-ANM.pdf) read by the AI agent on 2026-11-04. Axial Eq. 2 used as the ablation (θ = 0); the angle term is hand-set and the lateral values (41–43 mm) describe edge scatter, see AI_NOTES.md Q2.
+1. Ahn et al., Analysis and Noise Modeling of the Intel RealSense D435 for Mobile Robots, UR 2019: full text (docs/793350771-ANM.pdf) read by the AI agent on 2026-11-04. Axial Eq. 2 used as the ablation (θ = 0); the angle term is hand-set and the lateral values (41–43 mm) describe edge scatter, see AI_LOGS.md Q2.
 2. [Zhang et al., T-RO 2023](https://angli66.github.io/active-sensor-sim): how materials and IR noise are parameterised; try the SAPIEN `StereoDepthSensor` notebook.
 3. [HAMMER](https://www.github.com/Junggy/HAMMER-dataset): D435 error statistics on reflective vs diffuse objects.
 4. [Isaac Sim 5.1 depth sensors](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/sensors/isaacsim_sensors_camera_depth.html): units and meaning of `noiseMean`, `noiseSigma`, `confidenceThreshold`.

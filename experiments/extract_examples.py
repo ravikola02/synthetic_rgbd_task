@@ -235,7 +235,7 @@ def video(seed, run, cond, name):
     shutil.rmtree(d, ignore_errors=True)
     moved = max([p["bracket_moved_mm"] for p in row.get("phase_log", [])] or [0])
     print(f"video {name}: {row.get('status', 'no fit')}, lift {row.get('lift_mm', float('nan')):.0f} mm, "
-          f"bracket pushed {moved:.0f} mm" + ("" if mp4 else " (no video: grasp not executed)"))
+          f"bracket moved {moved:.0f} mm" + ("" if mp4 else " (no video: grasp not executed)"))
     return row
 
 
@@ -256,9 +256,21 @@ def strip(videos, name, title):
             style(axs[i, j], lab if j == 0 else "")
         cap.release()
     fig.suptitle(title, x=0.01, ha="left", fontsize=12, color=INK)
-    fig.tight_layout(rect=(0, 0, 1, 0.94))
+    fig.tight_layout(rect=(0, 0, 1, 0.94), h_pad=2.0)
     fig.savefig(os.path.join(OUT, name), dpi=130)
     plt.close(fig)
+
+
+# executed grasps: (seed, draw, condition, video name, strip label); ideal videos are made next to each case
+GRASPS = {
+    "01": (243, 2, "2_axial", "axial noise: lifted"),
+    "02": (299, 0, "4_edge_axial", "edge + axial: lifted"),
+    "03": (351, 0, "3_edge", "edge fattening: lifted"),
+    "04": (245, 0, "5_bias", "depth bias +2 %: lifted"),
+    "05": (432, 0, "6_full", "full model: lifted"),
+}
+VIDEO_NAMES = {"2_axial": "axial_noise", "4_edge_axial": "edge_axial", "3_edge": "edge_fattening",
+               "5_bias": "depth_bias", "6_full": "full_model"}
 
 
 def main():
@@ -267,48 +279,50 @@ def main():
     ap.add_argument("--no-video", action="store_true")
     a = ap.parse_args()
     os.makedirs(OUT, exist_ok=True)
-    # perception failures
-    fig_detect_fit([case(204, 1, "0_ideal"), case(204, 1, "2_axial")], "01_axial_noise_no_hole.png",
-                   "Seed 204, draw 1: axial noise - no hole candidate at all, so the CAD fit cannot start",
-                   "The noise breaks up the bracket's faces, so the hole is no longer a gap enclosed by a face. The fit "
-                   "starts from hole candidates, so the pipeline stops here: no pose, no grasp.")
+    # perception: what the camera effects do to the detector and the fit
+    fig_detect_fit([case(243, 2, "0_ideal"), case(243, 2, "2_axial")], "01_axial_noise_false_holes.png",
+                   "Seed 243, draw 2: axial noise - 11 false holes, the detector picks one 177 mm away",
+                   "The noise breaks up the faces and leaves enclosed gaps that pass as holes, mostly on the profile. "
+                   "The CAD fit tries every candidate and still finds the bracket (1.1 mm off), and the grasp lifts it "
+                   "(video 01).")
     fig_detect_fit([case(299, 0, "0_ideal"), case(299, 0, "2_axial"), case(299, 0, "4_edge_axial")],
                    "02_edge_fattening_amplifies_noise.png",
                    "Seed 299, draw 0: same noise draw - axial alone finds the hole, edge + axial does not",
-                   "Edge fattening fills the hole with foreground depth, so with noise the real hole loses to a false one.")
-    fig_edge(380, "03_edge_fattening_fills_hole.png")
-    # grasp failures (ideal and the rules-only control both lift these seeds)
-    fig_detect_fit([case(204, 0, "0_ideal"), case(204, 0, "3_edge")], "04_edge_fattening_grasp_fails.png",
-                   "Seed 204: edge fattening alone - perception barely changes, yet the grasp pushes the bracket away",
-                   "Hole and pose are still found (fit 0.4 mm); the small change moves the grasp point and the jaws "
-                   "shove the part 39 mm instead of lifting it (video 04, every draw: edge fattening has no randomness).")
-    fig_bias(233, 1, "05_depth_bias_shift.png")
-    fig_detect_fit([case(204, 2, "0_ideal"), case(204, 2, "6_full")], "06_full_model_grasp_fails.png",
-                   "Seed 204, draw 2: full D435 model - false hole picked, pose ~12 mm off, the grasp tips the bracket over",
-                   "Every stage degrades: the detector picks a false hole on the profile, the fit recovers the bracket "
-                   "but shifted by the depth bias, and the jaws close off-centre and push the part 25 mm (video 06). "
-                   "Same scene as example 04.")
-    fig_detect_fit([case(431, 3, "0_ideal"), case(431, 3, "6_full")], "07_full_model_wrong_pose.png",
+                   "Edge fattening fills the hole with foreground depth, so with noise the real hole loses to a false one "
+                   "163 mm away. The fit still recovers the bracket and the grasp lifts it (video 02).")
+    fig_edge(351, "03_edge_fattening_fills_hole.png")
+    # pose shift: the bias moves the whole part along the viewing ray
+    fig_bias(245, 0, "04_depth_bias_shift.png")
+    fig_detect_fit([case(432, 0, "0_ideal"), case(432, 0, "6_full")], "05_full_model_false_hole_still_lifted.png",
+                   "Seed 432, draw 0: full D435 model - false hole 278 mm away, pose 10 mm off, the bracket is still lifted",
+                   "The detector picks a false hole on the profile, the fit recovers the bracket but shifted by the depth "
+                   "bias, and the jaws still close on it and lift it (video 05).")
+    # where the pipeline stops
+    fig_detect_fit([case(431, 3, "0_ideal"), case(431, 3, "6_full")], "06_full_model_wrong_pose.png",
                    "Seed 431, draw 3: full D435 model - the CAD fit locks onto a false hole: pose 253 mm / 43° off",
                    "Every hole candidate is false, and the best-scoring CAD match is on the wrong part. The grasp "
                    "planner then finds no reachable grasp (IK failed): the robot does not move.")
+    fig_detect_fit([case(511, 0, "0_ideal"), case(511, 0, "5_bias")], "07_depth_bias_body_collision.png",
+                   "Seed 511: depth bias - the shifted grasp needs an arm motion through the robot's body",
+                   "Hole and shape are right, the pose is 10.3 mm off along the viewing ray. Every arm motion that reaches "
+                   "the shifted grasp would pass the arm 4.5 mm into the torso, so the planner rejects it "
+                   "(body collision, all 5 draws): the robot does not move.")
     fig_detect_fit([case(246, 0, "0_ideal"), case(246, 0, "1_rules")], "08_control_rules_planner_sensitivity.png",
                    "Control, seed 246: datasheet rules alone leave perception unchanged, yet the grasp planner fails (IK)",
-                   "Same hole, same pose (0.2 vs 0.3 mm): the grasp search lands on a candidate the arm cannot reach "
+                   "Same hole, same pose (0.23 vs 0.25 mm): the grasp search lands on a candidate the arm cannot reach "
                    "(all 5 draws). Part of every grasp drop vs ideal is this planner sensitivity.")
     if a.no_video:
         return
-    jobs = [(204, 0, "0_ideal", "04_ideal_grasp_seed204.mp4"), (204, 0, "3_edge", "04_edge_fattening_grasp_seed204.mp4"),
-            (233, 1, "0_ideal", "05_ideal_grasp_seed233.mp4"), (233, 1, "5_bias", "05_depth_bias_grasp_seed233_draw1.mp4"),
-            (204, 2, "6_full", "06_full_model_grasp_seed204_draw2.mp4")]
+    jobs = []
+    for k, (seed, run, cond, _) in GRASPS.items():
+        jobs += [(seed, run, "0_ideal", f"{k}_ideal_grasp_seed{seed}.mp4"),
+                 (seed, run, cond, f"{k}_{VIDEO_NAMES[cond]}_grasp_seed{seed}_draw{run}.mp4")]
     with ThreadPoolExecutor(len(jobs)) as ex:
         list(ex.map(lambda j: video(*j), jobs))
-    strip([("04_ideal_grasp_seed204.mp4", "ideal: lifted"), ("04_edge_fattening_grasp_seed204.mp4", "edge fattening: pushed")],
-          "04_edge_fattening_grasp_frames.png", "Seed 204 grasp: ideal depth (top) vs edge fattening alone (bottom)")
-    strip([("05_ideal_grasp_seed233.mp4", "ideal: lifted"), ("05_depth_bias_grasp_seed233_draw1.mp4", "bias: knocked over")],
-          "05_depth_bias_grasp_frames.png", "Seed 233 grasp: ideal depth (top) vs depth bias, draw 1 (bottom)")
-    strip([("04_ideal_grasp_seed204.mp4", "ideal: lifted"), ("06_full_model_grasp_seed204_draw2.mp4", "full model: tipped over")],
-          "06_full_model_grasp_frames.png", "Seed 204 grasp: ideal depth (top) vs full D435 model, draw 2 (bottom)")
+    for k, (seed, run, cond, lab) in GRASPS.items():
+        strip([(f"{k}_ideal_grasp_seed{seed}.mp4", "ideal: lifted"),
+               (f"{k}_{VIDEO_NAMES[cond]}_grasp_seed{seed}_draw{run}.mp4", lab)],
+              f"{k}_grasp_frames.png", f"Seed {seed} grasp: ideal depth (top) vs {LABELS[cond]}, draw {run} (bottom)")
     print(f"examples in {OUT}")
 
 

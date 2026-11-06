@@ -24,14 +24,16 @@ A humanoid robot in a manufacturing cell picks an angle bracket from a table nex
 using its head depth camera. We take the Unitree G1 as the robot and its head camera, an Intel RealSense D435,
 as the reference sensor. The D435 is an active infrared stereo camera, documented in Intel's datasheet
 \cite{d435ds} and depth tuning guide \cite{bkm}, and its stereo failure modes are the ones small metal
-features provoke. The work centres on the camera's depth model; the downstream task is deliberately simple.
+features are expected to provoke. The work centres on the camera's depth model; the downstream task is deliberately simple.
 
 We render labelled RGB-D frames of the cell in two simulators from one scene description, corrupt the ideal
 depth with an analytical D435 model built from published numbers, and run a depth-only pipeline on it: detect
 the bracket's top hole in 6D, fit the bracket's CAD model, and grasp the bracket with the jaws approaching
 along the hole axis. On 30 held-out test scenes, all of which succeed with ideal depth, the full camera model
-lowers hole detection from 100\,\% to 54\,\% and grasp success from 100\,\% to 57\,\%. The CAD fit still
-finds the bracket in 99\,\% of the cases, but displaced by about 11\,mm. All code runs on a laptop.
+lowers hole detection from 100\,\% to 54\,\%. The CAD fit still finds the bracket in 99\,\% of the cases, but
+displaced by about 11\,mm, and every grasp that is executed lifts the bracket; grasp success falls to
+69\,\%, close to the 77\,\% that the grasp planner reaches with noise-free depth rounded to the D435's 1\,mm
+unit. All code runs on a laptop.
 % TODO: repository link
 
 % =====================================================================================================
@@ -49,7 +51,7 @@ experiments use PyBullet, which reviewers can run on a laptop. Each frame holds 
 (848$\times$480, the D435's recommended depth resolution, $f = 447$\,px), an instance mask, and the camera
 intrinsics, camera pose and 6D part poses as ground truth. The camera model operates on saved frames and is
 therefore independent of the simulator. Building the pipeline exposed three rendering errors that would have
-biased every result: a half-pixel offset in PyBullet's image grid, Isaac ignoring a focal length given in
+biased the results: a half-pixel offset in PyBullet's image grid, Isaac ignoring a focal length given in
 stage units (rendering at 25$^\circ$ instead of 87$^\circ$ field of view), and the G1's waist sagging under soft
 joint drives so that the head camera moved while rendering.
 
@@ -71,14 +73,15 @@ the best match is kept.
 
 \paragraph{Grasping.} The Dex1 parallel jaws approach along the hole axis, close across the bracket's 40\,mm
 width at an antipodal grasp point on the fitted CAD, and lift the part by 10\,cm. Inverse kinematics plans a
-pre-grasp, a straight approach, the closing and the lift for either arm, and the plan is executed in PyBullet
-with physics. A grasp succeeds if the bracket rises above 50\,mm with both jaws in contact after a one-second
+pre-grasp, a straight approach, the closing and the lift for either arm; a plan is rejected if the arm comes
+within 10\,mm of the robot's own body anywhere along the motion, since PyBullet does not simulate
+self-collision. The plan is executed in PyBullet with physics. A grasp succeeds if the bracket rises above 50\,mm with both jaws in contact after a one-second
 hold.
 
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.85\linewidth]{tasks.png}
-\caption{The three stages on ideal depth (seed 204). Detection: hole candidates (orange), true openings
+\caption{The three stages on ideal depth (seed 432). Detection: hole candidates (orange), true openings
 (green rings) and the chosen top hole (red $\times$). Pose fit: the fitted CAD model's visible points. Grasp:
 the jaws approach along the hole axis.}
 \label{fig:tasks}
@@ -89,17 +92,17 @@ estimator or an end-to-end robot policy. We considered a model-based network (Fo
 GPU stack and pretrained weights, against the requirement that everything run on a laptop. The geometric
 pipeline is a deliberate surrogate for it. It relies on the same depth cues a network uses, whether for pose
 estimation or inside a policy: planar faces, depth edges, small holes a few pixels wide, and surface normals.
-If the camera model destroys or shifts these cues, a model that depends on them is affected as well. Its
-thresholds play the role of learned parameters: tuned on ideal synthetic depth, they behave like the weights
-of a network trained only on ideal synthetic data and then deployed on the real sensor. Unlike a network, the
-pipeline is transparent, so every failure can be traced to the camera effect that caused it. The limitation is
+If the camera model destroys or shifts these cues, a model that depends on them is likely to be affected as
+well. Its thresholds play a role similar to learned parameters: tuned on ideal synthetic depth, they resemble
+the weights of a network trained only on ideal synthetic data and then deployed on the real sensor. Unlike a network, the
+pipeline is transparent, so failures can be traced to the camera effect that caused it. The limitation is
 that a network trained on noisy depth may learn to tolerate some of the effects; the pipeline therefore
 measures how sensitive the cues are, not how a particular network would perform.
 
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=\linewidth]{scene.png}
-\caption{The cell and one frame (seed 204). From left: the G1 at the table in its observation pose, the head
+\caption{The cell and one frame (seed 432). From left: the G1 at the table in its observation pose, the head
 camera's RGB image, and the ideal and D435-model depth of the marked region.}
 \label{fig:scene}
 \end{figure}
@@ -142,12 +145,12 @@ task: temporal noise, rolling shutter and motion blur (the depth imagers have a 
 infrared, interference between cameras, defocus, colour-sensor effects and post-processing filters (off by
 default). Dropouts (pixels without depth) are left out for lack of a usable number. The datasheet bounds
 them only on its test target: a fill rate of at least 99\,\% on a flat, matte white wall within 2\,m
-\cite{d435ds}, with no rule for where invalid pixels occur. At that level they are isolated pixels, which fail
-the detector's size and roundness tests. No measurement exists for anodized aluminium; dropout patches on the
-profile, where its faces reflect the projector pattern away at steep angles, would add false-hole candidates
-on the profile, which the CAD fit already rejects in 99--100\,\% of draws. The bracket is matte
-powder-coated, close to the datasheet target, and false depth on the profile's T-slots is rejected the same
-way. For the remaining effects no usable number exists: the
+\cite{d435ds}, with no rule for where invalid pixels occur. At that level they would mostly be isolated pixels, which
+fail the detector's size and roundness tests; the real data in Section~\ref{sec:realism} suggest far more. No measurement exists for anodized aluminium; dropout patches on the
+profile, where its faces may reflect the projector pattern away at steep angles, would probably add
+false-hole candidates on the profile, which the CAD fit rejected in 99--100\,\% of draws in our sweep. The bracket is matte
+powder-coated, close to the datasheet target, and false depth on the profile's T-slots would likely be rejected
+the same way. For the remaining effects no usable number exists: the
 dependence on incidence angle (the only published term \cite{ahn} is hand-set and does not reproduce its own
 measurements), occlusion shadows inside the image, and the spatially correlated ``egg carton'' noise that
 Intel describes without a correlation length.
@@ -155,7 +158,8 @@ Intel describes without a correlation length.
 The noise level itself is uncertain. Ahn et al.\ \cite{ahn} fitted the axial noise of a real D435 to about
 2.7 times Intel's value at 0.5\,m, still within the range Intel measures on different surfaces (0.07--0.32\,px).
 On the development scenes this level alone collapses the pipeline (CAD fit in 4 of 150 draws, against 143 with
-Intel's value), so the published noise level decides between a working and a failing perception stage.
+Intel's value), so on these 15 scenes the choice of published noise level decides between a working and a failing
+perception stage.
 
 % =====================================================================================================
 \section{Experiment: does the camera model change the downstream outcome?}
@@ -165,8 +169,8 @@ noise level ($\sigma_Z \approx 0.9$\,mm), so an effect of the noise on detection
 
 \paragraph{Protocol.} The pipeline, the camera model and the hypotheses were developed on 15 scenes, which
 were then closed. The test protocol was fixed before any test run (git tag \texttt{final-experiment}). The
-30 test scenes are the first seeds from 201 on for which every stage succeeds with ideal depth, so that every
-failure is caused by the camera model. Seven depth conditions are compared: ideal, datasheet rules only, each
+30 test scenes are the first seeds from 201 on for which every stage succeeds with ideal depth, with a
+collision-free arm motion, so that every failure is caused by the camera model. Seven depth conditions are compared: ideal, datasheet rules only, each
 effect alone, edge fattening with axial noise, and the full model. Each scene is run with 5 noise draws that
 are paired across conditions (same random numbers and bias sign), giving 150 draws per condition, compared
 with ideal by an exact McNemar test. Because the bias moves every position by about 10\,mm, detection and
@@ -174,24 +178,33 @@ pose count as correct within 15\,mm; the strict 3\,mm and 5\,mm criteria are rep
 
 \paragraph{Results.} Table~\ref{tab:results} and Fig.~\ref{fig:results} summarise the sweep.
 % TODO: verdict per hypothesis, if wanted as a list
-The datasheet rules leave perception unchanged (below 1\,mm) but lower the grasp to 77\,\%: the 1\,mm
-rounding nudges the fitted pose, and the grasp search switches to a candidate the arm cannot reach. This row is
-the control for the grasp planner's own sensitivity, against which the camera effects on the grasp should be
-read. Axial noise causes the largest single drop in detection, to 56\,\%: it leaves enclosed gaps on the
-profile's flat top face that pass as holes, and it breaks up the bracket's faces so that the real hole is no
-longer enclosed (Fig.~\ref{fig:holeplane}). Edge fattening alone does not prevent detection, since the plug it puts into the hole still
-stands out on noise-free depth, but it tilts the hole axis (0.75$^\circ$ to 1.12$^\circ$) and with noise it
-lowers detection further, from 56\,\% to 39\,\% ($p = 0.005$, Fig.~\ref{fig:detection}). The depth bias is
-invisible to detection but shifts the whole pose by 10.7\,mm along the viewing ray and lowers the grasp to
-66\,\%. The full model degrades every stage. Throughout, the CAD fit absorbs most perception errors, because it
-tries every candidate and keeps the one that matches the bracket.
+The datasheet rules leave perception almost unchanged (fit error below 1\,mm; the rounding flips the detector's
+pick in one scene) but lower the grasp to 77\,\%: the 1\,mm rounding nudges the fitted pose, and the grasp
+search switches to a candidate the arm cannot reach. This row is the control for the grasp planner's own
+sensitivity, against which the camera effects on the grasp should be read. Axial noise causes the largest
+single drop in detection, to 63\,\%; in the cases we inspected it leaves enclosed gaps on the profile's flat top face that pass as holes,
+and it breaks up the bracket's faces so that the real hole is no longer enclosed (Fig.~\ref{fig:holeplane}).
+Edge fattening alone does not prevent detection, since the plug it puts into the hole still stands out on
+noise-free depth, but it tilts the hole axis (median error 0.67$^\circ$ to 1.06$^\circ$) and with noise it lowers
+detection further, from 63\,\% to 39\,\% ($p < 10^{-4}$, Fig.~\ref{fig:detection}). Since our edge model
+is likely too strong (Section~\ref{sec:realism}), this drop may overstate the effect on a real D435. The depth bias is
+invisible to detection but shifts the whole pose by 10.7\,mm along the viewing ray. The full model combines
+both: 54\,\% detection and an 11\,mm pose offset. Throughout, the CAD fit absorbs the detection errors,
+because it tries every candidate and keeps the one that matches the bracket.
+
+The grasp was more robust than we expected. Every grasp that was executed lifted the bracket, also with the
+11\,mm offset of the bias and the full model (Fig.~\ref{fig:grasp}): the open jaws (54\,mm for the 40\,mm
+bracket) appear to absorb it. All grasp failures are planning failures: the grasp target moves by a few millimetres and
+the planner finds no reachable arm motion, or only one through the robot's own body (6 draws, all with
+the bias). The camera conditions reach 69--79\,\% against 77\,\% for the rules control, so at this sample size we
+see no clear effect of the camera model on the grasp beyond the planner's own sensitivity.
 
 \paragraph{Second renderer.} The sweep was repeated with Isaac Sim RTX depth for the same 30 scenes and
-noise draws. Ideal depth again succeeds in every stage. Hole detection reaches 61\,\% with axial noise,
-97\,\% with edge fattening, 48\,\% with both ($p = 0.022$ against axial alone), 98\,\% with the bias and
-53\,\% with the full model; the pose is found in 99--100\,\% of draws and the bias shifts it by 10.7\,mm, as
-with PyBullet. The pattern and the sizes of the effects agree within a few percentage points, so they come
-from the camera model and not from the renderer. The grasp runs in PyBullet in both cases and is not an
+noise draws. Ideal depth again succeeds in every stage. Hole detection reaches 63\,\% with axial noise (as with
+PyBullet), 97\,\% with edge fattening, 46\,\% with both ($p = 0.005$ against axial alone), 98\,\% with the
+bias and 49\,\% with the full model; the pose is found in every draw and the bias shifts it by 10.7\,mm, as
+with PyBullet. The pattern and the sizes of the effects agree within a few percentage points, which suggests
+that they come from the camera model and not from the renderer. The grasp runs in PyBullet in both cases and is not an
 independent check.
 
 \begin{table}[htbp]
@@ -201,15 +214,16 @@ independent check.
 Condition & Hole detected & Pose found & Grasp lifted \\
 \midrule
 ideal & 100\,\% & 100\,\% & 100\,\% \\
-datasheet rules & 100\,\% & 100\,\% & 77\,\% \\
-axial noise & 56\,\% & 99\,\% & 63\,\% \\
-edge fattening & 100\,\% & 100\,\% & 63\,\% \\
-edge + axial & 39\,\% & 100\,\% & 65\,\% \\
-depth bias $\pm$2\,\% & 100\,\% & 100\,\% (10.7\,mm off) & 66\,\% \\
-full model & 54\,\% & 99\,\% (10.9\,mm off) & 57\,\% \\
+datasheet rules & 97\,\% & 100\,\% & 77\,\% \\
+axial noise & 63\,\% & 100\,\% & 70\,\% \\
+edge fattening & 100\,\% & 100\,\% & 73\,\% \\
+edge + axial & 39\,\% & 100\,\% & 78\,\% \\
+depth bias $\pm$2\,\% & 100\,\% & 100\,\% (10.7\,mm off) & 79\,\% \\
+full model & 54\,\% & 99\,\% (11.1\,mm off) & 69\,\% \\
 \bottomrule
 \end{tabular}
-\caption{Success per stage, 30 test scenes $\times$ 5 paired noise draws. Detection and pose within 15\,mm.}
+\caption{Success per stage, 30 test scenes $\times$ 5 paired noise draws. Detection and pose within 15\,mm.
+Every executed grasp lifted the bracket; the grasp failures are planning failures.}
 \label{tab:results}
 \end{table}
 
@@ -223,7 +237,7 @@ full model & 54\,\% & 99\,\% (10.9\,mm off) & 57\,\% \\
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.8\linewidth]{hole_plane.png}
-\caption{Why detection fails under axial noise: depth points within 18\,mm of the true top hole, in the hole's
+\caption{How detection can fail under axial noise: depth points within 18\,mm of the true top hole, in the hole's
 frame (height $h$ stretched about 4$\times$), coloured by what the detector made of them. With ideal depth the
 face is one clean plane and the hole is an enclosed gap (black). With axial noise ($\sigma_Z \approx 0.9$\,mm)
 many points fall outside the 1\,mm face band, the face breaks up, no gap is enclosed, and the detector picks a
@@ -243,34 +257,38 @@ fills it, and a false hole on the profile 163\,mm away wins.}
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=\linewidth]{grasp.png}
-\caption{One scene (seed 204) grasped with ideal depth (top) and with the full camera model (bottom, draw 2).
-Under the full model every stage degrades: the detector picks a false hole on the profile 161\,mm away, the
-CAD fit recovers the bracket but 11.6\,mm off, and the jaws close off-centre and tip the bracket over.}
+\caption{One scene (seed 432) grasped with ideal depth (top) and with the full camera model (bottom, draw 0).
+Under the full model the detector picks a false hole on the profile 278\,mm away and the CAD fit recovers the
+bracket 10.2\,mm off, yet the jaws still close on it and lift it.}
 \label{fig:grasp}
 \end{figure}
 
-\paragraph{What did not work.} Three failure patterns remain. When axial noise breaks up every face, there is
-no hole candidate and the pipeline stops without a pose. When all candidates are false, the CAD fit can lock
-onto the profile (one case 253\,mm and 43$^\circ$ off); the grasp planner then finds no reachable grasp, so the
-robot does not move. And near-correct poses still produce failed grasps (Fig.~\ref{fig:grasp}): the planner is
-sensitive to millimetre changes. The pipeline also has its own limits, which the test-scene selection hides.
-On scenes filtered only for a visible hole, ideal depth reaches 90\,\% detection (the misses pick a round gap
-in the bracket's cap) but only 47\,\% grasp success, mostly because the planner tries one grasp candidate and one
-hand orientation before reporting an IK failure.
+\paragraph{What did not work.} When all hole candidates are false, the CAD fit can lock onto the profile
+(once in 150 draws under the full model, 253\,mm and 43$^\circ$ off); the grasp planner then finds no reachable
+grasp, so the robot does not move. The grasp planner is the weakest part: it tries one grasp candidate and one
+hand orientation per arm, so millimetre changes of the pose decide between a plan and none. Its first version
+also had no check against the robot's own body. In a first sweep, 7 of the 30 ideal grasps passed the elbow
+through the torso, and so did every grasp that pushed or tipped the bracket over instead of lifting it; those
+failures had looked like camera effects. With the collision check and a new scene selection, no executed
+grasp fails. The pipeline also has its own limits, which the test-scene selection hides. On scenes filtered
+only for a visible hole, ideal depth reaches 90\,\% detection (the misses pick a round gap in the bracket's
+cap) but only 47\,\% grasp success, mostly from IK failures (measured before the collision check).
 
 \paragraph{Implications for learned policies.} The two perception stages respond to the camera very
 differently. Hole detection depends on a local cue a few pixels wide and drops from 100\,\% to 54\,\% under the
 full model. The CAD fit integrates
-over the whole visible surface and still finds the bracket in 99\,\% of the cases. This argues against
-training an end-to-end policy directly on depth images: such a policy has to read the same local cues, the
-hole and the face edges, and would inherit their fragility, while its training data would also have to carry
+over the whole visible surface and still finds the bracket in 99\,\% of the cases. This suggests caution
+with training an end-to-end policy directly on depth images: such a policy has to read the same local cues,
+the hole and the face edges, and would likely inherit their fragility, while its training data would also have to carry
 the right sensor effects. An explicit reconstruction step, model-based fitting such as ICP against CAD or any
-other module that recovers the object's state from the whole surface, absorbs most of the sensor error before
-the robot acts, and a policy trained on that state sees far less of the sim-to-real gap. It does not remove
-everything: a systematic error such as the depth bias passes through the fit as an 11\,mm offset and still
-costs grasps. We did not train a policy; this conclusion rests on the contrast between the two stages.
+other module that recovers the object's state from the whole surface, absorbed most of the random sensor error in our
+pipeline, and a policy trained on that state may see less of the sim-to-real gap. It does not remove
+everything: a systematic error such as the depth bias passes through the fit as an 11\,mm offset, which our
+jaws absorb but a tighter grasp would not, and which moves the target the arm has to reach. We did not train a policy; this is an argument from the contrast between the two stages, not a
+measured result.
 
-\paragraph{Limitations.} The evaluation is synthetic: it shows how sensitive the pipeline is to the model.
+\paragraph{Limitations.} The evaluation is synthetic: it shows how sensitive the pipeline is to the model. It covers one
+bracket, one profile and 30 scenes, so the rates carry intervals of about $\pm 8$ percentage points.
 How close the model is to a real D435 is checked in Section~\ref{sec:realism}. The edge-fattening width comes
 from the R200, the noise is independent per pixel, there is no angle dependence, and PyBullet renders no
 material effects.
@@ -281,13 +299,14 @@ material effects.
 The model is built from Intel's documentation, not fitted to real data. As a basic check we applied it to
 the ground truth of HAMMER \cite{hammer}, which pairs real D435 depth with depth rendered from 3D scans of the
 same view (108 frames, 13 indoor scenes, 0.4--1.4\,m; \texttt{camera\_model/validate\_hammer.py},
-Fig.~\ref{fig:hammer}). The documented effects appear with similar size: the noise grows with distance as
-Intel's formula predicts (2.0 against 1.2\,mm plane residual at 0.53\,m), and the real unit has a scale bias of
-$+3.1\,\%$, comparable to our $\pm 2\,\%$. Two effects differ: the real noise is spatially correlated, and at
+Fig.~\ref{fig:hammer}). The documented effects appear with comparable size: the noise grows with distance as
+Intel's formula predicts, though about 1.7 times larger (2.0 against 1.2\,mm plane residual at 0.53\,m), and
+the real unit shows a scale bias of $+3.1\,\%$, somewhat above our $\pm 2\,\%$ (part of it may come from the
+dataset's calibration). Two effects differ: the real noise is spatially correlated, and at
 depth edges the foreground bleeds in only partially (about a third of the pixels, another 40\,\% invalid)
 against almost all of them in our model, so our edge fattening is likely too strong. Missing depth (10--40\,\%
 of pixels on walls and the dark table), for which the documentation gives no number, is absent from the model.
-The check uses one unit and household objects, so it shows the model is of the right kind and size, not that
+The check uses one unit and household objects, so it suggests the model is of the right kind and size, not that
 it predicts real success rates.
 
 \begin{figure}[htbp]
@@ -304,8 +323,8 @@ steps that read the foreground depth or are invalid.}
 \section{Riskiest sim-to-real assumption (draft)}
 % DRAFT: at most one page; to be rewritten by the author. Points collected so far.
 A perception model adapts its parameters to the data it was developed on. The baseline detector, tuned on
-ideal depth, fails on D435 noise in the same way that a network or a robot policy trained on ideal synthetic
-depth would fail on the real camera. Generating the training data through a camera model adapts the
+ideal depth, fails on D435 noise, much as a network or a robot policy trained on ideal synthetic depth could be
+expected to fail on the real camera. Generating the training data through a camera model adapts the
 parameters to the sensor that will be deployed: targeted data quality
 rather than the broad domain randomisation most sim-to-real approaches rely on, which brings its own
 difficulties for training.
@@ -327,7 +346,10 @@ exist.
 I used Claude Code throughout. It found, read and summarised the sources (datasheet, tuning guide, papers),
 looked up values and page references, and wrote and ran the code under my decisions. It drafted the report's
 prose from my notes and decisions; I revised and rewrote every section myself.
-I did not read the sources in full myself; instead I had claims checked against the source text, which found
+I did not read the sources in full myself. I proofread the sources of the noise models: for each effect I
+checked the quoted passages, values and page references against the documents. I did not read the code of the
+task pipeline (scene, rendering, perception, grasping) line by line; I confirmed that its functions do what
+they should from their outputs. Claims were also checked against the source text, which found
 wrong page numbers, a citation attributed to the wrong camera (Keselman's values are for the R200) and a
 miscounted result. The main disagreement concerned edge fattening: the AI recommended modelling it with a
 swept width from the start and later ranked it first again. I declined, because no D435 value exists and an

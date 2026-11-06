@@ -1,7 +1,7 @@
 # D435 depth camera model: algorithms and math
 
 Code: [`camera_model/d435.py`](../camera_model/d435.py) (`simulate(depth, K, rng, edge, axial, bias, rules)`).
-Choices and sources: AI_NOTES.md Q2. Experiment that uses it: AI_NOTES.md Q3 and [`pipeline.md`](pipeline.md).
+Choices and sources: AI_LOGS.md Q2. Experiment that uses it: AI_LOGS.md Q3 and [`pipeline.md`](pipeline.md).
 
 The model turns an **ideal rendered depth image** into the depth a RealSense D435 would report. It is
 analytical, so it runs on any renderer's output (PyBullet and Isaac Sim share it). It applies three effects with
@@ -183,7 +183,7 @@ made only of them (e.g. "rules only", "edge only") gives the same depth for ever
 | `AHN_ABC` (ablation) | 0.001063, 0.0007278, 0.003949 | Ahn et al. 2019 Eq. 2 |
 
 Effects left out (temporal noise, correlated noise, incidence angle, specular and dark-surface dropout,
-occlusion shadow, multi-path and others), with the reason for each: AI_NOTES.md Q2, "Final list of effects".
+occlusion shadow, multi-path and others), with the reason for each: AI_LOGS.md Q2, "Final list of effects".
 
 ```bash
 python camera_model/d435.py     # prints the noise levels and what each step does to a test frame

@@ -52,7 +52,7 @@ MIN_PART_DIST = 0.16    # profile half-length (0.10) + half-width (0.02) + brack
 # ---------------------------------------------------------------- camera
 # Pose of each camera's ROS optical frame (+Z forward, +X right, +Y down) in its parent link frame.
 # Only the G1's torso-mounted D435 (d435_link: +X forward / +Z up). Wrist cameras were tried and
-# dropped (see AI_NOTES.md); the dict keeps that easy to revisit.
+# dropped (see AI_LOGS.md); the dict keeps that easy to revisit.
 CAMERAS = {
     "head": {"link": "d435_link", "pos": (0.0, 0.0, 0.0), "quat_wxyz": (0.5, -0.5, 0.5, -0.5)},
 }
@@ -83,15 +83,16 @@ def sample_part_poses(rng):
 #   3. the bracket fit succeeds (t < 5 mm, r < 10 deg) from that hole
 #   4. robot/grasp_hole.py lifts the bracket the full ~100 mm (seed 20, which slips to 51 mm, excluded)
 # Every ideal-depth stage is therefore 15/15 on this set by construction: it is the baseline the
-# camera model degrades, not an accuracy measure (that is on all seeds with a visible hole, AI_NOTES.md).
+# camera model degrades, not an accuracy measure (that is on all seeds with a visible hole, AI_LOGS.md).
 # Seeds 0-112 checked; 98 rejected: 69 no visible top hole, 4 detector picked the wrong hole,
 # 20 IK failed, 4 bracket pushed away / not lifted (12, 42, 54, 63), 1 slipped (20).
 DEV_SEEDS = [4, 8, 23, 26, 27, 32, 37, 38, 45, 69, 73, 86, 92, 97, 112]
 
 # ---------------------------------------------------------------- held-out test set
-# Final experiment (AI_NOTES.md Q3, frozen protocol + amendment 3, 2026-11-05; experiments/final_sweep.py select):
-# the first 30 seeds from 201 up where every ideal PyBullet stage succeeds (top hole visible, detector within
-# 3 mm, fit success, grasp lifted) - the same rule as DEV_SEEDS. Seeds 201-431 screened; rejected: 156 no
-# visible top hole, 4 detector wrong, 31 grasp plan infeasible, 10 not lifted
-# (output/final_sweep/screening/screening.json).
-TEST_SEEDS = [204, 231, 233, 243, 245, 246, 266, 271, 292, 298, 299, 304, 306, 313, 342, 345, 348, 351, 365, 376, 379, 380, 382, 384, 385, 388, 392, 399, 408, 431]
+# Final experiment (AI_LOGS.md Q3, frozen protocol + amendments 3-4, 2026-11-06; experiments/final_sweep.py
+# select): the first 30 seeds from 201 up where every ideal PyBullet stage succeeds (top hole visible, detector
+# within 3 mm, fit success, grasp lifted with a collision-free arm motion) - the same rule as DEV_SEEDS. Seeds
+# 201-557 screened; rejected: 246 no visible top hole, 7 detector wrong, 75 grasp plan infeasible (IK failed or
+# arm-body collision), 0 not lifted (output/final_sweep/screening/screening.json).
+TEST_SEEDS = [231, 243, 245, 246, 266, 271, 277, 298, 299, 313, 342, 345, 348, 351, 382, 383, 384, 385, 388, 392,
+              399, 431, 432, 465, 473, 475, 511, 544, 545, 557]

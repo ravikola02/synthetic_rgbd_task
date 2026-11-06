@@ -8,8 +8,9 @@ with the jaws approaching along the hole axis.
 **Status: complete, with final results.** The scene, the ideal-depth reference set, the downstream pipeline and
 the analytical D435 depth model (`camera_model/d435.py`) are done. Every script runs on ideal depth by default
 and on the D435 model with `--camera d435`. The final experiment (7 depth conditions on 30 held-out test seeds)
-is in [Final experiment](#final-experiment), with results in `output/final_sweep/results/` and failure examples
-in `extracted_examples/`. Algorithms and math: `docs/pipeline.md`, `docs/camera_model.md`.
+is in [Final experiment](#final-experiment), with results in `output/final_sweep/results/` and examples
+in `extracted_examples/`. A check of the camera model against real D435 depth (HAMMER dataset):
+`camera_model/validate_hammer.py`. Algorithms and math: `docs/pipeline.md`, `docs/camera_model.md`.
 
 ## Setup
 
@@ -74,7 +75,7 @@ python robot/grasp_hole.py --camera d435 --seeds 45 --run-ids 0 --close-view   #
 Ablations switch one part of the model: `--edge none`, `--axial ahn` (Ahn et al. 2019 noise, ~2.7× Intel's at
 0.5 m) or `--axial none`, `--bias 0` (or a fixed `--bias 2` / `--bias -2`, in %), `--no-rules`. Noise draw r
 of seed s uses the same random numbers, including the bias sign, in every script and model variant.
-AI_NOTES.md (Q2, working log) lists the effects left out and why.
+AI_LOGS.md (Q2, working log) lists the effects left out and why.
 
 With the depth bias every position moves ~10 mm along the viewing ray, so the evaluation summaries also
 count the "right hole" / "pose found" with that shift allowed, next to the strict 3 mm / 5 mm criteria.
@@ -108,31 +109,36 @@ therefore the baseline for the camera model, not an accuracy measure.
 
 Does the D435 model change the outcome of hole detection, bracket fit and grasp? 7 depth conditions (ideal,
 datasheet rules, axial noise, edge fattening, edge + axial, depth bias ±2 %, full model) on 30 held-out test seeds
-(`TEST_SEEDS`: every ideal-depth stage succeeds), 5 paired noise draws each. Protocol and hypotheses: AI_NOTES.md Q3 (working log).
+(`TEST_SEEDS`: every ideal-depth stage succeeds, with a collision-free arm motion), 5 paired noise draws each. Protocol and hypotheses: AI_LOGS.md Q3 (working log).
 
 ```bash
 python experiments/final_sweep.py all          # select seeds, run, analyse (see REPRODUCE.md for timings);
                                                # opens a live web view (--no-view to skip)
-python experiments/run_seed.py --seed 204 --condition 6_full --run 2 [--gui]   # one case, same numbers
+python experiments/run_seed.py --seed 432 --condition 6_full --run 0 [--gui]   # one case, same numbers
 python experiments/extract_examples.py         # example figures + grasp videos -> extracted_examples/
 ```
 
 Results: `output/final_sweep/results/table.md` (also `.csv`, `.html`, `plots/table.png`), plots in
 `output/final_sweep/plots/`, per-draw rows in `results/rows_*.csv`, raw per-job JSON in `raw/`. Examples of
-where the camera model breaks the task: `extracted_examples/README.md`.
+what the camera model does to the task, with grasp videos: `extracted_examples/README.md`.
 
 | Condition | Hole detected | Fit, pose found (15 mm) | Grasp lifted |
 |---|---|---|---|
 | ideal | 100 % | 100 % | 100 % |
-| datasheet rules | 100 % | 100 % | 77 % |
-| axial noise | 56 % | 99 % | 63 % |
-| edge fattening | 100 % | 100 % | 63 % |
-| edge + axial | 39 % | 100 % | 65 % |
-| depth bias ±2 % | 100 % | 100 % (~10.7 mm off) | 66 % |
-| full model | 54 % | 99 % (~10.9 mm off) | 57 % |
+| datasheet rules | 97 % | 100 % | 77 % |
+| axial noise | 63 % | 100 % | 70 % |
+| edge fattening | 100 % | 100 % | 73 % |
+| edge + axial | 39 % | 100 % | 78 % |
+| depth bias ±2 % | 100 % | 100 % (~10.7 mm off) | 79 % |
+| full model | 54 % | 99 % (~11.1 mm off) | 69 % |
 
-The rules-only row is the control for the grasp: it changes perception by < 1 mm, so its grasp drop (77 %) is the
-grasp planner's own sensitivity; compare the camera effects on the grasp with it.
+The camera model bites at the detector (axial noise creates false holes; edge fattening makes it worse,
+p < 1e-4); the CAD fit absorbs the detection errors, and the depth bias passes through it as a ~11 mm shift.
+Every executed grasp lifted the bracket, also 11 mm off: all grasp failures are planning failures (IK, or an arm
+motion through the robot's own body, which the planner rejects). The rules-only row is the control for the
+grasp: it changes perception by < 1 mm, so its grasp drop (77 %) is the grasp planner's own sensitivity; compare
+the camera effects on the grasp with it. The perception results were repeated on Isaac Sim depth
+(`output/final_sweep_isaac/plots/`).
 
 ## Development set and reference data
 
@@ -178,18 +184,19 @@ scene/           scene definition shared by both backends
   backends/        pybullet_backend.py, isaac_backend.py
 perception/      hole_detector.py, hole_detector_tuned.py (mitigation), bracket_fit.py,
                  eval_holes.py, eval_bracket_fit.py
-robot/           grasp_hole.py: IK, grasp selection and execution in PyBullet
+robot/           grasp_hole.py: IK (with an arm-body collision check), grasp selection and execution in PyBullet
 experiments/     final_sweep.py (final experiment), run_seed.py (one case, --gui), watch.py (live view),
                  extract_examples.py (example figures and videos)
-extracted_examples/  failure examples (figures, grasp videos, README)
-camera_model/    d435.py: analytical D435 depth model; __init__.py: shared --camera options and ablations
+extracted_examples/  examples from the final sweep (figures, grasp videos, README)
+camera_model/    d435.py: analytical D435 depth model; __init__.py: shared --camera options and ablations;
+                 validate_hammer.py: model vs real D435 depth (HAMMER sample, fetched to data/hammer/)
 assets/cad/      part CAD (STEP) + cached stable poses
 assets/robot/    G1 + Dex1 URDF and meshes
 data/ideal/      ideal reference frames of the development and test seeds
 docs/            pipeline.md and camera_model.md (algorithms and math); D435 datasheet, depth tuning guide, depth post-processing paper, depth testing methodology,
                  Ahn et al. 2019, Keselman et al. 2017, literature notes
 report/          report.tex (the PDF report), make_figures.py (its figures -> report/figures/)
-AI_NOTES.md      working log for the AI assistant (decision history, superseded results; not for human readers)
+AI_LOGS.md      working log for the AI assistant (decision history, superseded results; not for human readers)
 ```
 
 ## Sources and modifications

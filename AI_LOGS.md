@@ -1,4 +1,4 @@
-# AI notes: working log (not written for human readers)
+# AI logs: working log (not written for human readers)
 
 > **This file is a working log for the AI assistant, not documentation.** It records decisions, their history and
 > intermediate results as they happened, so many entries are superseded and it is not meant to be read by people.
@@ -7,6 +7,15 @@
 
 
 Status legend: ✅ decided · 🟡 proposed, not yet confirmed · ⬜ open
+
+---
+
+## User's own TODO (added 2026-11-06, due Sun 2026-11-08)
+The user does these themselves; the AI only helps when asked.
+- ⬜ Read the camera model fully: `camera_model/d435.py` (192 lines), `camera_model/__init__.py`, `docs/camera_model.md`, report section 3.
+- 🟡 Proofread sources and statements (noise-model sources done 2026-11-06: geometry, axial, bias; findings below not yet applied: BKM calls the formula a "theoretical limit" on a textured target; report.tex:133 "Intel's subpixel accuracy" overgeneralises; BKM curve uses HFOV 90° vs our 87°; "Proj" 0.07–0.11 px online only and uncited; PP values are D415; bias scale form + random sign are own assumptions, cite the testing-methodology paper; KPI conditions 80 % ROI, HD, white wall): check every cited value / page against the PDFs in `docs/` (datasheet, BKM, PP, Ahn, Keselman 1705.05548) and every claim in the report against `output/final_sweep/results/`.
+- ⬜ Read every line of `report/report.tex` and correct it.
+- ⬜ Write the riskiest assumption and the six-month plan (report section 5, `report.tex` ~l. 318–337; ideas collected in Q4 below).
 
 ---
 
@@ -261,6 +270,10 @@ Only #1 (and the datasheet rules, dropped above after testing) have a model in t
 
 *Amendment 4 (user, 2026-11-06, after the amendment-3 results; a planner fix, post hoc):* the grasp planner now rejects plans where the grasping arm (upper arm to jaws) comes within `BODY_CLEARANCE` = 10 mm of the robot's own body (pelvis, legs, torso, head, other arm) along the whole motion; IK restarts raised from 4 to 8 (`IK_RESTARTS`) to find a collision-free solution; new status "body collision" (infeasible, like "IK failed"); executed clearance logged per grasp (`body_clearance_exec_mm`). Reason: PyBullet runs without self-collision and the IK never checked the body, so in the amendment-3 sweep 7/30 ideal grasps (204, 233, 306, 351, 379, 380, 408) put the elbow / wrist 45-131 mm inside the torso, 3 more touched it (2-7 mm), and all 51 "executed, not lifted" failures had the arm 44-131 mm inside the torso: motions a real G1 cannot make. Seeds re-screened from 201 with the same rule (every ideal stage succeeds, now including a collision-free grasp); whole sweep rerun. Plans that were already collision-free are unchanged (restart order kept; seed 231 identical). The amendment-3 results are kept in git history (commit d3be189).
 
+*Amendment 4 results (2026-11-06):* new test seeds (201-557 screened: 246 no visible hole, 7 detector wrong, 75 grasp plan infeasible) [231, 243, 245, 246, 266, 271, 277, 298, 299, 313, 342, 345, 348, 351, 382-385, 388, 392, 399, 431, 432, 465, 473, 475, 511, 544, 545, 557]; 20 kept from amendment 3. Hole detected (PyBullet): ideal 100, rules 97, axial 63, edge 100, edge + axial 39 (vs axial p = 6.5e-5), bias 100, full 54 %; pose found 99-100 % everywhere; fit translation bias 10.7 / full 11.1 mm. Grasp lifted: ideal 100, rules 77, axial 70, edge 73, edge + axial 78, bias 79, full 69 %. **No executed grasp failed**: every failure is IK failed or body collision (6 draws, all with the bias: seed 511 bias x5, 432 full draw 1); executed motions kept >= 10.2 mm from the body. So the camera model bites at the detector; the fit absorbs it; the jaws (54 mm open for 40 mm) absorb the 11 mm bias; grasp drops are planning sensitivity (rules control 77 %). Hypothesis 'bias affects the grasp heavily' not supported; 'full model degrades every layer' holds for detection and accuracy, not for grasp success. Examples re-extracted (extracted_examples/, seeds 243, 299, 351, 245, 432, 431, 511, 246) with grasp videos; report figures now use seed 432.
+
+*Realism check (2026-11-06):* `camera_model/validate_hammer.py` compares the model with real D435 depth (HAMMER, 108 frames / 13 scenes, fetched by HTTP range from the 170 GB archive). Walls at 0.53 m: plane-fit RMS 2.0 vs 1.2 mm (real ~1.7x, correlated), neighbour noise 0.5 vs 1.0 mm; scale bias +3.1 % in every scene (+2.2..+3.9); invalid away from edges 10-32 % walls, 22-40 % table, 5-23 % objects vs ~0; edges 1-2 px: 27-37 % foreground + ~41 % invalid vs 86-94 % foreground. Dropout: datasheet gives only fill rate >= 99 % on a matte white wall (Table 4-15, testing guide §1.3.2/§2.6.2); no number for anodized aluminium found (Halmetschlager-Funek 2018 paywalled). User: HAMMER is a realism check, not a calibration source; report Section 5.
+
 **Results** (2026-11-04). PyBullet, 15 test seeds × 10 independent noise draws. Same random numbers for both models. Per-pixel independent Gaussian, no angle term, no edge effects. Model: `camera_model/d435.py`, `simulate(depth, K, rng, axial="intel"|"ahn"|None, rules=True|False)`; command line (`eval_holes.py`, `eval_bracket_fit.py`, `grasp_hole.py`): Intel = `--camera d435 --no-rules`, Ahn = `--camera d435 --axial ahn --no-rules`, rules only = `--camera d435 --axial none`, Intel + rules (complete model) = `--camera d435`, Ahn + rules = `--camera d435 --axial ahn`; add `--runs 10`.
 
 | Depth | σ_z on the bracket | Detector alone: correct / none / wrong | Fit success | Fit t / r (median, successes) |
@@ -355,6 +368,7 @@ Only #1 (and the datasheet rules, dropped above after testing) have a model in t
 
 ## Q5. AI-tool use note
 - **How the AI was used:** I did not read the papers or documents in full myself. I relied on the AI agent (Claude Code) to find sources, read and summarise them (datasheet, tuning guide, Ahn et al., HAMMER, learned-model papers), look up specific values and page references, and proofread my notes and the README. I made the decisions from its summaries, and asked it to check claims against the source text (PDFs in `docs/`, the robot URDF, saved result files) rather than from memory; that check found and fixed wrong page numbers, a misattributed citation (Keselman et al. 2017 values are for the R200, not the D435) and a miscounted result.
+- (2026-11-06) **User proofread the noise-model sources** (with the AI showing the source passages): camera geometry (datasheet §2.3, §4.4–4.5, §4.8–4.8.1, Tables 3-49, 4-17, 4-20), axial noise (BKM §3e and p. 4 curve; PP subpixel values; Ahn Eq. 2), depth bias (datasheet Table 4-15; testing methodology §1.3.1). The user did **not** read the task-pipeline code (scene, rendering, perception, grasping) line by line, only confirmed its functions from their outputs. Report's AI note updated accordingly.
 - (2026-11-05) Report's AI note corrected: the AI drafted the report prose from the user's notes and decisions; the user revises and rewrites every section. The earlier wording ("proofread the documents") understated the AI's part.
 - Used Claude Code to read the task, structure the problem, find and extract camera specs from the datasheet and tuning guide, write and run the pipeline code under the user's decisions.
 - Corrections / disagreements with the tool:

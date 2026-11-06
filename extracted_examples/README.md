@@ -1,46 +1,47 @@
-# Extracted examples: where the D435 model breaks the downstream task
+# Extracted examples: what the D435 model does to the downstream task
 
 Cases taken from the final sweep (`output/final_sweep/`, 30 test seeds where every ideal-depth stage succeeds,
 5 noise draws per seed). Each one is recomputed with the same code and the same random numbers as its sweep row
-(`python experiments/extract_examples.py`; `--no-video` for figures only). Every seed here lifts the bracket with
-ideal depth. The grasp examples (04–06) also lift with the datasheet rules alone (the control condition), so their
-failures are not just the grasp planner's sensitivity (see 08).
+(`python experiments/extract_examples.py`; `--no-video` for figures only). Grasps are planned with the arm-body
+collision check (the arm stays at least 10 mm from the robot's own body along the whole motion), so every motion
+shown is one the G1 can make.
 
 Legend of the detection / fit figures: green ring = true top hole, orange = hole candidates, red × = the detector's
 pick; fit = CAD model points on the measured surface (green) or off it (red).
 
-## Perception failures
+## Perception: where the camera model bites, and how the fit absorbs it
 
 | # | Seed, draw | Condition | What happens | Files |
 |---|---|---|---|---|
-| 01 | 204, 1 | axial noise | The noise breaks up the bracket's faces, so the hole is no longer a gap enclosed by a face: **no hole candidate**, so the CAD fit cannot start and the pipeline stops (no pose, no grasp). | `01_axial_noise_no_hole.png` |
-| 02 | 299, 0 | axial vs edge + axial | **Same noise draw**: axial alone finds the hole (1.0 mm), but with edge fattening the detector picks a false hole on the profile 163 mm away. Edge fattening amplifies the noise effect (sweep: 56 % → 39 % detected, p = 0.005). | `02_edge_fattening_amplifies_noise.png` |
-| 03 | 380 | edge fattening alone | The hole is filled with foreground depth (a plug ~6 mm in front of the face instead of a 4 mm deep gap). It is still detected (edge alone: 100 %), but it looks 10.0 mm wide instead of 6.7 mm and its axis tilts from 0.8° to 3.0°: an accuracy effect, not a detection failure. | `03_edge_fattening_fills_hole.png` |
-| 07 | 431, 3 | full model | Every hole candidate is false and the best-scoring CAD match lands on the **wrong part: pose 253 mm / 43° off**. The grasp planner then finds no reachable grasp (IK failed), so the robot does not move. | `07_full_model_wrong_pose.png` |
+| 01 | 243, 2 | axial noise | The noise breaks up the faces and leaves enclosed gaps that pass as holes: **11 false holes**, the detector picks one on the profile 177 mm away. The CAD fit tries every candidate and still finds the bracket (1.1 mm off), and the grasp lifts it. | `01_axial_noise_false_holes.png`, `01_grasp_frames.png`, `01_ideal_grasp_seed243.mp4`, `01_axial_noise_grasp_seed243_draw2.mp4` |
+| 02 | 299, 0 | axial vs edge + axial | **Same noise draw**: axial alone finds the hole (1.0 mm); with edge fattening the hole is filled and a false hole on the profile 163 mm away wins. Edge fattening amplifies the noise effect (sweep: 63 % → 39 % detected, p = 6.5e-5). The fit and the grasp still succeed. | `02_edge_fattening_amplifies_noise.png`, `02_grasp_frames.png`, `02_ideal_grasp_seed299.mp4`, `02_edge_axial_grasp_seed299_draw0.mp4` |
+| 03 | 351 | edge fattening alone | The hole is filled with foreground depth (a plug in front of the face instead of a gap). It is still detected (edge alone: 100 %), but it looks 8.5 mm wide instead of 7.1 mm and its axis tilts from 0.4° to 1.7°: an accuracy effect, not a detection failure. | `03_edge_fattening_fills_hole.png`, `03_grasp_frames.png`, `03_ideal_grasp_seed351.mp4`, `03_edge_fattening_grasp_seed351_draw0.mp4` |
+| 04 | 245, 0 | depth bias (+2 %) | Shape and rotation are right, but the whole part sits **10.5 mm further along the viewing ray** (2 % of ~0.52 m). The jaws are wide enough to absorb this: the bracket is lifted. | `04_depth_bias_shift.png` (side view: measured points, true and fitted CAD), `04_grasp_frames.png`, `04_ideal_grasp_seed245.mp4`, `04_depth_bias_grasp_seed245_draw0.mp4` |
+| 05 | 432, 0 | full model | **Every perception stage degrades and the grasp still succeeds**: the detector picks a false hole on the profile 278 mm away, the fit recovers the bracket but 10.2 mm off (bias), and the jaws still close on it and lift it. | `05_full_model_false_hole_still_lifted.png`, `05_grasp_frames.png`, `05_ideal_grasp_seed432.mp4`, `05_full_model_grasp_seed432_draw0.mp4` |
 
-## Grasp failures (ideal and rules-only both lift)
+## Where the pipeline stops (the robot does not move, so no video)
 
 | # | Seed, draw | Condition | What happens | Files |
 |---|---|---|---|---|
-| 04 | 204 (all draws) | edge fattening alone | Perception barely changes (hole 2.0 mm, fit 0.4 mm), yet the grasp point moves and the jaws **push the bracket 39 mm** instead of lifting it. Edge fattening has no randomness, so it fails on every draw. | `04_edge_fattening_grasp_fails.png`, `04_edge_fattening_grasp_frames.png`, `04_ideal_grasp_seed204.mp4`, `04_edge_fattening_grasp_seed204.mp4` |
-| 05 | 233, 1 | depth bias (+2 %) | The hole is found and the shape and rotation are right, but the whole part sits **10.7 mm further along the viewing ray** (2 % of ~0.53 m). The jaws close off the part and **knock it over** (pushed 64 mm). | `05_depth_bias_shift.png` (side view: measured points, true and fitted CAD), `05_depth_bias_grasp_frames.png`, `05_ideal_grasp_seed233.mp4`, `05_depth_bias_grasp_seed233_draw1.mp4` |
-| 06 | 204, 2 | full model | **Every stage degrades**: the detector picks a false hole on the profile (161 mm away), the fit recovers the bracket but 11.6 mm off (bias), and the jaws close off-centre and **tip the bracket over** (pushed 25 mm). Same scene as 04. | `06_full_model_grasp_fails.png`, `06_full_model_grasp_frames.png`, `04_ideal_grasp_seed204.mp4` (ideal), `06_full_model_grasp_seed204_draw2.mp4` |
+| 06 | 431, 3 | full model | Every hole candidate is false and the best-scoring CAD match lands on the **wrong part: pose 253 mm / 43° off** (the only draw in 150 under the full model without a pose). The grasp planner then finds no reachable grasp (IK failed). | `06_full_model_wrong_pose.png` |
+| 07 | 511 (all draws) | depth bias | Hole and shape are right, the pose is 10.3 mm off. Every arm motion that reaches the shifted grasp would pass the arm 4.5 mm into the torso, so the planner rejects it (**body collision**). The bias moves the grasp target, and that alone can make it unreachable. | `07_depth_bias_body_collision.png` |
 
 ## Control: the grasp planner's own sensitivity
 
 | # | Seed, draw | Condition | What happens | Files |
 |---|---|---|---|---|
-| 08 | 246 (all draws) | datasheet rules alone | Perception is unchanged (same hole, fit 0.2 vs 0.3 mm), yet the grasp **fails (IK)**: the 1 mm depth rounding nudges the pose and the grasp search lands on a candidate the arm cannot reach. In the sweep the rules alone drop the grasp from 100 % to 77 % (7 of 30 seeds; rules have no randomness, so each seed fails or lifts on all 5 draws). Part of every grasp drop vs ideal is this planner sensitivity: judge the camera effects on the grasp against the rules row (77 %), not only against ideal (100 %). | `08_control_rules_planner_sensitivity.png` |
+| 08 | 246 (all draws) | datasheet rules alone | Perception is unchanged (same hole, fit 0.23 vs 0.25 mm), yet the grasp **fails (IK)**: the 1 mm depth rounding nudges the pose and the grasp search lands on a candidate the arm cannot reach. In the sweep the rules alone drop the grasp from 100 % to 77 % (7 of 30 seeds; rules have no randomness, so each seed fails or lifts on all 5 draws). Judge the camera effects on the grasp against this row (77 %), not only against ideal (100 %). | `08_control_rules_planner_sensitivity.png` |
 
 ## Points for the report
 
-1. **The detector is where the camera model bites.** Axial noise creates false holes (01, 02, 07); edge fattening
-   on its own does not stop detection but makes the noise effect worse (02) and degrades the hole's geometry (03).
-2. **The CAD fit absorbs most perception errors** (pose found in 99–100 % of draws under every condition), but not
-   all: with no candidate on the bracket it cannot start (01), and with only false candidates it can lock onto the
-   wrong part (07).
-3. **The depth bias is a pure shift along the viewing ray** (05): shape and rotation stay right, the position is
-   off by 2 % of the distance (~11 mm). The grasp tolerates this often (bias: 66 % lifted vs 77 % for the rules
-   control) but not always (05, 06).
-4. **Small perception changes can flip the grasp** (04, 08): the grasp planner is sensitive to ~1 mm pose changes,
-   which is why the rules-only control is needed to interpret the grasp column.
+1. **The detector is where the camera model bites.** Axial noise creates false holes (01, 06); edge fattening on its
+   own does not stop detection but makes the noise effect worse (02) and degrades the hole's geometry (03).
+2. **The CAD fit absorbs almost all of it** (pose found in 99–100 % of draws under every condition): it tries every
+   candidate and keeps the one that matches the bracket (01, 02, 05). It fails only when every candidate is false
+   and a wrong part matches better (06).
+3. **The depth bias is a pure shift along the viewing ray** (04): shape and rotation stay right, the position is
+   off by 2 % of the distance (~11 mm).
+4. **Every executed grasp lifts the bracket**, even 10–11 mm off (04, 05): the open jaws (54 mm for the 40 mm
+   bracket) absorb the shift. The grasp drops (69–79 % vs 77 % for the rules control) are all planning failures:
+   a millimetre change moves the grasp target to one the arm cannot reach (08) or can reach only through its own
+   body (07).
