@@ -358,24 +358,49 @@ material effects.
 % =====================================================================================================
 \section{Outlook}
 % DRAFT: at most one page; to be rewritten by the author. Points collected so far.
-\paragraph{Riskiest assumption (draft).} A perception model adapts its parameters to the data it was developed on. The baseline detector, tuned on
-ideal depth, failed on the modelled D435 noise, much as a network or a robot policy trained on ideal synthetic depth could be
-expected to fail on the real camera. Generating the training data through a camera model would adapt the
-parameters to the sensor that will be deployed: targeted data quality
-rather than the broad domain randomisation most sim-to-real approaches rely on, which brings its own
-difficulties for training.
+\paragraph{Riskiest assumption.} 
+A perception module trained mainly on synthetic data learns the
+regularities of the renderer, not of the sensor since the ideal depth would have sharp edges, no noise, no missing pixels and no
+bias, and the model's parameters would adapt to exactly that. Our baseline detector suggested this effect. It was 
+tuned on ideal depth, its detection fell from 100\,\% to 54\,\% under the modelled D435. A perception module trained or developed on ideal
+depth is poised to struggle in the same way, the more so when it relies on local cues, such as the
+hole and the face edges, which the camera degrades first. The ICP fit, which integrates over the whole surface,
+absorbed most of the random error but passed the systematic bias through as an 11\,mm offset. The usual answer
+is domain randomisation by varing the sensor effects broadly enough that the real camera falls inside the range.
+It brings its own difficulties, that the model has to cover variations the real sensor never produced, which costs
+data, capacity and possibly precision. 
 
-The risk is that the adaptation is only as good as the camera model. The two published noise levels for the
-D435 differ by a factor of 2.7, and parameters adapted to the lower one meet the higher one as the ideal-tuned
-detector met Intel's noise. The riskiest assumption is therefore that the simulated sensor matches the real
-one where it matters for the task.
-% TODO: state the riskiest assumption in your own words.
+Whether as randomisation ranges or as a camera model, the sensor
+effects are rarely calibrated for the combination of camera and scene, and for the D435 several have no clear
+range, the edge-fattening width is known only for the older R200, no angle dependence is documented, and
+dropout is bounded only on a matte white wall ($\leq 1\,\%$), while real D435 depth on everyday surfaces is
+10--40\,\% invalid. Even the documented values may not suit a
+specific case, the two published noise levels differ by a factor of 2.7, and the HAMMER unit showed a bias of
+$+3.1\,\%$, above the datasheet's $\pm 2\,\%$, and noise about 1.7 times larger and spatially correlated. A model
+adapted to the wrong value would meet the real camera as the ideal-tuned detector met the modelled one. The riskiest
+assumption here is therefore that the simulated sensor, its effects and their sizes, matches the real camera in the
+given scene where it matters for the task.
 
-\paragraph{First six months (draft).} The work so far suggests measuring before modelling: validate the camera
-model against real D435 depth with ground truth, per depth range and separately at edges; calibrate the edge
-fattening on the D435 itself; and measure the angle dependence between 60$^\circ$ and 75$^\circ$, where no data
-exist.
-% TODO: own plan.
+Additionally Real parts may differ from their CAD models anodizing and
+powder coat vary in gloss, edges carry burrs and scratches, while our renderer shows ideal geometry with no material effects. Ambient infrared light in a factory
+hall, clutter around the parts and drift in the camera's mounting would add further deviations. We expect these
+to matter less than the sensor model, but none of them was tested.
+
+\paragraph{First six months.} The straightforward route is to calibrate the effects the model already has on the real
+camera in the real scene, turning the documented analytical model into a calibrated one, captures of the cell
+with the parts at known poses would fix the size of each modelled effect for this camera. The risk of this route
+is that it only fits the effects we chose to model and other kinds of error that play a role in the scene would go
+unnoticed. Challanges with 3d scans of grouth truth are also possible.
+
+What I would rather do is use to develop camera model with camera views only. Several views of the same parts, for example the head camera
+together with a camera on the robot's wrist, see each surface from different distances and angles. Merging them,
+for instance as a Bayesian update of an error model with the analytical model as its prior, could estimate the
+sensor's errors from the disagreement between views, and could also reveal effects that are not in the model. This
+is what I would pursue in the first six months, aiming at a camera model that is acceptable for the task without a
+ground-truth calibration.
+
+In the longer run I would work on foundational perception modules, trained broadly and methods to fine-tune to a given
+camera and scene with only a few views.
 
 % =====================================================================================================
 \section*{Use of AI tools}
