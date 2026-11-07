@@ -26,9 +26,9 @@
 \section{Overview}
 A humanoid robot in a manufacturing cell picks an angle bracket from a table next to an aluminium profile,
 using its head depth camera. We take the Unitree G1 as the robot and its head camera, an Intel RealSense D435,
-as the reference sensor. The D435 is an active infrared    stereo camera, documented in Intel's datasheet
+as the reference sensor. The D435 is an active infrared stereo camera, documented in Intel's datasheet
 \cite{d435ds} and depth tuning guide \cite{bkm}, and its stereo failure modes are the ones small metal
-features are expected to provoke. The work centres on the camera's depth model and it's effects on the downstream perception and robot tasks.
+features are expected to provoke. The work centres on the camera's depth model and its effects on the downstream perception and robot tasks.
 
 We render labelled RGB-D frames of the cell in simulation from scene description, corrupt the ideal
 depth with an analytical D435 model built from published numbers, and run a depth-only pipeline on it. The task is to detect
@@ -36,10 +36,15 @@ the bracket's top hole in 6D, fit the bracket's CAD model, and grasp the bracket
 along the hole axis (Fig.~\ref{fig:tasks}). On 30 held-out test scenes, all of which succeed with ideal depth, the full camera model
 lowered hole detection from 100\,\% to 54\,\%. The CAD fit still found the bracket in 99\,\% of the cases, but
 displaced by about 11\,mm, and the grasp success fell to
-69\,\%. 
+69\,\%.
 
+The results suggest a few takeaways. Cues only a
+few pixels wide, such as the hole, appear to suffer first, while a fit over the whole surface tolerated the random
+noise but not the systematic bias. The grasp result reflects the planner's sensitivity as well as the camera's. A
+brief check against real D435 depth suggests the model is of the right kind and size, though it is not calibrated
+for this cell. Finally, the report outlines what this may mean for models trained on synthetic depth.
 
-% TODO: repository link and conclusion style para
+Code, data and reproduction steps: \url{https://github.com/ravikola02/synthetic_rgbd_task}.
 
 \begin{figure}[h]
 \centering
@@ -64,7 +69,7 @@ arms are raised to the sides so that the head camera sees the table unobstructed
 intrinsics, camera pose and 6D part poses as ground truth. The camera model operates on saved frames and is
 therefore independent of the simulator.
 
-\paragraph{Use of such synthetic data.} The rgbd camera in simulation is usable both for training a model and for evaluating a model-based system. In a
+\paragraph{Use of such synthetic data.} The RGB-D camera in simulation is usable both for training a model and for evaluating a model-based system. In a
 learning pipeline, the depth passed through the camera model, together with the masks and 6D poses, would
 train a pose estimator, a segmentation network or a robot policy that will actually be deployed. Here
 the same frames serve as simulated inputs for evaluation of the developed code for the downstream tasks.
@@ -104,7 +109,7 @@ one, shows where a failure starts and whether it propagates to the robot's actio
 \paragraph{A stand-in for a learned model.} In a real cell this step could be a learned pose
 estimator or an end-to-end robot policy. We considered a model-based network (FoundationPose), but it needs a
 GPU stack and pretrained weights. The geometric pipeline is a simpler surrogate for it. It relies on the same depth cues a network would possibly use, whether for pose
-estimation or inside an end to end robot policy like planar faces, depth edges, small holes a few pixels wide, and surface normals.
+estimation or inside an end-to-end robot policy: planar faces, depth edges, small holes a few pixels wide and surface normals.
 If the camera model destroys or shifts these cues, a model that depends on them (as it was trained on such data) is likely to be affected as
 well. Its thresholds play a role similar to learned parameters, tuned on ideal synthetic depth, they resemble
 the weights of a network trained only on ideal synthetic data and then deployed on the real sensor. Unlike a network, the
@@ -125,7 +130,7 @@ measures how sensitive the cues are, not how a particular network would perform.
 infrared stereo pair would be more faithful, but the D4 matcher's parameters are undocumented and the
 simulation would itself need validation against real data. Learned noise models need real D435 depth of
 similar scenes, we found no released D435 noise generator. The scope rule is that every modelled effect has a
-published or reliable number. Testing on ambiguous heuristic numbers is not traceable to study impacts of a realistic camera on such a scene.
+published or reliable number. Effects with only heuristic numbers would not be traceable, so their impact could not be attributed to the real camera.
 
 \paragraph{Effects included.} The D435 measures disparity $d$ between its two infrared imagers, with baseline
 $B = 50$\,mm, and reports depth $Z = fB/d$. The model has four parts: the output limits that every D435 frame obeys, and
@@ -192,9 +197,10 @@ measurements), occlusion shadows inside the image, and the spatially correlated 
 Intel describes without a correlation length.
 
 The noise level itself is uncertain. Ahn et al.\ \cite{ahn} fitted the axial noise of a real D435 to about
-2.7 times Intel's value at 0.5\,m, still within the range Intel measures on different surfaces (0.085--0.32\,px).
-On the development scenes this level alone collapsed the pipeline (CAD fit in 4 of 150 draws, against 143 with
-Intel's value).
+2.7 times Intel's value at 0.5\,m (about 0.2\,px). Intel gives below 0.1\,px on a well-textured target \cite{bkm} and
+measured up to 0.32\,px on a black glossy surface (on the D415) \cite{pp}, so both levels are plausible.
+On the development scenes this level alone collapsed the pipeline (CAD fit in 4 of 150 draws, 15 scenes
+$\times$ 10 draws, against 143 with Intel's value).
 
 % =====================================================================================================
 \section{Experiment: does the camera model change the downstream outcome?}
@@ -211,7 +217,6 @@ condition, giving 150 draws per condition. Because the bias moves every position
 pose count as correct within 15\,mm; the strict 3\,mm and 5\,mm criteria are reported as accuracy.
 
 \paragraph{Results.} Table~\ref{tab:results} and Fig.~\ref{fig:results} summarise the sweep; per stage:
-% TODO: verdict per hypothesis, if wanted as a list
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.8\linewidth]{stages.png}
@@ -223,7 +228,7 @@ pose count as correct within 15\,mm; the strict 3\,mm and 5\,mm criteria are rep
   \item \emph{Hole detection} was affected by axial noise and edge fattening. Axial noise caused the largest
 single drop, to 63\,\%: it broke up the bracket's faces so that the real hole was no longer enclosed, and left
 gaps on the profile that passed as holes (Fig.~\ref{fig:holeplane}, a development scene). Edge fattening
-alone did not prevent detection but tilted the hole axis (0.67$^\circ$ to 1.06$^\circ$); with noise it lowered
+alone did not prevent detection but tilted the hole axis (median axis error from 0.67$^\circ$ to 1.06$^\circ$); with noise it lowered
 detection to 39\,\%, filling holes that noise alone left open (Fig.~\ref{fig:detection}). Our edge model is
 likely too strong (Section~\ref{sec:realism}), so this drop may be overstated. The bias and the rules left
 detection almost unchanged; the full model reached 54\,\%.
@@ -249,7 +254,7 @@ viewing ray (11\,mm under the full model). Noise and edge fattening did not stop
 candidate, the fit absorbed the detection errors and found the bracket in 99--100\,\% of draws.
   \item \emph{Grasp} was affected by every camera condition: success fell from 100\,\% to 69--79\,\%, with
   the full model lowest (69\,\%). The failures happened at planning: the camera's pose errors moved the grasp
-  target by a few millimetres, and the planner found no reachable arm motion. Even the 1\,mm rounding alone did
+  target by a few millimetres, and the planner found no reachable, collision-free arm motion. Even the 1\,mm rounding alone did
   this (77\,\%). Once planned, every grasp lifted the bracket; the open jaws (54\,mm for the 40\,mm bracket)
   absorbed the bias offset, though sometimes only by a corner, so that the bracket swung in the grip
   (Fig.~\ref{fig:grasp}). The size of the drop therefore reflects both the camera and the planner's
@@ -357,49 +362,49 @@ material effects.
 
 % =====================================================================================================
 \section{Outlook}
-% DRAFT: at most one page; to be rewritten by the author. Points collected so far.
 \paragraph{Riskiest assumption.} 
 A perception module trained mainly on synthetic data learns the
 regularities of the renderer, not of the sensor since the ideal depth would have sharp edges, no noise, no missing pixels and no
-bias, and the model's parameters would adapt to exactly that. Our baseline detector suggested this effect. It was 
+bias, and the model's parameters would adapt to exactly that. Our baseline detector suggested this effect: 
 tuned on ideal depth, its detection fell from 100\,\% to 54\,\% under the modelled D435. A perception module trained or developed on ideal
 depth is poised to struggle in the same way, the more so when it relies on local cues, such as the
 hole and the face edges, which the camera degrades first. The ICP fit, which integrates over the whole surface,
 absorbed most of the random error but passed the systematic bias through as an 11\,mm offset. The usual answer
-is domain randomisation by varing the sensor effects broadly enough that the real camera falls inside the range.
-It brings its own difficulties, that the model has to cover variations the real sensor never produced, which costs
+is domain randomisation, varying the sensor effects broadly enough that the real camera falls inside the range.
+It brings its own difficulties: the model has to cover variations the real sensor never produces, which costs
 data, capacity and possibly precision. 
 
 Whether as randomisation ranges or as a camera model, the sensor
 effects are rarely calibrated for the combination of camera and scene, and for the D435 several have no clear
-range, the edge-fattening width is known only for the older R200, no angle dependence is documented, and
+range: the edge-fattening width is known only for the older R200, no angle dependence is documented, and
 dropout is bounded only on a matte white wall ($\leq 1\,\%$), while real D435 depth on everyday surfaces is
 10--40\,\% invalid. Even the documented values may not suit a
-specific case, the two published noise levels differ by a factor of 2.7, and the HAMMER unit showed a bias of
+specific case: the two published noise levels differ by a factor of 2.7, and the HAMMER unit showed a bias of
 $+3.1\,\%$, above the datasheet's $\pm 2\,\%$, and noise about 1.7 times larger and spatially correlated. A model
 adapted to the wrong value would meet the real camera as the ideal-tuned detector met the modelled one. The riskiest
 assumption here is therefore that the simulated sensor, its effects and their sizes, matches the real camera in the
 given scene where it matters for the task.
 
-Additionally Real parts may differ from their CAD models anodizing and
+Additionally, real parts may differ from their CAD models: anodizing and
 powder coat vary in gloss, edges carry burrs and scratches, while our renderer shows ideal geometry with no material effects. Ambient infrared light in a factory
 hall, clutter around the parts and drift in the camera's mounting would add further deviations. We expect these
 to matter less than the sensor model, but none of them was tested.
 
 \paragraph{First six months.} The straightforward route is to calibrate the effects the model already has on the real
-camera in the real scene, turning the documented analytical model into a calibrated one, captures of the cell
+camera in the real scene, turning the documented analytical model into a calibrated one: captures of the cell
 with the parts at known poses would fix the size of each modelled effect for this camera. The risk of this route
-is that it only fits the effects we chose to model and other kinds of error that play a role in the scene would go
-unnoticed. Challanges with 3d scans of grouth truth are also possible.
+is that it only fits the effects we chose to model, and other kinds of error that play a role in the scene would go
+unnoticed. If 3D scans of the cell serve as ground truth instead, their own error has to be small against the
+effects being calibrated, which at sub-millimetre noise is not guaranteed.
 
-What I would rather do is use to develop camera model with camera views only. Several views of the same parts, for example the head camera
+I would rather develop the camera model from camera views alone. Several views of the same parts, for example the head camera
 together with a camera on the robot's wrist, see each surface from different distances and angles. Merging them,
 for instance as a Bayesian update of an error model with the analytical model as its prior, could estimate the
 sensor's errors from the disagreement between views, and could also reveal effects that are not in the model. This
 is what I would pursue in the first six months, aiming at a camera model that is acceptable for the task without a
 ground-truth calibration.
 
-In the longer run I would work on foundational perception modules, trained broadly and methods to fine-tune to a given
+In the longer run I would work on foundational perception modules, trained broadly, and on methods to fine-tune them to a given
 camera and scene with only a few views.
 
 % =====================================================================================================
@@ -412,8 +417,8 @@ task pipeline (scene, rendering, perception, grasping) line by line; I confirmed
 they should from their outputs. Claims were also checked against the source text, which found
 wrong page numbers, a citation attributed to the wrong camera (Keselman's values are for the R200) and a
 miscounted result. The main disagreement concerned edge fattening: the AI recommended modelling it with a
-swept width from the start ranked it first priority multiple times. I declined, because no D435 value exists and an
-invented width would break traceability. In the end I tested it only with the reliable number of R200 and marked
+swept width from the start and ranked it first priority multiple times. I declined, because no D435 value exists and an
+invented width would break traceability. In the end I tested it only with the R200's measured value and marked
 it as needing calibration.
 
 % =====================================================================================================
@@ -425,6 +430,8 @@ RealSense D400 Depth Cameras for Best Performance}, Intel, rev.\ 2.0.
 Depth Cameras, \emph{CVPR Workshops}, 2017.
 \bibitem{ahn} M. S. Ahn, H. Chae, D. Noh, H. Nam, D. Hong, Analysis and Noise Modeling of the Intel RealSense
 D435 for Mobile Robots, \emph{Int.\ Conf.\ on Ubiquitous Robots (UR)}, 2019.
+\bibitem{pp} A. Grunnet-Jepsen, D. Tong, \emph{Depth Post-Processing for Intel RealSense D400 Depth Cameras},
+Intel, rev.\ 1.0.2.
 \bibitem{hammer} H. Jung, P. Ruhkamp, G. Zhai, N. Brasch, Y. Li, Y. Verdie, J. Song, Y. Zhou, A. Armagan,
 S. Ilic, A. Leonardis, N. Navab, B. Busam, On the Importance of Accurate Geometry Data for Dense 3D Vision
 Tasks, \emph{CVPR}, pp.\ 780--791, 2023 (HAMMER dataset).
