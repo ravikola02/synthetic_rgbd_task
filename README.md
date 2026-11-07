@@ -156,7 +156,7 @@ experiments/        final_sweep.py, run_seed.py, watch.py (live view), extract_e
 extracted_examples/ example figures and grasp videos from the final sweep
 assets/             part CAD (STEP) and the G1 + Dex1 URDF
 data/ideal/         ideal reference frames
-docs/               pipeline.md and camera_model.md (algorithms and math), Intel documents and papers used
+docs/               pipeline.md and camera_model.md (algorithms and math), Intel documents used
 report/             report.tex / report.pdf, figures, explainer video
 AI_LOGS.md          working log of the AI assistant (decision history; not written for readers)
 ```
@@ -175,3 +175,8 @@ from the original URDF.
 **Camera.** Intel RealSense D400 datasheet, depth tuning guide, depth post-processing paper and depth testing
 methodology (in `docs/`); Keselman et al., CVPRW 2017 (edge fattening, R200); Ahn et al., UR 2019 (noise
 ablation); Jung et al., CVPR 2023 (HAMMER, realism check).
+
+The Intel documents are in `docs/`. The three papers are not included for copyright reasons; code comments
+refer to them by their local file names: Keselman et al. ([arXiv 1705.05548](https://arxiv.org/abs/1705.05548),
+`docs/1705.05548v2.pdf`), Ahn et al. (IEEE UR 2019, `docs/793350771-ANM.pdf`) and Jung et al. (CVPR 2023 open
+access, `docs/Jung_HAMMER_CVPR2023.pdf`).

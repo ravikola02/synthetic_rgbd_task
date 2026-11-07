@@ -22,3 +22,8 @@ report/*.synctex.gz
 report/figures/videos/
 # HAMMER sample (camera_model/validate_hammer.py fetch; CC BY-NC-SA, not redistributed)
 data/hammer/
+
+# Third-party papers (copyright): kept locally, not redistributed
+docs/1705.05548v2.pdf
+docs/793350771-ANM.pdf
+docs/Jung_HAMMER_CVPR2023.pdf
